@@ -30,14 +30,14 @@ const updateDriver = Joi.object({
 const createCustomer = Joi.object({
   name: Joi.string().trim().min(1).max(255).required(),
   phone: Joi.string().trim().min(3).max(50).required(),
-  address: Joi.string().trim().min(1).required(),
+  address: Joi.string().trim().allow(null, '').optional(),
   notes: Joi.string().trim().allow(null, '').optional(),
 });
 
 const updateCustomer = Joi.object({
   name: Joi.string().trim().min(1).max(255).optional(),
   phone: Joi.string().trim().min(3).max(50).optional(),
-  address: Joi.string().trim().min(1).optional(),
+  address: Joi.string().trim().allow(null, '').optional(),
   notes: Joi.string().trim().allow(null, '').optional(),
 }).min(1);
 

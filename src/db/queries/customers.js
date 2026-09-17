@@ -33,7 +33,7 @@ async function create({ name, phone, address, notes }) {
     `INSERT INTO customers (name, phone, address, notes)
      VALUES ($1, $2, $3, $4)
      RETURNING id, name, phone, address, notes, created_at`,
-    [name, phone, address, notes || null]
+    [name, phone, address || null, notes || null]
   );
   return rows[0];
 }
