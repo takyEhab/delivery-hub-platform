@@ -2,7 +2,8 @@
 
 A full-stack platform for managing restaurant and delivery operations — order intake, driver assignment, and real-time delivery status tracking.
 
-**Live app:** https://delivery-hub-platform.vercel.app
+**Live Website Link:** https://delivery-hub-platform.vercel.app
+**API Link:** https://delivery-hub-platform-api.vercel.app
 
 ## What it does
 
