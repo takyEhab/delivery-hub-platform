@@ -1,25 +1,26 @@
 import axios from 'axios';
 
 // Resolve API base URL: always use '/api' proxy on mobile/LAN devices to prevent localhost connection errors
-const getBaseURL = () => {
-  const envUrl = import.meta.env.VITE_API_URL;
-  if (!envUrl || envUrl === '/api') return '/api';
-  
-  // If accessed from mobile or remote IP (not localhost), never try to connect to localhost:3000
-  if (
-    typeof window !== 'undefined' &&
-    window.location.hostname &&
-    window.location.hostname !== 'localhost' &&
-    window.location.hostname !== '127.0.0.1'
-  ) {
-    if (envUrl.includes('localhost') || envUrl.includes('127.0.0.1')) {
-      return '/api';
-    }
-  }
-  return envUrl;
-};
+// const getBaseURL = () => {
+//   const envUrl = import.meta.env.VITE_API_URL;
+//   if (!envUrl || envUrl === '/api') return '/api';
 
-const baseURL = getBaseURL();
+//   // If accessed from mobile or remote IP (not localhost), never try to connect to localhost:3000
+//   if (
+//     typeof window !== 'undefined' &&
+//     window.location.hostname &&
+//     window.location.hostname !== 'localhost' &&
+//     window.location.hostname !== '127.0.0.1'
+//   ) {
+//     if (envUrl.includes('localhost') || envUrl.includes('127.0.0.1')) {
+//       return '/api';
+//     }
+//   }
+//   return envUrl;
+// };
+
+// const baseURL = getBaseURL();
+const baseURL = import.meta.env.API_URL || "https://delivery-hub-platform-api.vercel.app"
 
 export const apiClient = axios.create({
   baseURL,
