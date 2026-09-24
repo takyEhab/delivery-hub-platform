@@ -135,7 +135,7 @@ export function Login() {
                   id="phone"
                   type="text"
                   autoComplete="tel"
-                  placeholder="01007479928"
+                  placeholder="01097132814"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   className="block w-full rounded-xl border border-slate-700/80 bg-[#020b14]/70 text-sm text-white placeholder:text-slate-500 pl-10 pr-3 rtl:pl-3 rtl:pr-10 py-3 transition-colors focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 focus:outline-none"
@@ -190,7 +190,7 @@ export function Login() {
             <div className="grid grid-cols-2 gap-2 text-xs">
               <button
                 type="button"
-                onClick={() => handleQuickFill('01007479928', 'changeme123')}
+                onClick={() => handleQuickFill('01097132814', 'changeme123')}
                 className="flex items-center justify-center gap-1.5 p-2.5 rounded-xl bg-[#031120] border border-cyan-900/50 text-slate-200 hover:text-cyan-300 hover:border-cyan-500/50 hover:bg-cyan-950/40 transition-all text-center"
               >
                 <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0" />

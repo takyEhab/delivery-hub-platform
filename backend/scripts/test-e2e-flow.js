@@ -53,7 +53,7 @@ async function runE2E() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
         },
-        { phone: '01007479928', password: 'changeme123' }
+        { phone: '01097132814', password: 'changeme123' }
     );
     console.log('Owner login status:', ownerLogin.status);
     const ownerToken = ownerLogin.data.token;
