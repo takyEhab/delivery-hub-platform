@@ -117,7 +117,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
       // Pre-fetch initial recent customers
       listCustomers()
         .then((data) => setSearchResults(data.slice(0, 10)))
-        .catch(() => {});
+        .catch(() => { });
     }
   }, [isOpen]);
 
@@ -134,7 +134,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
     } else {
       listCustomers()
         .then((data) => setSearchResults(data.slice(0, 10)))
-        .catch(() => {});
+        .catch(() => { });
     }
   }, [debouncedSearch, customerMode, isOpen]);
 
@@ -292,11 +292,10 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
             <button
               type="button"
               onClick={() => setCustomerMode('existing')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-xl transition-all ${
-                customerMode === 'existing'
-                  ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-white'
-              }`}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-xl transition-all ${customerMode === 'existing'
+                ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md'
+                : 'text-slate-400 hover:text-white'
+                }`}
             >
               <UserCheck className="w-4 h-4" />
               {t('existing_customer')}
@@ -304,11 +303,10 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
             <button
               type="button"
               onClick={() => setCustomerMode('new')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-xl transition-all ${
-                customerMode === 'new'
-                  ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-white'
-              }`}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-xl transition-all ${customerMode === 'new'
+                ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md'
+                : 'text-slate-400 hover:text-white'
+                }`}
             >
               <UserPlus className="w-4 h-4" />
               {t('new_customer')}
@@ -492,11 +490,10 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                 key={cat.category}
                 type="button"
                 onClick={() => setActiveCategoryTab(idx)}
-                className={`px-3 py-1.5 rounded-lg font-bold shrink-0 transition-all ${
-                  activeCategoryTab === idx
-                    ? 'bg-cyan-500 text-slate-950 shadow-md'
-                    : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800 hover:text-white'
-                }`}
+                className={`px-3 py-1.5 rounded-lg font-bold shrink-0 transition-all ${activeCategoryTab === idx
+                  ? 'bg-cyan-500 text-slate-950 shadow-md'
+                  : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800 hover:text-white'
+                  }`}
               >
                 {language === 'ar' ? cat.categoryNameAr : cat.categoryNameEn}
               </button>
@@ -535,7 +532,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                   onClick={() => handleAppendCookingStyle(style)}
                   className="px-2 py-1 rounded-lg bg-orange-950/30 border border-orange-500/30 hover:bg-orange-900/50 text-[11px] font-semibold text-orange-300 transition-all"
                 >
-                  🔥 {language === 'ar' ? style.ar : style.en}
+                  {language === 'ar' ? style.ar : style.en}
                 </button>
               ))}
             </div>
