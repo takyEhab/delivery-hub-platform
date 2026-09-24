@@ -113,6 +113,7 @@ export function OrderDetails() {
 
   const isAssignedToCurrentDriver =
     isDriver && order.assigned_driver_id === user?.id;
+  const canUpdateStatus = isOwner || isAssignedToCurrentDriver;
 
   const mapsUrl = order.customer?.address
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
@@ -168,7 +169,7 @@ export function OrderDetails() {
             </Button>
           )}
 
-          {isAssignedToCurrentDriver && order.status === 'preparing' && (
+          {canUpdateStatus && order.status === 'preparing' && (
             <Button
               variant="primary"
               size="md"
@@ -181,7 +182,7 @@ export function OrderDetails() {
             </Button>
           )}
 
-          {isAssignedToCurrentDriver && order.status === 'out_for_delivery' && (
+          {canUpdateStatus && order.status === 'out_for_delivery' && (
             <Button
               variant="primary"
               size="md"

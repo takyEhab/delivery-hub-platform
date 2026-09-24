@@ -4,6 +4,7 @@ const { authenticate, authorize } = require('../middleware/auth');
 const { validate } = require('../middleware/validate');
 const {
   createOrder,
+  updateOrder,
   assignOrder,
   updateOrderStatus,
 } = require('../validators/schemas');
@@ -23,6 +24,20 @@ router.get('/', ordersController.listOrders);
 
 router.get('/:id', ordersController.getOrder);
 
+router.put(
+  '/:id',
+  authorize('owner'),
+  validate(updateOrder),
+  ordersController.updateOrder
+);
+
+router.patch(
+  '/:id',
+  authorize('owner'),
+  validate(updateOrder),
+  ordersController.updateOrder
+);
+
 router.patch(
   '/:id/assign',
   authorize('owner'),
@@ -32,7 +47,7 @@ router.patch(
 
 router.patch(
   '/:id/status',
-  authorize('driver'),
+  authorize('owner', 'driver'),
   validate(updateOrderStatus),
   ordersController.updateOrderStatus
 );

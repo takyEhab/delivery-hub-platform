@@ -21,6 +21,7 @@ import {
   Fish,
   Flame,
   Utensils,
+  Edit3,
 } from 'lucide-react';
 import { updateOrderStatus } from '../../api/orders';
 import { getErrorMessage } from '../../api/client';
@@ -80,13 +81,25 @@ export function OrderCard({
           </div>
         </div>
 
-        <Link
-          to={`/orders/${order.id}`}
-          className="text-xs font-bold text-cyan-400 hover:text-cyan-200 flex items-center gap-0.5 p-1.5 rounded-lg hover:bg-cyan-950/40 transition-colors"
-        >
-          <span>{t('view_details')}</span>
-          <ChevronRight className="w-3.5 h-3.5 rtl:rotate-180" />
-        </Link>
+        <div className="flex items-center gap-1.5">
+          {isOwner && (
+            <Link
+              to={`/orders/${order.id}/edit`}
+              className="text-xs font-semibold text-cyan-300 hover:text-white flex items-center gap-1 py-1 px-2 rounded-lg bg-cyan-950/50 hover:bg-cyan-900/60 border border-cyan-800/40 transition-colors"
+              title={t('edit_order')}
+            >
+              <Edit3 className="w-3.5 h-3.5 text-cyan-400" />
+              <span>{t('edit_order')}</span>
+            </Link>
+          )}
+          <Link
+            to={`/orders/${order.id}`}
+            className="text-xs font-bold text-cyan-400 hover:text-cyan-200 flex items-center gap-0.5 p-1.5 rounded-lg hover:bg-cyan-950/40 transition-colors"
+          >
+            <span>{t('view_details')}</span>
+            <ChevronRight className="w-3.5 h-3.5 rtl:rotate-180" />
+          </Link>
+        </div>
       </div>
 
       {/* Customer and address section */}
@@ -162,8 +175,8 @@ export function OrderCard({
           )}
         </div>
 
-        {/* Driver progression buttons */}
-        {isDriver && (
+        {/* Progression buttons for Driver & Owner */}
+        {(isDriver || isOwner) && (
           <div className="flex items-center gap-2 mt-1">
             {order.status === 'preparing' && (
               <Button

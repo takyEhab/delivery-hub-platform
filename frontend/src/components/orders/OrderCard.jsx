@@ -160,8 +160,8 @@ export function OrderCard({
           </div>
         )}
 
-        {/* Driver action button */}
-        {isDriver && (
+        {/* Driver or Owner action button */}
+        {(isDriver || isOwner) && (
           <div className="w-full">
             {order.status === 'preparing' && (
               <Button

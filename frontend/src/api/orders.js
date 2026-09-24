@@ -28,3 +28,9 @@ export async function updateOrderStatus(orderId, status) {
   });
   return res.data.order;
 }
+
+export async function updateOrder(orderId, orderData) {
+  const res = await apiClient.put(`/orders/${orderId}`, orderData);
+  return res.data.order;
+}
+

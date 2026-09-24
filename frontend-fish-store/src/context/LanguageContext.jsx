@@ -100,6 +100,14 @@ const translations = {
     calculated_total: 'الإجمالي المقدر',
     submit_create_order: 'تأكيد وحفظ طلب الأسماك',
     cancel: 'إلغاء',
+    edit_order: 'تعديل الطلب',
+    edit_order_title: 'تعديل طلب الأسماك #',
+    edit_order_desc: 'تعديل الأصناف، الكابتن، العنوان أو حالة الطلب.',
+    save_changes: 'حفظ التعديلات',
+    order_status_label: 'حالة الطلب',
+    mark_out_for_delivery: 'بدء التوصيل (في الطريق)',
+    mark_delivered: 'تأكيد تسليم الطلب',
+    revert_to_preparing: 'إعادة لقيد التجهيز',
 
     // Customers page
     customers_title: 'سجل عملاء أمير البحار',
@@ -234,6 +242,14 @@ const translations = {
     calculated_total: 'Estimated Total',
     submit_create_order: 'Confirm & Place Seafood Order',
     cancel: 'Cancel',
+    edit_order: 'Edit Order',
+    edit_order_title: 'Edit Seafood Order #',
+    edit_order_desc: 'Modify seafood items, courier, address, or order status.',
+    save_changes: 'Save Changes',
+    order_status_label: 'Order Status',
+    mark_out_for_delivery: 'Out for Delivery',
+    mark_delivered: 'Mark as Delivered',
+    revert_to_preparing: 'Revert to Preparing',
 
     // Customers page
     customers_title: 'Prince of the Seas Customers',

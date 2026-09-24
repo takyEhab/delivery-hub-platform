@@ -9,7 +9,7 @@ import {
 } from '../../utils/formatters';
 import { useLanguage } from '../../context/LanguageContext';
 import { OrderCard } from './OrderCard';
-import { Fish, Truck, Phone, ChevronRight, User } from 'lucide-react';
+import { Fish, Truck, Phone, ChevronRight, User, Edit3 } from 'lucide-react';
 
 export function OrderTable({ orders, onAssignClick, onStatusUpdated, isOwner, isDriver }) {
   const { t, language } = useLanguage();
@@ -129,17 +129,31 @@ export function OrderTable({ orders, onAssignClick, onStatusUpdated, isOwner, is
                     </td>
 
                     <td className="py-3.5 px-5 text-left rtl:text-left ltr:text-right whitespace-nowrap">
-                      <Link to={`/orders/${order.id}`}>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          icon={ChevronRight}
-                          iconPosition="right"
-                          className="text-xs py-1 px-3 border-cyan-800/60 text-cyan-300 hover:bg-cyan-950/40"
-                        >
-                          {t('view_details')}
-                        </Button>
-                      </Link>
+                      <div className="flex items-center justify-end gap-2">
+                        {isOwner && (
+                          <Link to={`/orders/${order.id}/edit`}>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              icon={Edit3}
+                              className="text-xs py-1 px-2.5 border-cyan-900/60 text-cyan-300 hover:text-white hover:bg-cyan-950/60 hover:border-cyan-700"
+                            >
+                              {t('edit_order')}
+                            </Button>
+                          </Link>
+                        )}
+                        <Link to={`/orders/${order.id}`}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            icon={ChevronRight}
+                            iconPosition="right"
+                            className="text-xs py-1 px-3 border-cyan-800/60 text-cyan-300 hover:bg-cyan-950/40"
+                          >
+                            {t('view_details')}
+                          </Button>
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 );

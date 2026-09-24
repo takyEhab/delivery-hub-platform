@@ -141,10 +141,46 @@ async function updateOrderStatus(req, res, next) {
   }
 }
 
+async function updateOrder(req, res, next) {
+  try {
+    const orderId = req.params.id;
+    const existing = await ordersQueries.findById(orderId);
+    if (!existing) {
+      throw new AppError('Order not found', 404);
+    }
+
+    let customerId = req.body.customer_id;
+    if (req.body.customer) {
+      const created = await customersQueries.create(req.body.customer);
+      customerId = created.id;
+    }
+
+    let driverId = req.body.driver_id;
+    if (driverId !== undefined && driverId !== null) {
+      const driver = await usersQueries.findActiveDriverById(driverId);
+      if (!driver) {
+        throw new AppError('Active driver not found', 404);
+      }
+    }
+
+    const updated = await ordersQueries.update(orderId, {
+      customerId,
+      assignedDriverId: driverId,
+      items: req.body.items,
+      status: req.body.status,
+    });
+
+    res.json({ order: updated });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   createOrder,
   listOrders,
   getOrder,
   assignOrder,
   updateOrderStatus,
+  updateOrder,
 };

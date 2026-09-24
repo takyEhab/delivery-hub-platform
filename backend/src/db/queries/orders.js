@@ -118,6 +118,45 @@ async function updateStatus(orderId, status, driverId = null) {
   return findById(orderId);
 }
 
+async function update(orderId, { customerId, assignedDriverId, items, status }) {
+  const updates = [];
+  const params = [];
+  let paramIndex = 1;
+
+  if (customerId !== undefined) {
+    updates.push(`customer_id = $${paramIndex++}`);
+    params.push(customerId);
+  }
+
+  if (assignedDriverId !== undefined) {
+    updates.push(`assigned_driver_id = $${paramIndex++}`);
+    params.push(assignedDriverId);
+  }
+
+  if (items !== undefined) {
+    const itemsValue = typeof items === 'string' ? JSON.stringify([{ description: items }]) : JSON.stringify(items);
+    updates.push(`items = $${paramIndex++}::jsonb`);
+    params.push(itemsValue);
+  }
+
+  if (status !== undefined) {
+    updates.push(`status = $${paramIndex++}`);
+    params.push(status);
+  }
+
+  if (updates.length === 0) {
+    return findById(orderId);
+  }
+
+  params.push(orderId);
+  const query = `UPDATE orders SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING id`;
+  const { rows } = await db.query(query, params);
+  if (rows.length === 0) {
+    return null;
+  }
+  return findById(orderId);
+}
+
 module.exports = {
   create,
   findById,
@@ -125,4 +164,5 @@ module.exports = {
   listByDriver,
   assignDriver,
   updateStatus,
+  update,
 };

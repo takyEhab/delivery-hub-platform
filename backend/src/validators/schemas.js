@@ -62,6 +62,21 @@ const updateOrderStatus = Joi.object({
     .required(),
 });
 
+const updateOrder = Joi.object({
+  customer_id: Joi.number().integer().positive().optional(),
+  customer: createCustomer.optional(),
+  driver_id: Joi.number().integer().positive().allow(null).optional(),
+  items: Joi.alternatives()
+    .try(
+      Joi.array().items(Joi.object().unknown(true)).min(1),
+      Joi.string().trim().min(1)
+    )
+    .optional(),
+  status: Joi.string()
+    .valid('preparing', 'out_for_delivery', 'delivered')
+    .optional(),
+}).min(1);
+
 const searchQuery = Joi.object({
   q: Joi.string().trim().min(1).required(),
 });
@@ -74,6 +89,7 @@ module.exports = {
   createCustomer,
   updateCustomer,
   createOrder,
+  updateOrder,
   assignOrder,
   updateOrderStatus,
   searchQuery,

@@ -10,6 +10,7 @@ import { Customers } from './pages/Customers';
 import { Drivers } from './pages/Drivers';
 import { Orders } from './pages/Orders';
 import { OrderDetails } from './pages/OrderDetails';
+import { EditOrder } from './pages/EditOrder';
 import { NotFound } from './pages/NotFound';
 
 function RootRedirect() {
@@ -80,6 +81,14 @@ export function App() {
           element={
             <ProtectedRoute allowedRoles={['owner', 'driver']}>
               <OrderDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders/:id/edit"
+          element={
+            <ProtectedRoute allowedRoles={['owner']}>
+              <EditOrder />
             </ProtectedRoute>
           }
         />

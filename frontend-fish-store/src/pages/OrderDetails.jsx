@@ -10,6 +10,7 @@ import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { OrderStatusTimeline } from '../components/orders/OrderStatusTimeline';
 import { AssignDriverModal } from '../components/orders/AssignDriverModal';
+import { EditOrderModal } from '../components/orders/EditOrderModal';
 import {
   formatStatus,
   getStatusBadgeVariant,
@@ -31,6 +32,7 @@ import {
   AlertCircle,
   Fish,
   Flame,
+  Edit,
 } from 'lucide-react';
 
 export function OrderDetails() {
@@ -44,6 +46,7 @@ export function OrderDetails() {
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [assignModalOpen, setAssignModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
 
   const fetchOrderDetails = useCallback(async () => {
     setIsLoading(true);
@@ -119,6 +122,7 @@ export function OrderDetails() {
 
   const isAssignedToCurrentDriver =
     isDriver && order.assigned_driver_id === user?.id;
+  const canUpdateStatus = isOwner || isAssignedToCurrentDriver;
 
   const mapsUrl = order.customer?.address
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
@@ -156,8 +160,20 @@ export function OrderDetails() {
           </div>
         </div>
 
-        {/* Action button: Owner Assign or Driver Status update */}
+        {/* Action button: Owner Edit/Assign or Driver Status update */}
         <div className="flex items-center gap-2">
+          {isOwner && (
+            <Button
+              variant="outline"
+              size="sm"
+              icon={Edit}
+              onClick={() => setEditModalOpen(true)}
+              className="text-cyan-300 border-cyan-800/80 hover:bg-cyan-950/60"
+            >
+              {t('edit_order')}
+            </Button>
+          )}
+
           {isOwner && !order.driver && (
             <Button
               variant="primary"
@@ -170,7 +186,7 @@ export function OrderDetails() {
             </Button>
           )}
 
-          {isAssignedToCurrentDriver && order.status === 'preparing' && (
+          {canUpdateStatus && order.status === 'preparing' && (
             <Button
               variant="primary"
               size="md"
@@ -183,7 +199,7 @@ export function OrderDetails() {
             </Button>
           )}
 
-          {isAssignedToCurrentDriver && order.status === 'out_for_delivery' && (
+          {canUpdateStatus && order.status === 'out_for_delivery' && (
             <Button
               variant="primary"
               size="md"
@@ -406,6 +422,14 @@ export function OrderDetails() {
         order={order}
         onClose={() => setAssignModalOpen(false)}
         onSuccess={(updated) => setOrder(updated)}
+      />
+
+      {/* Edit Order Modal */}
+      <EditOrderModal
+        isOpen={editModalOpen}
+        order={order}
+        onClose={() => setEditModalOpen(false)}
+        onOrderUpdated={(updated) => setOrder(updated)}
       />
     </div>
   );
