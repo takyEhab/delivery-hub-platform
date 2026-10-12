@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { listCustomers, searchCustomers } from '../api/customers';
+import { listCustomers, searchCustomers, deleteCustomer } from '../api/customers';
 import { getErrorMessage } from '../api/client';
 import { useToast } from '../hooks/useToast';
 import { useAuth } from '../hooks/useAuth';
@@ -8,13 +8,14 @@ import { CustomerTable } from '../components/customers/CustomerTable';
 import { CustomerModal } from '../components/customers/CustomerModal';
 import { ImportContactsModal } from '../components/customers/ImportContactsModal';
 import { Button } from '../components/ui/Button';
+import { ConfirmModal } from '../components/ui/ConfirmModal';
 import { TableSkeleton } from '../components/ui/Skeleton';
 import { Users, Plus, Search, RefreshCw, Smartphone, UserPlus } from 'lucide-react';
 import { isContactPickerSupported, selectMultipleContacts } from '../utils/contacts';
 
 export function Customers() {
   const { isOwner } = useAuth();
-  const { error: toastError, info } = useToast();
+  const { error: toastError, info, success: toastSuccess } = useToast();
 
   const [customers, setCustomers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -25,6 +26,11 @@ export function Customers() {
   // Modals
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null);
+
+  // Deletion state
+  const [customerToDelete, setCustomerToDelete] = useState(null);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Batch Contact Import
   const [importModalOpen, setImportModalOpen] = useState(false);
@@ -68,6 +74,28 @@ export function Customers() {
   const handleEditClick = (customer) => {
     setEditingCustomer(customer);
     setModalOpen(true);
+  };
+
+  const handleDeleteClick = (customer) => {
+    if (!isOwner) return;
+    setCustomerToDelete(customer);
+    setConfirmDeleteOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!customerToDelete) return;
+    setIsDeleting(true);
+    try {
+      await deleteCustomer(customerToDelete.id);
+      toastSuccess(`Customer "${customerToDelete.name}" was permanently removed.`);
+      setConfirmDeleteOpen(false);
+      setCustomerToDelete(null);
+      handleSuccess();
+    } catch (err) {
+      toastError(getErrorMessage(err));
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleImportFromContacts = async () => {
@@ -200,6 +228,7 @@ export function Customers() {
         <CustomerTable
           customers={customers}
           onEdit={handleEditClick}
+          onDelete={handleDeleteClick}
           isOwner={isOwner}
         />
       )}
@@ -210,6 +239,8 @@ export function Customers() {
         onClose={() => setModalOpen(false)}
         customer={editingCustomer}
         onSuccess={handleSuccess}
+        onDelete={handleDeleteClick}
+        isOwner={isOwner}
       />
 
       {/* Batch Import Contacts Modal */}
@@ -221,6 +252,21 @@ export function Customers() {
         }}
         contacts={importedContacts}
         onSuccess={handleSuccess}
+      />
+
+      {/* Admin Confirm Deletion Dialog */}
+      <ConfirmModal
+        isOpen={confirmDeleteOpen}
+        onClose={() => {
+          setConfirmDeleteOpen(false);
+          setCustomerToDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        title="Delete Customer Profile"
+        message={`Are you sure you want to delete "${customerToDelete?.name}"? This action cannot be undone and will permanently remove this customer from the directory.`}
+        confirmText="Delete Customer"
+        variant="danger"
+        isLoading={isDeleting}
       />
     </div>
   );

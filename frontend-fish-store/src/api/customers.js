@@ -21,3 +21,8 @@ export async function updateCustomer(id, customerData) {
   const res = await apiClient.patch(`/customers/${id}`, customerData);
   return res.data.customer;
 }
+
+export async function deleteCustomer(id) {
+  await apiClient.delete(`/customers/${id}`);
+}
+

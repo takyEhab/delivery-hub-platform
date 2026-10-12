@@ -7,9 +7,9 @@ import { getErrorMessage } from '../../api/client';
 import { useToast } from '../../hooks/useToast';
 import { useLanguage } from '../../context/LanguageContext';
 import { isContactPickerSupported, selectContact } from '../../utils/contacts';
-import { Smartphone, User, Phone, MapPin, FileText, UserCheck } from 'lucide-react';
+import { Smartphone, User, Phone, MapPin, FileText, UserCheck, Trash2 } from 'lucide-react';
 
-export function CustomerModal({ isOpen, onClose, customer, onSuccess }) {
+export function CustomerModal({ isOpen, onClose, customer, onSuccess, onDelete, isOwner }) {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -205,6 +205,28 @@ export function CustomerModal({ isOpen, onClose, customer, onSuccess }) {
               : (language === 'ar' ? 'حفظ العميل' : 'Save Customer')}
           </Button>
         </div>
+
+        {isEditing && isOwner && onDelete && (
+          <div className="pt-3.5 mt-2 border-t border-dashed border-rose-900/40 flex items-center justify-between gap-3 bg-rose-950/20 p-3 rounded-xl border border-rose-900/30">
+            <div>
+              <p className="text-xs font-bold text-rose-400">{t('danger_zone')}</p>
+              <p className="text-[11px] text-slate-400">{t('danger_zone_desc')}</p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              icon={Trash2}
+              onClick={() => {
+                onClose();
+                onDelete(customer);
+              }}
+              className="text-xs text-rose-400 border-rose-800/60 hover:bg-rose-950/60 hover:text-rose-300 py-1 px-2.5"
+            >
+              {t('delete_customer')}
+            </Button>
+          </div>
+        )}
       </form>
     </Modal>
   );

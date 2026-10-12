@@ -34,4 +34,10 @@ router.patch(
   customersController.updateCustomer
 );
 
+router.delete(
+  '/:id',
+  authorize('owner'),
+  customersController.deleteCustomer
+);
+
 module.exports = router;

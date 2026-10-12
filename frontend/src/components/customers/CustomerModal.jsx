@@ -6,9 +6,9 @@ import { createCustomer, updateCustomer } from '../../api/customers';
 import { getErrorMessage } from '../../api/client';
 import { useToast } from '../../hooks/useToast';
 import { isContactPickerSupported, selectContact } from '../../utils/contacts';
-import { Smartphone, User, Phone, MapPin, FileText, UserCheck } from 'lucide-react';
+import { Smartphone, User, Phone, MapPin, FileText, UserCheck, Trash2 } from 'lucide-react';
 
-export function CustomerModal({ isOpen, onClose, customer, onSuccess }) {
+export function CustomerModal({ isOpen, onClose, customer, onSuccess, onDelete, isOwner }) {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -219,6 +219,28 @@ export function CustomerModal({ isOpen, onClose, customer, onSuccess }) {
             {isEditing ? 'Save Changes' : 'Create Customer'}
           </Button>
         </div>
+
+        {isEditing && isOwner && onDelete && (
+          <div className="pt-3.5 mt-2 border-t border-dashed border-rose-200/80 flex items-center justify-between gap-3 bg-rose-50/50 p-2.5 rounded-lg">
+            <div>
+              <p className="text-xs font-semibold text-rose-800">Delete this customer?</p>
+              <p className="text-[11px] text-slate-500">Requires confirmation before removal</p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              icon={Trash2}
+              onClick={() => {
+                onClose();
+                onDelete(customer);
+              }}
+              className="text-xs text-rose-600 border-rose-300 hover:bg-rose-100 hover:text-rose-700 py-1 px-2.5"
+            >
+              Delete...
+            </Button>
+          </div>
+        )}
       </form>
     </Modal>
   );

@@ -64,10 +64,36 @@ async function update(id, fields) {
   return rows[0] || null;
 }
 
+async function deleteCustomer(id) {
+  const client = await db.pool.connect();
+  try {
+    await client.query('BEGIN');
+    const { rows } = await client.query(
+      'SELECT id, name, phone FROM customers WHERE id = $1',
+      [id]
+    );
+    if (rows.length === 0) {
+      await client.query('ROLLBACK');
+      return null;
+    }
+    await client.query('DELETE FROM orders WHERE customer_id = $1', [id]);
+    await client.query('DELETE FROM customers WHERE id = $1', [id]);
+    await client.query('COMMIT');
+    return rows[0];
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
 module.exports = {
   listAll,
   search,
   findById,
   create,
   update,
+  deleteCustomer,
 };
+

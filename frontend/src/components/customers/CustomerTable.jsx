@@ -1,9 +1,22 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { formatDate } from '../../utils/formatters';
-import { Phone, MapPin, Edit, FileText, User } from 'lucide-react';
+import { Phone, MapPin, Edit, FileText, User, MoreVertical, Trash2 } from 'lucide-react';
 import { Button } from '../ui/Button';
 
-export function CustomerTable({ customers, onEdit, isOwner }) {
+export function CustomerTable({ customers, onEdit, onDelete, isOwner }) {
+  const [activeMenuId, setActiveMenuId] = useState(null);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setActiveMenuId(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   if (!customers || customers.length === 0) {
     return (
       <div className="text-center py-12 px-4 bg-white rounded-xl border border-slate-200/80">
@@ -19,9 +32,9 @@ export function CustomerTable({ customers, onEdit, isOwner }) {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200/80 shadow-card overflow-hidden">
+    <div className="bg-white rounded-xl border border-slate-200/80 shadow-card overflow-visible">
       {/* Desktop Table */}
-      <div className="hidden md:block overflow-x-auto">
+      <div className="hidden md:block overflow-x-auto overflow-y-visible">
         <table className="w-full text-left border-collapse text-sm">
           <thead>
             <tr className="bg-slate-50/80 border-b border-slate-200/80 text-slate-500 font-medium text-xs uppercase tracking-wider">
@@ -80,7 +93,7 @@ export function CustomerTable({ customers, onEdit, isOwner }) {
                       title={c.notes}
                       className="inline-flex items-center gap-1 text-xs text-slate-500 italic truncate"
                     >
-                      <FileText className="w-3 h-3 text-slate-400 shrink-0" />
+                      <FileText className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                       <span className="truncate">{c.notes}</span>
                     </span>
                   ) : (
@@ -93,16 +106,53 @@ export function CustomerTable({ customers, onEdit, isOwner }) {
                 </td>
 
                 {isOwner && (
-                  <td className="py-3.5 px-5 text-right">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      icon={Edit}
-                      onClick={() => onEdit(c)}
-                      className="text-slate-500 hover:text-emerald-700 hover:bg-emerald-50"
-                    >
-                      Edit
-                    </Button>
+                  <td className="py-3.5 px-5 text-right relative">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        icon={Edit}
+                        onClick={() => onEdit(c)}
+                        className="text-slate-500 hover:text-emerald-700 hover:bg-emerald-50"
+                      >
+                        Edit
+                      </Button>
+
+                      {/* Not easily accessible: tucked inside a discreet dropdown menu */}
+                      <div className="relative inline-block text-left" ref={activeMenuId === c.id ? menuRef : null}>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveMenuId(activeMenuId === c.id ? null : c.id);
+                          }}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors focus:outline-none"
+                          title="More options"
+                          aria-label="More options"
+                        >
+                          <MoreVertical className="w-4 h-4" />
+                        </button>
+
+                        {activeMenuId === c.id && (
+                          <div className="absolute right-0 mt-1 w-44 rounded-xl bg-white shadow-xl border border-slate-200/90 py-1.5 z-30 animate-in fade-in zoom-in-95 duration-100">
+                            <div className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400 border-b border-slate-100">
+                              Admin Controls
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setActiveMenuId(null);
+                                onDelete?.(c);
+                              }}
+                              className="w-full text-left px-3 py-2 text-xs text-rose-600 hover:bg-rose-50 flex items-center gap-2 transition-colors font-medium"
+                            >
+                              <Trash2 className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                              <span>Delete Customer</span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </td>
                 )}
               </tr>
@@ -126,15 +176,51 @@ export function CustomerTable({ customers, onEdit, isOwner }) {
                 </div>
               </div>
               {isOwner && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  icon={Edit}
-                  onClick={() => onEdit(c)}
-                  className="text-xs py-1 px-2.5"
-                >
-                  Edit
-                </Button>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    icon={Edit}
+                    onClick={() => onEdit(c)}
+                    className="text-xs py-1 px-2.5"
+                  >
+                    Edit
+                  </Button>
+
+                  {/* Discreet options menu on mobile */}
+                  <div className="relative inline-block text-left" ref={activeMenuId === c.id ? menuRef : null}>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveMenuId(activeMenuId === c.id ? null : c.id);
+                      }}
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                      title="More options"
+                    >
+                      <MoreVertical className="w-4 h-4" />
+                    </button>
+
+                    {activeMenuId === c.id && (
+                      <div className="absolute right-0 mt-1 w-44 rounded-xl bg-white shadow-xl border border-slate-200/90 py-1.5 z-30">
+                        <div className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400 border-b border-slate-100">
+                          Admin Controls
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setActiveMenuId(null);
+                            onDelete?.(c);
+                          }}
+                          className="w-full text-left px-3 py-2 text-xs text-rose-600 hover:bg-rose-50 flex items-center gap-2 transition-colors font-medium"
+                        >
+                          <Trash2 className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                          <span>Delete Customer</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
 

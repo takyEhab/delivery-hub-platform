@@ -42,9 +42,24 @@ async function updateCustomer(req, res, next) {
   }
 }
 
+async function deleteCustomer(req, res, next) {
+  try {
+    const { id } = req.params;
+    const deleted = await customersQueries.deleteCustomer(id);
+    if (!deleted) {
+      throw new AppError('Customer not found', 404);
+    }
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   listCustomers,
   searchCustomers,
   createCustomer,
   updateCustomer,
+  deleteCustomer,
 };
+

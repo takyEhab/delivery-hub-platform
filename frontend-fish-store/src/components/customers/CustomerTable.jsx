@@ -1,11 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { formatDate } from '../../utils/formatters';
-import { Phone, MapPin, Edit, FileText, User } from 'lucide-react';
+import { Phone, MapPin, Edit, FileText, User, MoreVertical, Trash2 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { useLanguage } from '../../context/LanguageContext';
 
-export function CustomerTable({ customers, onEdit, isOwner }) {
+export function CustomerTable({ customers, onEdit, onDelete, isOwner }) {
   const { t, language } = useLanguage();
+  const [activeMenuId, setActiveMenuId] = useState(null);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setActiveMenuId(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   if (!customers || customers.length === 0) {
     return (
@@ -22,9 +34,9 @@ export function CustomerTable({ customers, onEdit, isOwner }) {
   }
 
   return (
-    <div className="bg-[#05172b]/90 rounded-2xl border border-cyan-900/40 shadow-xl overflow-hidden">
+    <div className="bg-[#05172b]/90 rounded-2xl border border-cyan-900/40 shadow-xl overflow-visible">
       {/* Desktop Table */}
-      <div className="hidden md:block overflow-x-auto">
+      <div className="hidden md:block overflow-x-auto overflow-y-visible">
         <table className="w-full text-right rtl:text-right ltr:text-left border-collapse text-sm">
           <thead>
             <tr className="bg-[#030f1c] border-b border-cyan-950/80 text-cyan-400 font-bold text-xs uppercase tracking-wider">
@@ -89,16 +101,53 @@ export function CustomerTable({ customers, onEdit, isOwner }) {
                 </td>
 
                 {isOwner && (
-                  <td className="py-3.5 px-5 text-left rtl:text-left ltr:text-right whitespace-nowrap">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      icon={Edit}
-                      onClick={() => onEdit(c)}
-                      className="text-xs py-1 px-3 border-cyan-800/60 text-cyan-300 hover:bg-cyan-950/40"
-                    >
-                      {language === 'ar' ? 'تعديل' : 'Edit'}
-                    </Button>
+                  <td className="py-3.5 px-5 text-left rtl:text-left ltr:text-right whitespace-nowrap relative">
+                    <div className="flex items-center justify-end rtl:justify-start gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        icon={Edit}
+                        onClick={() => onEdit(c)}
+                        className="text-xs py-1 px-3 border-cyan-800/60 text-cyan-300 hover:bg-cyan-950/40"
+                      >
+                        {language === 'ar' ? 'تعديل' : 'Edit'}
+                      </Button>
+
+                      {/* Not easily accessible: hidden in dropdown menu */}
+                      <div className="relative inline-block text-left" ref={activeMenuId === c.id ? menuRef : null}>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveMenuId(activeMenuId === c.id ? null : c.id);
+                          }}
+                          className="p-1.5 rounded-lg text-cyan-400/70 hover:text-cyan-200 hover:bg-cyan-950/80 border border-transparent hover:border-cyan-800/40 transition-colors"
+                          title={language === 'ar' ? 'خيارات إضافية' : 'More options'}
+                          aria-label="More options"
+                        >
+                          <MoreVertical className="w-4 h-4" />
+                        </button>
+
+                        {activeMenuId === c.id && (
+                          <div className="absolute right-0 rtl:right-auto rtl:left-0 mt-1.5 w-44 rounded-xl bg-[#031326] shadow-2xl border border-cyan-800/70 py-1.5 z-30 animate-in fade-in zoom-in-95 duration-100">
+                            <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-cyan-500/80 border-b border-cyan-950/80">
+                              {t('admin_controls')}
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setActiveMenuId(null);
+                                onDelete?.(c);
+                              }}
+                              className="w-full text-right rtl:text-right ltr:text-left px-3 py-2 text-xs text-rose-400 hover:bg-rose-950/50 flex items-center gap-2 transition-colors font-medium"
+                            >
+                              <Trash2 className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                              <span>{t('delete_customer')}</span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </td>
                 )}
               </tr>
@@ -122,15 +171,51 @@ export function CustomerTable({ customers, onEdit, isOwner }) {
                 </div>
               </div>
               {isOwner && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  icon={Edit}
-                  onClick={() => onEdit(c)}
-                  className="text-xs py-1 px-2.5 border-cyan-800/60 text-cyan-300"
-                >
-                  {language === 'ar' ? 'تعديل' : 'Edit'}
-                </Button>
+                <div className="flex items-center gap-1.5">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    icon={Edit}
+                    onClick={() => onEdit(c)}
+                    className="text-xs py-1 px-2.5 border-cyan-800/60 text-cyan-300"
+                  >
+                    {language === 'ar' ? 'تعديل' : 'Edit'}
+                  </Button>
+
+                  {/* Discreet options menu on mobile */}
+                  <div className="relative inline-block text-left" ref={activeMenuId === c.id ? menuRef : null}>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveMenuId(activeMenuId === c.id ? null : c.id);
+                      }}
+                      className="p-1.5 rounded-lg text-cyan-400/70 hover:text-cyan-200 hover:bg-cyan-950/80 transition-colors"
+                      title={language === 'ar' ? 'خيارات إضافية' : 'More options'}
+                    >
+                      <MoreVertical className="w-4 h-4" />
+                    </button>
+
+                    {activeMenuId === c.id && (
+                      <div className="absolute right-0 rtl:right-auto rtl:left-0 mt-1.5 w-44 rounded-xl bg-[#031326] shadow-2xl border border-cyan-800/70 py-1.5 z-30">
+                        <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-cyan-500/80 border-b border-cyan-950/80">
+                          {t('admin_controls')}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setActiveMenuId(null);
+                            onDelete?.(c);
+                          }}
+                          className="w-full text-right rtl:text-right ltr:text-left px-3 py-2 text-xs text-rose-400 hover:bg-rose-950/50 flex items-center gap-2 transition-colors font-medium"
+                        >
+                          <Trash2 className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                          <span>{t('delete_customer')}</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
 
