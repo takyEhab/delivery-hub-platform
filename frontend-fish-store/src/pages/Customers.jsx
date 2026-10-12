@@ -240,7 +240,6 @@ export function Customers() {
         <CustomerTable
           customers={customers}
           onEdit={handleEditClick}
-          onDelete={handleDeleteClick}
           isOwner={isOwner}
         />
       )}

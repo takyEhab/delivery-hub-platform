@@ -207,24 +207,33 @@ export function CustomerModal({ isOpen, onClose, customer, onSuccess, onDelete, 
         </div>
 
         {isEditing && isOwner && onDelete && (
-          <div className="pt-3.5 mt-2 border-t border-dashed border-rose-900/40 flex items-center justify-between gap-3 bg-rose-950/20 p-3 rounded-xl border border-rose-900/30">
-            <div>
-              <p className="text-xs font-bold text-rose-400">{t('danger_zone')}</p>
-              <p className="text-[11px] text-slate-400">{t('danger_zone_desc')}</p>
+          <div className="pt-4 mt-3 border-t border-rose-950/70">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-rose-950/30 p-3.5 rounded-xl border border-rose-900/40">
+              <div className="space-y-0.5">
+                <span className="text-xs font-bold text-rose-400 flex items-center gap-1.5">
+                  <Trash2 className="w-3.5 h-3.5" />
+                  {t('delete_customer')}
+                </span>
+                <span className="text-[11px] text-slate-400 block">
+                  {language === 'ar'
+                    ? 'سيُطلب منك تأكيد الحذف قبل إزالة العميل نهائياً'
+                    : 'You will be asked to confirm before permanent removal'}
+                </span>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                icon={Trash2}
+                onClick={() => {
+                  onClose();
+                  onDelete(customer);
+                }}
+                className="text-xs text-rose-400 border-rose-800/80 hover:bg-rose-900/40 hover:text-rose-200 shrink-0 py-1.5 px-3"
+              >
+                {t('delete_customer')}
+              </Button>
             </div>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              icon={Trash2}
-              onClick={() => {
-                onClose();
-                onDelete(customer);
-              }}
-              className="text-xs text-rose-400 border-rose-800/60 hover:bg-rose-950/60 hover:text-rose-300 py-1 px-2.5"
-            >
-              {t('delete_customer')}
-            </Button>
           </div>
         )}
       </form>
