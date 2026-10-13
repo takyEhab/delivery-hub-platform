@@ -46,6 +46,7 @@ const updateCustomer = Joi.object({
 const createOrder = Joi.object({
   customer_id: Joi.number().integer().positive().optional(),
   customer: createCustomer.optional(),
+  driver_id: Joi.number().integer().positive().allow(null).optional(),
   items: Joi.alternatives()
     .try(
       Joi.array().items(Joi.object().unknown(true)).min(1),

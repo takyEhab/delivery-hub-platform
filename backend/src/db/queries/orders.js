@@ -55,7 +55,7 @@ function mapOrder(row) {
   };
 }
 
-async function create({ customerId, items, totalAmount = 0, paymentStatus = 'unpaid', paymentNotes = null }) {
+async function create({ customerId, items, totalAmount = 0, paymentStatus = 'unpaid', paymentNotes = null, driverId = null }) {
   let finalItems = items;
   if (!finalItems) {
     finalItems = [{ name: 'طلب أسماك', quantity: 1, price: totalAmount }];
@@ -74,10 +74,10 @@ async function create({ customerId, items, totalAmount = 0, paymentStatus = 'unp
 
   const isPaid = paymentStatus === 'paid';
   const { rows } = await db.query(
-    `INSERT INTO orders (customer_id, items, total_amount, payment_status, paid_at, payment_notes)
-     VALUES ($1, $2::jsonb, $3, $4, ${isPaid ? 'NOW()' : 'NULL'}, $5)
+    `INSERT INTO orders (customer_id, items, total_amount, payment_status, paid_at, payment_notes, assigned_driver_id)
+     VALUES ($1, $2::jsonb, $3, $4, ${isPaid ? 'NOW()' : 'NULL'}, $5, $6)
      RETURNING id`,
-    [customerId, itemsValue, computedTotal, paymentStatus || 'unpaid', paymentNotes || null]
+    [customerId, itemsValue, computedTotal, paymentStatus || 'unpaid', paymentNotes || null, driverId || null]
   );
   return findById(rows[0].id);
 }

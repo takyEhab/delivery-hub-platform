@@ -3,6 +3,7 @@ import { Modal } from '../ui/Modal';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { listCustomers, searchCustomers } from '../../api/customers';
+import { listDrivers } from '../../api/drivers';
 import { createOrder } from '../../api/orders';
 import { getErrorMessage } from '../../api/client';
 import { useToast } from '../../hooks/useToast';
@@ -33,6 +34,7 @@ import {
   Clock,
   CheckCircle2,
   Zap,
+  Truck,
 } from 'lucide-react';
 import { getCurrentGpsLocation } from '../../utils/location';
 
@@ -121,6 +123,11 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
     { name: '', quantity: 1, price: '' },
   ]);
 
+  // Optional Driver Assignment
+  const [drivers, setDrivers] = useState([]);
+  const [driverId, setDriverId] = useState('');
+  const [isLoadingDrivers, setIsLoadingDrivers] = useState(false);
+
   const [activeCategoryTab, setActiveCategoryTab] = useState(0);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -157,6 +164,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
       setSelectedCookingStyle(null);
       setPaymentStatus('unpaid');
       setPaymentNotes('');
+      setDriverId('');
       setItems([{ name: '', quantity: 1, price: '' }]);
       setErrors({});
 
@@ -164,6 +172,16 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
       listCustomers()
         .then((data) => setSearchResults(data.slice(0, 10)))
         .catch(() => { });
+
+      // Fetch active drivers for optional assignment
+      setIsLoadingDrivers(true);
+      listDrivers()
+        .then((data) => {
+          const active = (data || []).filter((d) => d.is_active);
+          setDrivers(active);
+        })
+        .catch(() => setDrivers([]))
+        .finally(() => setIsLoadingDrivers(false));
     }
   }, [isOpen]);
 
@@ -367,6 +385,10 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
         payment_notes: paymentNotes?.trim() || null,
         items: formattedItems,
       };
+
+      if (driverId) {
+        payload.driver_id = Number(driverId);
+      }
 
       if (customerMode === 'existing') {
         payload.customer_id = selectedCustomer.id;
@@ -1013,6 +1035,53 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
               onChange={(e) => setPaymentNotes(e.target.value)}
               className="block w-full rounded-xl border border-slate-700/80 bg-[#020b14]/80 text-xs text-white placeholder:text-slate-500 px-3 py-2.5 focus:border-cyan-400 focus:outline-none transition-colors"
             />
+          </div>
+        </div>
+
+        {/* Optional Driver Assignment Section */}
+        <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-900/90 to-slate-950/90 border border-slate-800 space-y-2.5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/20">
+                <Truck className="w-4 h-4" />
+              </div>
+              <div>
+                <label htmlFor="order-driver-select" className="text-xs font-bold text-slate-200">
+                  {language === 'ar' ? 'تعيين كابتن التوصيل (اختياري)' : 'Assign Courier (Optional)'}
+                </label>
+                <p className="text-[11px] text-slate-400">
+                  {language === 'ar'
+                    ? 'يمكنك إسناد الطلب لكابتن فوراً أو تركه غير مسند حالياً (الوضع الافتراضي)'
+                    : 'Assign to a delivery courier now or leave unassigned by default'}
+                </p>
+              </div>
+            </div>
+            {driverId && (
+              <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-teal-950 text-teal-300 border border-teal-700">
+                {language === 'ar' ? 'تم اختيار كابتن' : 'Assigned'}
+              </span>
+            )}
+          </div>
+
+          <div className="relative">
+            <select
+              id="order-driver-select"
+              value={driverId}
+              onChange={(e) => setDriverId(e.target.value)}
+              disabled={isLoadingDrivers}
+              className="w-full rounded-xl border border-slate-700/80 bg-[#020b14]/80 text-xs text-white px-3 py-2.5 focus:border-cyan-400 focus:outline-none transition-colors"
+            >
+              <option value="">
+                {language === 'ar'
+                  ? '🛵 بدون كابتن توصيل حالياً (غير مسند — الافتراضي)'
+                  : '🛵 Unassigned (Leave unassigned — Default)'}
+              </option>
+              {drivers.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.name} {d.phone ? `(${d.phone})` : ''}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 

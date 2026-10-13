@@ -59,6 +59,7 @@ async function createOrder(req, res, next) {
       totalAmount: req.body.total_amount,
       paymentStatus: req.body.payment_status,
       paymentNotes: req.body.payment_notes,
+      driverId: req.body.driver_id ? Number(req.body.driver_id) : null,
     });
 
     res.status(201).json({ order });
