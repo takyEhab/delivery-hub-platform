@@ -110,6 +110,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
   const [orderMode, setOrderMode] = useState('quick');
   const [quickAmount, setQuickAmount] = useState('');
   const [quickDescription, setQuickDescription] = useState('');
+  const [selectedCookingStyle, setSelectedCookingStyle] = useState(null);
 
   // Payment Tracking State
   const [paymentStatus, setPaymentStatus] = useState('unpaid'); // 'unpaid' | 'paid' | 'postpaid'
@@ -153,6 +154,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
       setOrderMode('quick');
       setQuickAmount('');
       setQuickDescription('');
+      setSelectedCookingStyle(null);
       setPaymentStatus('unpaid');
       setPaymentNotes('');
       setItems([{ name: '', quantity: 1, price: '' }]);
@@ -214,7 +216,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
     });
   };
 
-  // Quick cooking style append handler
+  // Quick cooking style append handler (for detailed mode)
   const handleAppendCookingStyle = (style) => {
     const styleText = language === 'ar' ? style.ar : style.en;
     // Append to notes
@@ -222,6 +224,52 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
       ...prev,
       notes: prev.notes ? `${prev.notes} - [${styleText}]` : `[${styleText}]`,
     }));
+  };
+
+  // Toggle single cooking style (for quick mode description)
+  const handleToggleCookingStyle = (style) => {
+    const styleTextAr = style.ar;
+    const styleTextEn = style.en;
+    const isCurrentlySelected = selectedCookingStyle === styleTextAr;
+
+    if (isCurrentlySelected) {
+      // Unselect and remove this style from quickDescription
+      setSelectedCookingStyle(null);
+      setQuickDescription((prev) => {
+        let updated = prev || '';
+        COOKING_STYLES.forEach((s) => {
+          updated = updated.replace(new RegExp(`\\s*-\\s*\\[?${s.ar}\\]?`, 'g'), '');
+          updated = updated.replace(new RegExp(`\\[?${s.ar}\\]?\\s*-\\s*`, 'g'), '');
+          updated = updated.replace(new RegExp(`\\[?${s.ar}\\]?`, 'g'), '');
+          updated = updated.replace(new RegExp(`\\s*-\\s*\\[?${s.en}\\]?`, 'g'), '');
+          updated = updated.replace(new RegExp(`\\[?${s.en}\\]?\\s*-\\s*`, 'g'), '');
+          updated = updated.replace(new RegExp(`\\[?${s.en}\\]?`, 'g'), '');
+        });
+        return updated.trim();
+      });
+    } else {
+      // Select single choice: remove previously selected style and set this one
+      setSelectedCookingStyle(styleTextAr);
+      const chosenText = language === 'ar' ? styleTextAr : styleTextEn;
+
+      setQuickDescription((prev) => {
+        let base = prev || '';
+        COOKING_STYLES.forEach((s) => {
+          base = base.replace(new RegExp(`\\s*-\\s*\\[?${s.ar}\\]?`, 'g'), '');
+          base = base.replace(new RegExp(`\\[?${s.ar}\\]?\\s*-\\s*`, 'g'), '');
+          base = base.replace(new RegExp(`\\[?${s.ar}\\]?`, 'g'), '');
+          base = base.replace(new RegExp(`\\s*-\\s*\\[?${s.en}\\]?`, 'g'), '');
+          base = base.replace(new RegExp(`\\[?${s.en}\\]?\\s*-\\s*`, 'g'), '');
+          base = base.replace(new RegExp(`\\[?${s.en}\\]?`, 'g'), '');
+        });
+        base = base.trim();
+
+        if (base) {
+          return `${base} - ${chosenText}`;
+        }
+        return chosenText;
+      });
+    }
   };
 
   const calculateTotal = () => {
@@ -689,22 +737,28 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
             {/* Quick Cooking Styles Chips in Quick Mode */}
             <div className="pt-2 border-t border-slate-800/80">
               <span className="text-[11px] font-bold text-slate-400 block mb-1.5">
-                {language === 'ar' ? 'إضافة طريقة التسوية للوصف:' : 'Add Cooking Style to Description:'}
+                {language === 'ar' ? 'طريقة التسوية (اختيار واحد فقط — انقر للتبديل أو الحذف):' : 'Cooking Style (Select one only — click again to remove):'}
               </span>
               <div className="flex flex-wrap gap-1.5">
-                {COOKING_STYLES.map((style, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => {
-                      const styleText = language === 'ar' ? style.ar : style.en;
-                      setQuickDescription((prev) => (prev ? `${prev} - ${styleText}` : styleText));
-                    }}
-                    className="px-2.5 py-1 rounded-lg bg-orange-950/30 border border-orange-500/30 hover:bg-orange-900/50 text-[11px] font-semibold text-orange-300 transition-all"
-                  >
-                    {language === 'ar' ? style.ar : style.en}
-                  </button>
-                ))}
+                {COOKING_STYLES.map((style, idx) => {
+                  const isSelected = selectedCookingStyle === style.ar;
+
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => handleToggleCookingStyle(style)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                        isSelected
+                          ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-slate-950 font-black shadow-md border border-orange-400 ring-2 ring-orange-400/50'
+                          : 'bg-orange-950/30 border border-orange-500/30 text-orange-300 hover:bg-orange-900/50 hover:text-white'
+                      }`}
+                    >
+                      {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-slate-950 stroke-[2.5]" />}
+                      <span>{language === 'ar' ? style.ar : style.en}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>

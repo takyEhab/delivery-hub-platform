@@ -76,8 +76,8 @@ export function OrderDetails() {
   const handleAdvanceStatus = async (nextStatus, paymentStatus = null) => {
     setIsUpdatingStatus(true);
     try {
-      const extra = paymentStatus ? { paymentStatus } : {};
-      const updated = await updateOrderStatus(order.id, nextStatus, extra);
+      const validPaymentStatus = typeof paymentStatus === 'string' ? paymentStatus : null;
+      const updated = await updateOrderStatus(order.id, nextStatus, validPaymentStatus);
       setOrder(updated);
       const title = language === 'ar' ? 'تم تحديث حالة الطلب' : 'Status Updated';
       const msg = language === 'ar'
@@ -94,10 +94,11 @@ export function OrderDetails() {
   const handleUpdatePayment = async (newPaymentStatus, newNotes = null) => {
     setIsUpdatingPayment(true);
     try {
-      const updated = await updatePaymentStatus(order.id, {
-        paymentStatus: newPaymentStatus,
-        paymentNotes: newNotes !== null ? newNotes : order.payment_notes,
-      });
+      const updated = await updatePaymentStatus(
+        order.id,
+        newPaymentStatus,
+        newNotes !== null ? newNotes : order.payment_notes
+      );
       setOrder(updated);
       const title = language === 'ar' ? 'تم تحديث الدفع والتحصيل' : 'Payment Updated';
       const msg = language === 'ar'

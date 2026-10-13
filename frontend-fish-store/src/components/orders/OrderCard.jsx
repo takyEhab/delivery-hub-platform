@@ -49,8 +49,8 @@ export function OrderCard({
   const handleAdvanceStatus = async (nextStatus, paymentStatus = null) => {
     setIsUpdating(true);
     try {
-      const extra = paymentStatus ? { paymentStatus } : {};
-      const updated = await updateOrderStatus(order.id, nextStatus, extra);
+      const validPaymentStatus = typeof paymentStatus === 'string' ? paymentStatus : null;
+      const updated = await updateOrderStatus(order.id, nextStatus, validPaymentStatus);
       const title = language === 'ar' ? 'تم تحديث حالة الطلب' : 'Status Updated';
       const msg = language === 'ar'
         ? `تم تحديث حالة طلب الأسماك #${order.id} إلى: ${formatStatus(nextStatus, 'ar')}`
@@ -68,7 +68,7 @@ export function OrderCard({
   const handleQuickPaymentUpdate = async (newPaymentStatus) => {
     setIsUpdating(true);
     try {
-      const updated = await updatePaymentStatus(order.id, { paymentStatus: newPaymentStatus });
+      const updated = await updatePaymentStatus(order.id, newPaymentStatus);
       const title = language === 'ar' ? 'تم تحديث الدفع والتحصيل' : 'Payment Updated';
       const msg = language === 'ar'
         ? `تم تحديث حالة دفع طلب #${order.id} إلى: ${formatPaymentStatus(newPaymentStatus, 'ar')}`
