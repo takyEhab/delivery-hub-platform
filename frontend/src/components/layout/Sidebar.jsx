@@ -9,6 +9,7 @@ import {
   LogOut,
   ShieldCheck,
   UserCheck,
+  History,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -23,7 +24,8 @@ export function Sidebar({ isOpen, onClose }) {
         { label: 'Drivers', to: '/drivers', icon: Truck },
       ]
     : [
-        { label: 'My Deliveries', to: '/orders', icon: Bike },
+        { label: 'Active Deliveries', to: '/orders', icon: Bike },
+        { label: 'Delivery History', to: '/orders/history', icon: History },
       ];
 
   return (
@@ -68,6 +70,7 @@ export function Sidebar({ isOpen, onClose }) {
               <NavLink
                 key={item.to}
                 to={item.to}
+                end={item.to === '/orders' || item.to === '/dashboard'}
                 onClick={() => {
                   if (window.innerWidth < 1024) onClose();
                 }}

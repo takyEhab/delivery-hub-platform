@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, useLocation, useNavigate } from 'react-router-dom';
 import { listOrders } from '../api/orders';
 import { listDrivers } from '../api/drivers';
 import { getErrorMessage } from '../api/client';
@@ -9,6 +9,8 @@ import { useLanguage } from '../context/LanguageContext';
 import { OrderTable } from '../components/orders/OrderTable';
 import { AssignDriverModal } from '../components/orders/AssignDriverModal';
 import { CustomerModal } from '../components/customers/CustomerModal';
+import { ImportContactsModal } from '../components/customers/ImportContactsModal';
+import { isContactPickerSupported, selectMultipleContacts } from '../utils/contacts';
 import { Button } from '../components/ui/Button';
 import { TableSkeleton } from '../components/ui/Skeleton';
 import { formatCurrency } from '../utils/formatters';
@@ -26,17 +28,31 @@ import {
   Receipt,
   CreditCard,
   DollarSign,
+  Bike,
+  History,
+  UserPlus,
+  Users,
 } from 'lucide-react';
 
-export function Orders() {
+export function Orders({ isHistoryView = false }) {
   const { isOwner, isDriver } = useAuth();
   const { t, language } = useLanguage();
+  const location = useLocation();
+  const navigate = useNavigate();
   const { openCreateOrder } = useOutletContext() || {};
-  const { error: toastError } = useToast();
+  const { success, error: toastError } = useToast();
+
+  const isHistory = isHistoryView || location.pathname === '/orders/history';
 
   const [orders, setOrders] = useState([]);
   const [drivers, setDrivers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Driver Customer Creation Modals
+  const [driverAddCustomerOpen, setDriverAddCustomerOpen] = useState(false);
+  const [importContactsModalOpen, setImportContactsModalOpen] = useState(false);
+  const [importedContacts, setImportedContacts] = useState([]);
+  const [isSelectingContacts, setIsSelectingContacts] = useState(false);
 
   // Filters
   const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'preparing' | 'out_for_delivery' | 'delivered'
@@ -55,6 +71,30 @@ export function Orders() {
   const handleEditCustomer = (customer) => {
     setEditingCustomerForOrder(customer);
     setCustomerModalOpen(true);
+  };
+
+  const handleImportFromContacts = async () => {
+    if (!isContactPickerSupported()) {
+      toastError(
+        language === 'ar'
+          ? 'استيراد جهات الاتصال متاح على متصفحات الهواتف المحمولة (مثل متصفح Chrome على أندرويد). يمكنك إضافة العملاء يدوياً من الكمبيوتر.'
+          : 'Contact Picker is available on mobile browsers (e.g. Chrome on Android). You can add customers manually on desktop.'
+      );
+      return;
+    }
+
+    setIsSelectingContacts(true);
+    try {
+      const selected = await selectMultipleContacts();
+      if (selected && selected.length > 0) {
+        setImportedContacts(selected);
+        setImportContactsModalOpen(true);
+      }
+    } catch (err) {
+      toastError(err.message || 'Failed to select contacts from device');
+    } finally {
+      setIsSelectingContacts(false);
+    }
   };
 
   const fetchOrders = useCallback(async () => {
@@ -108,8 +148,20 @@ export function Orders() {
   const postpaidCount = orders.filter((o) => o.payment_status === 'postpaid').length;
   const paidCount = orders.filter((o) => o.payment_status === 'paid').length;
 
+  // Counts for status tabs
+  const preparingCount = orders.filter((o) => o.status === 'preparing').length;
+  const inDeliveryCount = orders.filter((o) => o.status === 'out_for_delivery').length;
+  const deliveredCount = orders.filter((o) => o.status === 'delivered').length;
+  const activeOrdersCount = orders.filter((o) => o.status !== 'delivered').length;
+  const totalOrdersCount = orders.length;
+
   // Client-side filtering across orders
   const filteredOrders = orders.filter((order) => {
+    // In Active Deliveries view for Driver: automatically hide delivered orders!
+    if (isDriver && !isHistory && order.status === 'delivered') {
+      return false;
+    }
+
     // Status filter
     if (statusFilter !== 'all' && order.status !== statusFilter) {
       return false;
@@ -149,20 +201,72 @@ export function Orders() {
     return true;
   });
 
-  // Counts for status tabs
-  const preparingCount = orders.filter((o) => o.status === 'preparing').length;
-  const inDeliveryCount = orders.filter((o) => o.status === 'out_for_delivery').length;
-  const deliveredCount = orders.filter((o) => o.status === 'delivered').length;
-
   return (
     <div className="space-y-6">
+      {/* Top View Mode Switcher for Driver */}
+      {isDriver && (
+        <div className="flex items-center gap-2 p-1.5 bg-[#030e1a]/90 rounded-2xl border border-cyan-900/40 w-full sm:w-fit">
+          <button
+            type="button"
+            onClick={() => {
+              setStatusFilter('all');
+              navigate('/orders');
+            }}
+            className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              !isHistory
+                ? 'bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 shadow-md shadow-cyan-500/20 font-black'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
+            }`}
+          >
+            <Bike className="w-4 h-4" />
+            <span>{language === 'ar' ? 'المهام النشطة للتوصيل' : 'Active Deliveries'}</span>
+            <span
+              className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
+                !isHistory ? 'bg-slate-950/20 text-slate-950' : 'bg-slate-800 text-cyan-300'
+              }`}
+            >
+              {activeOrdersCount}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setStatusFilter('all');
+              navigate('/orders/history');
+            }}
+            className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              isHistory
+                ? 'bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 shadow-md shadow-cyan-500/20 font-black'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
+            }`}
+          >
+            <History className="w-4 h-4" />
+            <span>{language === 'ar' ? 'سجل جميع الطلبات' : 'Order History'}</span>
+            <span
+              className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
+                isHistory ? 'bg-slate-950/20 text-slate-950' : 'bg-slate-800 text-slate-400'
+              }`}
+            >
+              {totalOrdersCount}
+            </span>
+          </button>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
               <Fish className="w-6 h-6 text-cyan-400 stroke-[2.2]" />
-              <span>{isDriver ? t('nav_my_deliveries') : t('orders_title')}</span>
+              <span>
+                {isDriver
+                  ? isHistory
+                    ? (language === 'ar' ? 'سجل جميع الطلبات' : 'Delivery History')
+                    : (language === 'ar' ? 'المهام النشطة للتوصيل' : 'Active Deliveries')
+                  : t('orders_title')}
+              </span>
             </h1>
             <span className="px-2.5 py-0.5 rounded-full bg-cyan-950/80 text-cyan-300 border border-cyan-800/40 text-xs font-bold">
               {filteredOrders.length}
@@ -170,12 +274,44 @@ export function Orders() {
           </div>
           <p className="text-xs text-slate-300 mt-1">
             {isDriver
-              ? (language === 'ar' ? 'الطلبات المسندة إليك لتسليمها لزبائن أمير البحار.' : 'Orders assigned to you for delivery. Tap status buttons to advance.')
+              ? isHistory
+                ? (language === 'ar'
+                    ? 'أرشيف كامل لجميع الطلبات المسلمة والسابقة والبحث السريع في طلباتك.'
+                    : 'Complete archive of all past and delivered orders.')
+                : (language === 'ar'
+                    ? 'الطلبات الجارية المطلوب تسليمها. عند تسليم أي طلب سيختفي من هذه القائمة تلقائياً.'
+                    : 'Active delivery tasks. Delivered orders will disappear from this list automatically.')
               : t('orders_subtitle')}
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Driver Quick Customer Actions */}
+          {isDriver && (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                icon={UserPlus}
+                onClick={() => setDriverAddCustomerOpen(true)}
+                className="text-xs border-cyan-600/70 text-cyan-300 hover:bg-cyan-950/60 font-bold bg-[#020d1a]"
+              >
+                {language === 'ar' ? 'إضافة عميل' : 'Add Customer'}
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                icon={Users}
+                isLoading={isSelectingContacts}
+                onClick={handleImportFromContacts}
+                className="text-xs border-teal-600/70 text-teal-300 hover:bg-teal-950/60 font-bold bg-[#020d1a] hidden sm:inline-flex"
+              >
+                {language === 'ar' ? 'استيراد جهات اتصال' : 'Import Contacts'}
+              </Button>
+            </>
+          )}
+
           <Button
             variant="outline"
             size="sm"
@@ -293,11 +429,13 @@ export function Orders() {
             onClick={() => setStatusFilter('all')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
               statusFilter === 'all'
-                ? 'bg-cyan-500 text-slate-950 shadow-md'
+                ? 'bg-cyan-500 text-slate-950 shadow-md font-black'
                 : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800 hover:text-white'
             }`}
           >
-            {t('filter_all')} ({orders.length})
+            {isDriver && !isHistory
+              ? `${language === 'ar' ? 'الكل (النشطة)' : 'All Active'} (${activeOrdersCount})`
+              : `${t('filter_all')} (${orders.length})`}
           </button>
 
           <button
@@ -305,7 +443,7 @@ export function Orders() {
             onClick={() => setStatusFilter('preparing')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
               statusFilter === 'preparing'
-                ? 'bg-amber-500 text-slate-950 shadow-md'
+                ? 'bg-amber-500 text-slate-950 shadow-md font-black'
                 : 'bg-amber-950/40 text-amber-300 border border-amber-500/30 hover:bg-amber-900/40'
             }`}
           >
@@ -318,7 +456,7 @@ export function Orders() {
             onClick={() => setStatusFilter('out_for_delivery')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
               statusFilter === 'out_for_delivery'
-                ? 'bg-sky-500 text-slate-950 shadow-md'
+                ? 'bg-sky-500 text-slate-950 shadow-md font-black'
                 : 'bg-sky-950/40 text-sky-300 border border-sky-500/30 hover:bg-sky-900/40'
             }`}
           >
@@ -326,18 +464,20 @@ export function Orders() {
             {t('filter_out_for_delivery')} ({inDeliveryCount})
           </button>
 
-          <button
-            type="button"
-            onClick={() => setStatusFilter('delivered')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
-              statusFilter === 'delivered'
-                ? 'bg-emerald-500 text-slate-950 shadow-md'
-                : 'bg-emerald-950/40 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-900/40'
-            }`}
-          >
-            <CheckCircle2 className="w-3.5 h-3.5" />
-            {t('filter_delivered')} ({deliveredCount})
-          </button>
+          {(!isDriver || isHistory) && (
+            <button
+              type="button"
+              onClick={() => setStatusFilter('delivered')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                statusFilter === 'delivered'
+                  ? 'bg-emerald-500 text-slate-950 shadow-md font-black'
+                  : 'bg-emerald-950/40 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-900/40'
+              }`}
+            >
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              {t('filter_delivered')} ({deliveredCount})
+            </button>
+          )}
         </div>
 
         {/* Payment Status Tab Pills */}
@@ -443,6 +583,54 @@ export function Orders() {
         <div className="bg-[#05172b]/90 rounded-2xl border border-cyan-900/40 p-4">
           <TableSkeleton rows={6} cols={6} />
         </div>
+      ) : filteredOrders.length === 0 && isDriver && !isHistory ? (
+        <div className="bg-[#05172b]/90 rounded-2xl border border-cyan-800/40 p-10 text-center flex flex-col items-center justify-center space-y-4 shadow-xl">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 border border-emerald-400/40 flex items-center justify-center text-3xl shadow-lg shadow-emerald-500/10">
+            🎉
+          </div>
+          <div className="max-w-md space-y-1.5">
+            <h3 className="text-lg font-black text-white">
+              {language === 'ar' ? 'عاش يا كابتن! تم تسليم جميع الطلبات بنجاح' : 'All Deliveries Complete! Great Job!'}
+            </h3>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              {language === 'ar'
+                ? 'لا توجد طلبات نشطة معلقة في قائمتك حالياً. يمكنك مراجعة كافة الطلبات السابقة في سجل جميع الطلبات أو إضافة عملاء جدد.'
+                : 'No active deliveries pending in your queue. You can review all completed deliveries in Order History or add new customers.'}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-2.5 pt-2">
+            <Button
+              variant="primary"
+              size="sm"
+              icon={History}
+              onClick={() => {
+                setStatusFilter('all');
+                navigate('/orders/history');
+              }}
+              className="text-xs bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 font-bold shadow-md shadow-cyan-500/20"
+            >
+              {language === 'ar' ? 'عرض سجل جميع الطلبات' : 'View Order History'}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              icon={UserPlus}
+              onClick={() => setDriverAddCustomerOpen(true)}
+              className="text-xs border-cyan-600/60 text-cyan-300 hover:bg-cyan-950/40 font-bold"
+            >
+              {language === 'ar' ? 'إضافة عميل جديد' : 'Add New Customer'}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              icon={RefreshCw}
+              onClick={() => fetchOrders()}
+              className="text-xs border-slate-700 text-slate-300 hover:bg-slate-800/50"
+            >
+              {t('refresh')}
+            </Button>
+          </div>
+        </div>
       ) : (
         <OrderTable
           orders={filteredOrders}
@@ -484,6 +672,35 @@ export function Orders() {
           }}
         />
       )}
+
+      {/* Driver Add Customer Modal */}
+      <CustomerModal
+        isOpen={driverAddCustomerOpen}
+        customer={null}
+        onClose={() => setDriverAddCustomerOpen(false)}
+        isOwner={false}
+        existingCustomers={[]}
+        onSuccess={() => {
+          setDriverAddCustomerOpen(false);
+          success(
+            language === 'ar' ? 'تمت إضافة العميل بنجاح!' : 'Customer created successfully!',
+            language === 'ar' ? 'إضافة عميل' : 'Customer Added'
+          );
+          fetchOrders();
+        }}
+      />
+
+      {/* Driver Import Contacts Modal */}
+      <ImportContactsModal
+        isOpen={importContactsModalOpen}
+        onClose={() => setImportContactsModalOpen(false)}
+        contacts={importedContacts}
+        existingCustomers={[]}
+        onSuccess={() => {
+          setImportContactsModalOpen(false);
+          fetchOrders();
+        }}
+      />
     </div>
   );
 }

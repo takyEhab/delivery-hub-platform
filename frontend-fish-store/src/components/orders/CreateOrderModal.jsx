@@ -112,7 +112,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
   const [orderMode, setOrderMode] = useState('quick');
   const [quickAmount, setQuickAmount] = useState('');
   const [quickDescription, setQuickDescription] = useState('');
-  const [selectedCookingStyle, setSelectedCookingStyle] = useState(null);
+  const [isRawFish, setIsRawFish] = useState(false);
 
   // Payment Tracking State
   const [paymentStatus, setPaymentStatus] = useState('unpaid'); // 'unpaid' | 'paid' | 'postpaid'
@@ -161,7 +161,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
       setOrderMode('quick');
       setQuickAmount('');
       setQuickDescription('');
-      setSelectedCookingStyle(null);
+      setIsRawFish(false);
       setPaymentStatus('unpaid');
       setPaymentNotes('');
       setDriverId('');
@@ -244,52 +244,6 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
     }));
   };
 
-  // Toggle single cooking style (for quick mode description)
-  const handleToggleCookingStyle = (style) => {
-    const styleTextAr = style.ar;
-    const styleTextEn = style.en;
-    const isCurrentlySelected = selectedCookingStyle === styleTextAr;
-
-    if (isCurrentlySelected) {
-      // Unselect and remove this style from quickDescription
-      setSelectedCookingStyle(null);
-      setQuickDescription((prev) => {
-        let updated = prev || '';
-        COOKING_STYLES.forEach((s) => {
-          updated = updated.replace(new RegExp(`\\s*-\\s*\\[?${s.ar}\\]?`, 'g'), '');
-          updated = updated.replace(new RegExp(`\\[?${s.ar}\\]?\\s*-\\s*`, 'g'), '');
-          updated = updated.replace(new RegExp(`\\[?${s.ar}\\]?`, 'g'), '');
-          updated = updated.replace(new RegExp(`\\s*-\\s*\\[?${s.en}\\]?`, 'g'), '');
-          updated = updated.replace(new RegExp(`\\[?${s.en}\\]?\\s*-\\s*`, 'g'), '');
-          updated = updated.replace(new RegExp(`\\[?${s.en}\\]?`, 'g'), '');
-        });
-        return updated.trim();
-      });
-    } else {
-      // Select single choice: remove previously selected style and set this one
-      setSelectedCookingStyle(styleTextAr);
-      const chosenText = language === 'ar' ? styleTextAr : styleTextEn;
-
-      setQuickDescription((prev) => {
-        let base = prev || '';
-        COOKING_STYLES.forEach((s) => {
-          base = base.replace(new RegExp(`\\s*-\\s*\\[?${s.ar}\\]?`, 'g'), '');
-          base = base.replace(new RegExp(`\\[?${s.ar}\\]?\\s*-\\s*`, 'g'), '');
-          base = base.replace(new RegExp(`\\[?${s.ar}\\]?`, 'g'), '');
-          base = base.replace(new RegExp(`\\s*-\\s*\\[?${s.en}\\]?`, 'g'), '');
-          base = base.replace(new RegExp(`\\[?${s.en}\\]?\\s*-\\s*`, 'g'), '');
-          base = base.replace(new RegExp(`\\[?${s.en}\\]?`, 'g'), '');
-        });
-        base = base.trim();
-
-        if (base) {
-          return `${base} - ${chosenText}`;
-        }
-        return chosenText;
-      });
-    }
-  };
-
   const calculateTotal = () => {
     return items.reduce((sum, it) => {
       const q = parseFloat(it.quantity) || 0;
@@ -361,9 +315,19 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
 
       if (orderMode === 'quick') {
         finalTotalAmount = parseFloat(quickAmount);
+        const rawTag = language === 'ar' ? 'سمك طازج / نيء' : 'Raw Fish';
+        const desc = quickDescription.trim();
+        let itemName;
+        if (desc) {
+          itemName = isRawFish ? `${desc} [${rawTag}]` : desc;
+        } else {
+          itemName = isRawFish
+            ? (language === 'ar' ? 'طلب أسماك طازجة / نيئة' : 'Raw Fresh Seafood Order')
+            : (language === 'ar' ? 'طلب أسماك ومأكولات بحرية' : 'Seafood Order');
+        }
         formattedItems = [
           {
-            name: quickDescription.trim() || (language === 'ar' ? 'طلب أسماك ومأكولات بحرية' : 'Seafood Order'),
+            name: itemName,
             quantity: 1,
             price: finalTotalAmount,
           },
@@ -756,32 +720,45 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
               </div>
             </div>
 
-            {/* Quick Cooking Styles Chips in Quick Mode */}
+            {/* Raw Fish Option in Quick Mode */}
             <div className="pt-2 border-t border-slate-800/80">
-              <span className="text-[11px] font-bold text-slate-400 block mb-1.5">
-                {language === 'ar' ? 'طريقة التسوية (اختيار واحد فقط — انقر للتبديل أو الحذف):' : 'Cooking Style (Select one only — click again to remove):'}
-              </span>
-              <div className="flex flex-wrap gap-1.5">
-                {COOKING_STYLES.map((style, idx) => {
-                  const isSelected = selectedCookingStyle === style.ar;
-
-                  return (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => handleToggleCookingStyle(style)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                        isSelected
-                          ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-slate-950 font-black shadow-md border border-orange-400 ring-2 ring-orange-400/50'
-                          : 'bg-orange-950/30 border border-orange-500/30 text-orange-300 hover:bg-orange-900/50 hover:text-white'
-                      }`}
-                    >
-                      {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-slate-950 stroke-[2.5]" />}
-                      <span>{language === 'ar' ? style.ar : style.en}</span>
-                    </button>
-                  );
-                })}
-              </div>
+              <button
+                type="button"
+                onClick={() => setIsRawFish(!isRawFish)}
+                className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all text-right rtl:text-right ltr:text-left ${
+                  isRawFish
+                    ? 'bg-cyan-950/60 border-cyan-400 text-cyan-200 ring-2 ring-cyan-400/30 shadow-lg shadow-cyan-950/50'
+                    : 'bg-[#020b14]/70 border-slate-700/70 text-slate-300 hover:border-slate-500 hover:bg-slate-900/60'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-lg transition-colors ${
+                    isRawFish ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'bg-slate-800/80 text-slate-400 border border-slate-700/50'
+                  }`}>
+                    🐟
+                  </div>
+                  <div>
+                    <p className="text-xs font-black text-white flex items-center gap-2">
+                      <span>{language === 'ar' ? 'يحتوي الطلب على سمك طازج / نيء (بدون طهي)' : 'Order contains fresh / raw fish (uncooked)'}</span>
+                      {isRawFish && (
+                        <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 text-[10px] font-bold border border-cyan-400/40">
+                          {language === 'ar' ? 'سمك نيء' : 'Raw Fish'}
+                        </span>
+                      )}
+                    </p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      {language === 'ar' ? 'حدد هذا الخيار إذا كان الطلب يتضمن أسماكاً نيئة أو طازجة للتنظيف فقط' : 'Mark this option if the order includes raw fish for prep/cleaning only'}
+                    </p>
+                  </div>
+                </div>
+                <div className={`w-5 h-5 rounded-lg border flex items-center justify-center transition-all ${
+                  isRawFish
+                    ? 'bg-cyan-400 border-cyan-300 text-slate-950'
+                    : 'border-slate-600 bg-slate-900/80'
+                }`}>
+                  {isRawFish && <CheckCircle2 className="w-3.5 h-3.5 stroke-[3]" />}
+                </div>
+              </button>
             </div>
           </div>
         )}

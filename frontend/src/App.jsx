@@ -76,6 +76,14 @@ export function App() {
           }
         />
         <Route
+          path="/orders/history"
+          element={
+            <ProtectedRoute allowedRoles={['owner', 'driver']}>
+              <Orders isHistoryView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/orders/:id"
           element={
             <ProtectedRoute allowedRoles={['owner', 'driver']}>

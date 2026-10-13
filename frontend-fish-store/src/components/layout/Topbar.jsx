@@ -1,14 +1,14 @@
 import React from 'react';
-import { Menu, Plus, Fish, Waves, Sparkles } from 'lucide-react';
+import { Menu, Plus, Fish, Waves, Sparkles, UserPlus } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useLanguage } from '../../context/LanguageContext';
 import { LanguageToggle } from './LanguageToggle';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 
-export function Topbar({ onOpenSidebar, onNewOrderClick }) {
-  const { user, isOwner } = useAuth();
-  const { t } = useLanguage();
+export function Topbar({ onOpenSidebar, onNewOrderClick, onAddCustomerClick }) {
+  const { user, isOwner, isDriver } = useAuth();
+  const { t, language } = useLanguage();
 
   return (
     <header className="sticky top-0 z-30 h-16 bg-[#051528]/90 backdrop-blur-nav border-b border-cyan-900/30 px-4 sm:px-6 flex items-center justify-between gap-4 transition-colors">
@@ -44,7 +44,7 @@ export function Topbar({ onOpenSidebar, onNewOrderClick }) {
         {/* Language Switcher */}
         <LanguageToggle variant="default" />
 
-        {/* Create Order Button */}
+        {/* Create Order Button for Owner */}
         {isOwner && onNewOrderClick && (
           <Button
             size="sm"
@@ -54,6 +54,19 @@ export function Topbar({ onOpenSidebar, onNewOrderClick }) {
             className="hidden sm:inline-flex bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 font-bold shadow-md shadow-cyan-500/20 border-0"
           >
             {t('create_order')}
+          </Button>
+        )}
+
+        {/* Add Customer Button for Driver */}
+        {isDriver && onAddCustomerClick && (
+          <Button
+            size="sm"
+            variant="outline"
+            icon={UserPlus}
+            onClick={onAddCustomerClick}
+            className="inline-flex text-xs py-1.5 px-3 border-cyan-700/80 text-cyan-300 hover:bg-cyan-950/60 font-bold bg-[#020d1a]"
+          >
+            {language === 'ar' ? 'إضافة عميل' : 'Add Customer'}
           </Button>
         )}
 

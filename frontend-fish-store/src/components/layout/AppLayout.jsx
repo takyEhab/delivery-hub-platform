@@ -3,13 +3,15 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import { CreateOrderModal } from '../orders/CreateOrderModal';
+import { CustomerModal } from '../customers/CustomerModal';
 import { useAuth } from '../../hooks/useAuth';
 import { useLanguage } from '../../context/LanguageContext';
 
 export function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [createOrderOpen, setCreateOrderOpen] = useState(false);
-  const { isOwner } = useAuth();
+  const [addCustomerOpen, setAddCustomerOpen] = useState(false);
+  const { isOwner, isDriver } = useAuth();
   const { isRTL } = useLanguage();
   const navigate = useNavigate();
 
@@ -36,10 +38,16 @@ export function AppLayout() {
         <Topbar
           onOpenSidebar={() => setSidebarOpen(true)}
           onNewOrderClick={isOwner ? () => setCreateOrderOpen(true) : null}
+          onAddCustomerClick={() => setAddCustomerOpen(true)}
         />
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto relative z-10">
-          <Outlet context={{ openCreateOrder: () => setCreateOrderOpen(true) }} />
+          <Outlet
+            context={{
+              openCreateOrder: () => setCreateOrderOpen(true),
+              openAddCustomer: () => setAddCustomerOpen(true),
+            }}
+          />
         </main>
       </div>
 
@@ -51,6 +59,16 @@ export function AppLayout() {
           onOrderCreated={handleOrderCreated}
         />
       )}
+
+      {/* Global Quick Add Customer Modal for Driver or Owner */}
+      <CustomerModal
+        isOpen={addCustomerOpen}
+        onClose={() => setAddCustomerOpen(false)}
+        isOwner={isOwner}
+        onSuccess={() => {
+          setAddCustomerOpen(false);
+        }}
+      />
     </div>
   );
 }

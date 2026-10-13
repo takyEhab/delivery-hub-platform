@@ -13,6 +13,7 @@ import {
   Waves,
   Sparkles,
   ShoppingBag,
+  History,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useLanguage } from '../../context/LanguageContext';
@@ -20,7 +21,7 @@ import { LanguageToggle } from './LanguageToggle';
 
 export function Sidebar({ isOpen, onClose }) {
   const { user, isOwner, isDriver, logout } = useAuth();
-  const { t, isRTL } = useLanguage();
+  const { t, isRTL, language } = useLanguage();
 
   const navItems = isOwner
     ? [
@@ -30,7 +31,8 @@ export function Sidebar({ isOpen, onClose }) {
         { label: t('nav_drivers'), to: '/drivers', icon: Truck },
       ]
     : [
-        { label: t('nav_my_deliveries'), to: '/orders', icon: Bike },
+        { label: language === 'ar' ? 'المهام النشطة للتوصيل' : 'Active Deliveries', to: '/orders', icon: Bike },
+        { label: language === 'ar' ? 'سجل جميع الطلبات' : 'Delivery History', to: '/orders/history', icon: History },
       ];
 
   const sidebarPositionClasses = isRTL
@@ -93,6 +95,7 @@ export function Sidebar({ isOpen, onClose }) {
               <NavLink
                 key={item.to}
                 to={item.to}
+                end={item.to === '/orders' || item.to === '/dashboard'}
                 onClick={() => {
                   if (window.innerWidth < 1024) onClose();
                 }}

@@ -23,7 +23,7 @@ router.get('/', authorize('owner'), customersController.listCustomers);
 
 router.post(
   '/',
-  authorize('owner'),
+  authorize('owner', 'driver'),
   validate(createCustomer),
   customersController.createCustomer
 );
