@@ -21,6 +21,9 @@ import {
   User,
   Clock,
   CheckCircle2,
+  Banknote,
+  Receipt,
+  CreditCard,
 } from 'lucide-react';
 
 const SEAFOOD_PRESETS = [
@@ -78,6 +81,9 @@ export function EditOrderModal({ isOpen, onClose, order, onOrderUpdated }) {
   const { success, error: toastError } = useToast();
 
   const [items, setItems] = useState([]);
+  const [totalAmount, setTotalAmount] = useState('');
+  const [paymentStatus, setPaymentStatus] = useState('unpaid');
+  const [paymentNotes, setPaymentNotes] = useState('');
   const [status, setStatus] = useState('preparing');
   const [driverId, setDriverId] = useState('');
   const [drivers, setDrivers] = useState([]);
@@ -98,6 +104,9 @@ export function EditOrderModal({ isOpen, onClose, order, onOrderUpdated }) {
         : [{ name: '', quantity: 1, price: '' }];
 
       setItems(parsedItems.length > 0 ? parsedItems : [{ name: '', quantity: 1, price: '' }]);
+      setTotalAmount(order.total_amount !== undefined && order.total_amount !== null ? String(order.total_amount) : '');
+      setPaymentStatus(order.payment_status || 'unpaid');
+      setPaymentNotes(order.payment_notes || '');
       setStatus(order.status || 'preparing');
       setDriverId(order.assigned_driver_id ? String(order.assigned_driver_id) : '');
       setErrors({});
@@ -184,6 +193,9 @@ export function EditOrderModal({ isOpen, onClose, order, onOrderUpdated }) {
         items: formattedItems,
         status,
         driver_id: driverId ? Number(driverId) : null,
+        total_amount: totalAmount !== '' ? parseFloat(totalAmount) : calculateTotal(),
+        payment_status: paymentStatus,
+        payment_notes: paymentNotes?.trim() || null,
       };
 
       const updated = await updateOrder(order.id, payload);
@@ -298,6 +310,80 @@ export function EditOrderModal({ isOpen, onClose, order, onOrderUpdated }) {
               ))}
             </select>
           </div>
+        </div>
+
+        {/* Payment & Amount Controls Box */}
+        <div className="p-3.5 bg-[#031527] rounded-2xl border border-cyan-800/40 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-cyan-300 flex items-center gap-1.5">
+              <Banknote className="w-4 h-4 text-emerald-400" />
+              <span>{t('payment_status')}</span>
+            </span>
+            <div className="flex items-center gap-2">
+              <label className="text-[11px] text-slate-400 font-bold">{t('total_amount_to_pay')}:</label>
+              <div className="relative w-28">
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={totalAmount}
+                  onChange={(e) => setTotalAmount(e.target.value)}
+                  placeholder="0.00"
+                  className="w-full text-xs font-black text-emerald-300 bg-[#020b14] border border-slate-700 rounded-lg px-2 py-1.5 focus:outline-none focus:border-emerald-400"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Payment Status Selector */}
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              type="button"
+              onClick={() => setPaymentStatus('unpaid')}
+              className={`p-2.5 rounded-xl text-xs font-bold transition-all border flex flex-col items-center justify-center gap-1 ${
+                paymentStatus === 'unpaid'
+                  ? 'bg-amber-950/60 border-amber-400 text-amber-300 shadow-md ring-1 ring-amber-400'
+                  : 'bg-slate-900/80 border-slate-800 text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Banknote className="w-3.5 h-3.5" />
+              <span>{t('filter_unpaid')}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setPaymentStatus('paid')}
+              className={`p-2.5 rounded-xl text-xs font-bold transition-all border flex flex-col items-center justify-center gap-1 ${
+                paymentStatus === 'paid'
+                  ? 'bg-emerald-950/60 border-emerald-400 text-emerald-300 shadow-md ring-1 ring-emerald-400'
+                  : 'bg-slate-900/80 border-slate-800 text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Receipt className="w-3.5 h-3.5" />
+              <span>{t('filter_paid')}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setPaymentStatus('postpaid')}
+              className={`p-2.5 rounded-xl text-xs font-bold transition-all border flex flex-col items-center justify-center gap-1 ${
+                paymentStatus === 'postpaid'
+                  ? 'bg-purple-950/60 border-purple-400 text-purple-300 shadow-md ring-1 ring-purple-400'
+                  : 'bg-slate-900/80 border-slate-800 text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Clock className="w-3.5 h-3.5" />
+              <span>{t('filter_postpaid')}</span>
+            </button>
+          </div>
+
+          <input
+            type="text"
+            placeholder={t('payment_notes_placeholder')}
+            value={paymentNotes}
+            onChange={(e) => setPaymentNotes(e.target.value)}
+            className="w-full text-xs bg-[#020b14] border border-slate-700/80 rounded-xl px-3 py-2 text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400"
+          />
         </div>
 
         {/* Quick Seafood Menu Presets */}

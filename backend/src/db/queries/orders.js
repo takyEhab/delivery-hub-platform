@@ -5,6 +5,10 @@ const ORDER_SELECT = `
   o.customer_id,
   o.assigned_driver_id,
   o.items,
+  o.total_amount,
+  o.payment_status,
+  o.paid_at,
+  o.payment_notes,
   o.status,
   o.created_at,
   o.updated_at,
@@ -30,6 +34,10 @@ function mapOrder(row) {
     customer_id: row.customer_id,
     assigned_driver_id: row.assigned_driver_id,
     items: row.items,
+    total_amount: parseFloat(row.total_amount || 0),
+    payment_status: row.payment_status || 'unpaid',
+    paid_at: row.paid_at || null,
+    payment_notes: row.payment_notes || null,
     status: row.status,
     created_at: row.created_at,
     updated_at: row.updated_at,
@@ -47,13 +55,29 @@ function mapOrder(row) {
   };
 }
 
-async function create({ customerId, items }) {
-  const itemsValue = typeof items === 'string' ? JSON.stringify([{ description: items }]) : JSON.stringify(items);
+async function create({ customerId, items, totalAmount = 0, paymentStatus = 'unpaid', paymentNotes = null }) {
+  let finalItems = items;
+  if (!finalItems) {
+    finalItems = [{ name: 'طلب أسماك', quantity: 1, price: totalAmount }];
+  }
+  const itemsValue = typeof finalItems === 'string' ? JSON.stringify([{ description: finalItems }]) : JSON.stringify(finalItems);
+  
+  // Compute totalAmount if 0 but items have prices
+  let computedTotal = parseFloat(totalAmount) || 0;
+  if (computedTotal === 0 && Array.isArray(finalItems)) {
+    for (const it of finalItems) {
+      const q = parseInt(it.quantity, 10) || 1;
+      const p = parseFloat(it.price) || 0;
+      computedTotal += q * p;
+    }
+  }
+
+  const isPaid = paymentStatus === 'paid';
   const { rows } = await db.query(
-    `INSERT INTO orders (customer_id, items)
-     VALUES ($1, $2::jsonb)
+    `INSERT INTO orders (customer_id, items, total_amount, payment_status, paid_at, payment_notes)
+     VALUES ($1, $2::jsonb, $3, $4, ${isPaid ? 'NOW()' : 'NULL'}, $5)
      RETURNING id`,
-    [customerId, itemsValue]
+    [customerId, itemsValue, computedTotal, paymentStatus || 'unpaid', paymentNotes || null]
   );
   return findById(rows[0].id);
 }
@@ -99,20 +123,33 @@ async function assignDriver(orderId, driverId) {
   return { order: await findById(orderId) };
 }
 
-async function updateStatus(orderId, status, driverId = null) {
-  let query;
-  let params;
+async function updateStatus(orderId, status, driverId = null, { paymentStatus, paymentNotes } = {}) {
+  const sets = ['status = $2'];
+  const params = [orderId, status];
+  let paramIndex = 3;
 
-  if (driverId !== null) {
-    query = `UPDATE orders SET status = $2
-             WHERE id = $1 AND assigned_driver_id = $3
-             RETURNING id`;
-    params = [orderId, status, driverId];
-  } else {
-    query = `UPDATE orders SET status = $2 WHERE id = $1 RETURNING id`;
-    params = [orderId, status];
+  if (paymentStatus) {
+    sets.push(`payment_status = $${paramIndex++}`);
+    params.push(paymentStatus);
+    if (paymentStatus === 'paid') {
+      sets.push('paid_at = NOW()');
+    } else {
+      sets.push('paid_at = NULL');
+    }
   }
 
+  if (paymentNotes !== undefined) {
+    sets.push(`payment_notes = $${paramIndex++}`);
+    params.push(paymentNotes);
+  }
+
+  let whereClause = 'WHERE id = $1';
+  if (driverId !== null) {
+    whereClause += ` AND assigned_driver_id = $${paramIndex++}`;
+    params.push(driverId);
+  }
+
+  const query = `UPDATE orders SET ${sets.join(', ')} ${whereClause} RETURNING id`;
   const { rows } = await db.query(query, params);
   if (rows.length === 0) {
     return null;
@@ -120,7 +157,39 @@ async function updateStatus(orderId, status, driverId = null) {
   return findById(orderId);
 }
 
-async function update(orderId, { customerId, assignedDriverId, items, status }) {
+async function updatePayment(orderId, { paymentStatus, paymentNotes }) {
+  const sets = [];
+  const params = [orderId];
+  let paramIndex = 2;
+
+  if (paymentStatus) {
+    sets.push(`payment_status = $${paramIndex++}`);
+    params.push(paymentStatus);
+    if (paymentStatus === 'paid') {
+      sets.push('paid_at = NOW()');
+    } else {
+      sets.push('paid_at = NULL');
+    }
+  }
+
+  if (paymentNotes !== undefined) {
+    sets.push(`payment_notes = $${paramIndex++}`);
+    params.push(paymentNotes);
+  }
+
+  if (sets.length === 0) {
+    return findById(orderId);
+  }
+
+  const query = `UPDATE orders SET ${sets.join(', ')} WHERE id = $1 RETURNING id`;
+  const { rows } = await db.query(query, params);
+  if (rows.length === 0) {
+    return null;
+  }
+  return findById(orderId);
+}
+
+async function update(orderId, { customerId, assignedDriverId, items, status, totalAmount, paymentStatus, paymentNotes }) {
   const updates = [];
   const params = [];
   let paramIndex = 1;
@@ -139,6 +208,26 @@ async function update(orderId, { customerId, assignedDriverId, items, status }) 
     const itemsValue = typeof items === 'string' ? JSON.stringify([{ description: items }]) : JSON.stringify(items);
     updates.push(`items = $${paramIndex++}::jsonb`);
     params.push(itemsValue);
+  }
+
+  if (totalAmount !== undefined) {
+    updates.push(`total_amount = $${paramIndex++}`);
+    params.push(parseFloat(totalAmount) || 0);
+  }
+
+  if (paymentStatus !== undefined) {
+    updates.push(`payment_status = $${paramIndex++}`);
+    params.push(paymentStatus);
+    if (paymentStatus === 'paid') {
+      updates.push('paid_at = NOW()');
+    } else {
+      updates.push('paid_at = NULL');
+    }
+  }
+
+  if (paymentNotes !== undefined) {
+    updates.push(`payment_notes = $${paramIndex++}`);
+    params.push(paymentNotes);
   }
 
   if (status !== undefined) {
@@ -166,5 +255,6 @@ module.exports = {
   listByDriver,
   assignDriver,
   updateStatus,
+  updatePayment,
   update,
 };

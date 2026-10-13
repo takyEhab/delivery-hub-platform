@@ -41,6 +41,42 @@ export function getStatusBadgeVariant(status) {
   }
 }
 
+export function formatPaymentStatus(status, lang = 'ar') {
+  if (lang === 'ar') {
+    switch (status) {
+      case 'paid':
+        return 'تم الدفع (خالص)';
+      case 'postpaid':
+        return 'آجل (دين / مؤجل)';
+      case 'unpaid':
+      default:
+        return 'غير مدفوع (تحصيل)';
+    }
+  }
+
+  switch (status) {
+    case 'paid':
+      return 'Paid';
+    case 'postpaid':
+      return 'On Credit (Postpaid)';
+    case 'unpaid':
+    default:
+      return 'Unpaid (To Collect)';
+  }
+}
+
+export function getPaymentBadgeVariant(status) {
+  switch (status) {
+    case 'paid':
+      return 'success';  // Green / Emerald
+    case 'postpaid':
+      return 'danger';   // Rose / Red (On credit / debt)
+    case 'unpaid':
+    default:
+      return 'warning';  // Amber
+  }
+}
+
 export function formatDate(dateString, lang = 'ar') {
   if (!dateString) return '—';
   const date = new Date(dateString);

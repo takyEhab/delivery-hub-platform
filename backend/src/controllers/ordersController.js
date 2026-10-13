@@ -56,6 +56,9 @@ async function createOrder(req, res, next) {
     const order = await ordersQueries.create({
       customerId,
       items: req.body.items,
+      totalAmount: req.body.total_amount,
+      paymentStatus: req.body.payment_status,
+      paymentNotes: req.body.payment_notes,
     });
 
     res.status(201).json({ order });
@@ -126,7 +129,7 @@ async function assignOrder(req, res, next) {
 async function updateOrderStatus(req, res, next) {
   try {
     const orderId = req.params.id;
-    const { status } = req.body;
+    const { status, payment_status: paymentStatus, payment_notes: paymentNotes } = req.body;
 
     const order = await ordersQueries.findById(orderId);
     if (!order) {
@@ -143,11 +146,41 @@ async function updateOrderStatus(req, res, next) {
     const updated = await ordersQueries.updateStatus(
       orderId,
       status,
-      req.user.role === 'driver' ? req.user.id : null
+      req.user.role === 'driver' ? req.user.id : null,
+      { paymentStatus, paymentNotes }
     );
 
     if (!updated) {
       throw new AppError('Order not found or not assigned to you', 403);
+    }
+
+    res.json({ order: updated });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function updatePaymentStatus(req, res, next) {
+  try {
+    const orderId = req.params.id;
+    const { payment_status: paymentStatus, payment_notes: paymentNotes } = req.body;
+
+    const order = await ordersQueries.findById(orderId);
+    if (!order) {
+      throw new AppError('Order not found', 404);
+    }
+
+    if (req.user.role === 'driver' && order.assigned_driver_id !== req.user.id) {
+      throw new AppError('Forbidden', 403);
+    }
+
+    const updated = await ordersQueries.updatePayment(orderId, {
+      paymentStatus,
+      paymentNotes,
+    });
+
+    if (!updated) {
+      throw new AppError('Order not found', 404);
     }
 
     res.json({ order: updated });
@@ -183,6 +216,9 @@ async function updateOrder(req, res, next) {
       assignedDriverId: driverId,
       items: req.body.items,
       status: req.body.status,
+      totalAmount: req.body.total_amount,
+      paymentStatus: req.body.payment_status,
+      paymentNotes: req.body.payment_notes,
     });
 
     res.json({ order: updated });
@@ -197,5 +233,6 @@ module.exports = {
   getOrder,
   assignOrder,
   updateOrderStatus,
+  updatePaymentStatus,
   updateOrder,
 };

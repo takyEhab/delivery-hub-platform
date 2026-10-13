@@ -5,11 +5,14 @@ import { Button } from '../ui/Button';
 import {
   formatStatus,
   getStatusBadgeVariant,
+  formatPaymentStatus,
+  getPaymentBadgeVariant,
   formatDate,
+  formatCurrency,
 } from '../../utils/formatters';
 import { useLanguage } from '../../context/LanguageContext';
 import { OrderCard } from './OrderCard';
-import { Fish, Truck, Phone, ChevronRight, User, Edit3 } from 'lucide-react';
+import { Fish, Truck, Phone, ChevronRight, User, Edit3, Banknote } from 'lucide-react';
 
 export function OrderTable({ orders, onAssignClick, onStatusUpdated, isOwner, isDriver }) {
   const { t, language } = useLanguage();
@@ -40,7 +43,7 @@ export function OrderTable({ orders, onAssignClick, onStatusUpdated, isOwner, is
               <tr className="bg-[#030f1c] border-b border-cyan-950/80 text-cyan-400/90 font-bold text-xs uppercase tracking-wider">
                 <th className="py-4 px-5">{t('order_number')}</th>
                 <th className="py-4 px-4">{t('customer')}</th>
-                <th className="py-4 px-4">{t('address')}</th>
+                <th className="py-4 px-4">{t('total_amount_to_pay')}</th>
                 <th className="py-4 px-4">{t('status')}</th>
                 <th className="py-4 px-4">{t('driver_assigned')}</th>
                 <th className="py-4 px-4">{t('time')}</th>
@@ -54,6 +57,7 @@ export function OrderTable({ orders, onAssignClick, onStatusUpdated, isOwner, is
                   : typeof order.items === 'string'
                   ? [{ name: order.items, quantity: 1 }]
                   : [];
+                const totalAmountVal = parseFloat(order.total_amount) || 0;
 
                 return (
                   <tr
@@ -88,10 +92,15 @@ export function OrderTable({ orders, onAssignClick, onStatusUpdated, isOwner, is
                       )}
                     </td>
 
-                    <td className="py-3.5 px-4 max-w-xs">
-                      <p className="text-xs text-slate-300 truncate">
-                        {order.customer?.address || (language === 'ar' ? 'استلام من المحل' : 'Store pickup')}
-                      </p>
+                    <td className="py-3.5 px-4 whitespace-nowrap">
+                      <span className="font-black text-emerald-300 text-sm">
+                        {formatCurrency(totalAmountVal, language)}
+                      </span>
+                      <div className="mt-1">
+                        <Badge variant={getPaymentBadgeVariant(order.payment_status)} size="sm">
+                          {formatPaymentStatus(order.payment_status, language)}
+                        </Badge>
+                      </div>
                     </td>
 
                     <td className="py-3.5 px-4 whitespace-nowrap">

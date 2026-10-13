@@ -7,6 +7,7 @@ const {
   updateOrder,
   assignOrder,
   updateOrderStatus,
+  updatePaymentStatus,
 } = require('../validators/schemas');
 
 const router = express.Router();
@@ -50,6 +51,13 @@ router.patch(
   authorize('owner', 'driver'),
   validate(updateOrderStatus),
   ordersController.updateOrderStatus
+);
+
+router.patch(
+  '/:id/payment',
+  authorize('owner', 'driver'),
+  validate(updatePaymentStatus),
+  ordersController.updatePaymentStatus
 );
 
 module.exports = router;

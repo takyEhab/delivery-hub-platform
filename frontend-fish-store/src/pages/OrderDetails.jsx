@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { getOrder, updateOrderStatus } from '../api/orders';
+import { getOrder, updateOrderStatus, updatePaymentStatus } from '../api/orders';
 import { getErrorMessage } from '../api/client';
 import { useToast } from '../hooks/useToast';
 import { useAuth } from '../hooks/useAuth';
@@ -14,6 +14,8 @@ import { EditOrderModal } from '../components/orders/EditOrderModal';
 import {
   formatStatus,
   getStatusBadgeVariant,
+  formatPaymentStatus,
+  getPaymentBadgeVariant,
   formatDate,
   formatCurrency,
 } from '../utils/formatters';
@@ -34,6 +36,10 @@ import {
   Flame,
   Edit,
   Navigation,
+  Banknote,
+  Receipt,
+  CreditCard,
+  DollarSign,
 } from 'lucide-react';
 import { buildGoogleMapsUrl } from '../utils/location';
 
@@ -47,6 +53,7 @@ export function OrderDetails() {
   const [order, setOrder] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [isUpdatingPayment, setIsUpdatingPayment] = useState(false);
   const [assignModalOpen, setAssignModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
 
@@ -66,10 +73,11 @@ export function OrderDetails() {
     fetchOrderDetails();
   }, [fetchOrderDetails]);
 
-  const handleAdvanceStatus = async (nextStatus) => {
+  const handleAdvanceStatus = async (nextStatus, paymentStatus = null) => {
     setIsUpdatingStatus(true);
     try {
-      const updated = await updateOrderStatus(order.id, nextStatus);
+      const extra = paymentStatus ? { paymentStatus } : {};
+      const updated = await updateOrderStatus(order.id, nextStatus, extra);
       setOrder(updated);
       const title = language === 'ar' ? 'تم تحديث حالة الطلب' : 'Status Updated';
       const msg = language === 'ar'
@@ -80,6 +88,26 @@ export function OrderDetails() {
       toastError(getErrorMessage(err));
     } finally {
       setIsUpdatingStatus(false);
+    }
+  };
+
+  const handleUpdatePayment = async (newPaymentStatus, newNotes = null) => {
+    setIsUpdatingPayment(true);
+    try {
+      const updated = await updatePaymentStatus(order.id, {
+        paymentStatus: newPaymentStatus,
+        paymentNotes: newNotes !== null ? newNotes : order.payment_notes,
+      });
+      setOrder(updated);
+      const title = language === 'ar' ? 'تم تحديث الدفع والتحصيل' : 'Payment Updated';
+      const msg = language === 'ar'
+        ? `تم تغيير حالة دفع طلب #${order.id} إلى: ${formatPaymentStatus(newPaymentStatus, 'ar')}`
+        : `Order #${order.id} payment updated to ${formatPaymentStatus(newPaymentStatus, 'en')}!`;
+      success(msg, title);
+    } catch (err) {
+      toastError(getErrorMessage(err));
+    } finally {
+      setIsUpdatingPayment(false);
     }
   };
 
@@ -122,6 +150,8 @@ export function OrderDetails() {
     return acc + q * p;
   }, 0);
 
+  const totalAmountToDisplay = parseFloat(order.total_amount) > 0 ? parseFloat(order.total_amount) : subtotal;
+
   const isAssignedToCurrentDriver =
     isDriver && order.assigned_driver_id === user?.id;
   const canUpdateStatus = isOwner || isAssignedToCurrentDriver;
@@ -145,13 +175,19 @@ export function OrderDetails() {
             {isRTL ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
           </button>
           <div>
-            <div className="flex items-center gap-2.5">
+            <div className="flex flex-wrap items-center gap-2.5">
               <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
                 <Fish className="w-6 h-6 text-cyan-400" />
                 <span>{t('order_number')} #{order.id}</span>
               </h1>
+              <span className="text-base font-black text-emerald-300 bg-emerald-950/70 px-2.5 py-0.5 rounded-xl border border-emerald-500/40">
+                {formatCurrency(totalAmountToDisplay, language)}
+              </span>
               <Badge variant={getStatusBadgeVariant(order.status)} dot>
                 {formatStatus(order.status, language)}
+              </Badge>
+              <Badge variant={getPaymentBadgeVariant(order.payment_status)}>
+                {formatPaymentStatus(order.payment_status, language)}
               </Badge>
             </div>
             <p className="text-xs text-slate-400 mt-1 flex items-center gap-1.5">
@@ -162,7 +198,7 @@ export function OrderDetails() {
         </div>
 
         {/* Action button: Owner Edit/Assign or Driver Status update */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {isOwner && (
             <Button
               variant="outline"
@@ -201,16 +237,41 @@ export function OrderDetails() {
           )}
 
           {canUpdateStatus && order.status === 'out_for_delivery' && (
-            <Button
-              variant="primary"
-              size="md"
-              icon={CheckCircle2}
-              isLoading={isUpdatingStatus}
-              onClick={() => handleAdvanceStatus('delivered')}
-              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold border-0"
-            >
-              {language === 'ar' ? 'تأكيد تسليم الطلب للعميل' : 'Mark as Delivered'}
-            </Button>
+            order.payment_status !== 'paid' ? (
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="primary"
+                  size="md"
+                  icon={CheckCircle2}
+                  isLoading={isUpdatingStatus}
+                  onClick={() => handleAdvanceStatus('delivered', 'paid')}
+                  className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold border-0"
+                >
+                  {language === 'ar' ? 'تسليم + استلام كاش' : 'Delivered & Paid'}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="md"
+                  icon={Clock}
+                  isLoading={isUpdatingStatus}
+                  onClick={() => handleAdvanceStatus('delivered', 'postpaid')}
+                  className="bg-purple-950/40 border-purple-500/50 text-purple-300 hover:bg-purple-900/50 font-bold"
+                >
+                  {language === 'ar' ? 'تسليم بدون دفع (آجل)' : 'Delivered on Credit'}
+                </Button>
+              </div>
+            ) : (
+              <Button
+                variant="primary"
+                size="md"
+                icon={CheckCircle2}
+                isLoading={isUpdatingStatus}
+                onClick={() => handleAdvanceStatus('delivered')}
+                className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold border-0"
+              >
+                {language === 'ar' ? 'تأكيد تسليم الطلب للعميل' : 'Mark as Delivered'}
+              </Button>
+            )
           )}
         </div>
       </div>
@@ -288,8 +349,118 @@ export function OrderDetails() {
           </Card>
         </div>
 
-        {/* Right column: Customer Profile & Driver Info */}
+        {/* Right column: Payment Card, Customer Profile & Driver Info */}
         <div className="space-y-6">
+          {/* Payment & Collection Card */}
+          <Card>
+            <CardHeader
+              title={t('payment_status')}
+              description={language === 'ar' ? 'تفاصيل المبلغ والتحصيل المالي للطلب' : 'Order payment and collection details'}
+            />
+            <CardBody className="space-y-4 text-xs">
+              <div className="p-3.5 rounded-xl bg-[#030e1a] border border-cyan-900/50 flex items-center justify-between">
+                <div>
+                  <span className="text-slate-400 block text-[11px] mb-0.5">
+                    {t('total_amount_to_pay')}
+                  </span>
+                  <span className="text-xl font-black text-emerald-300">
+                    {formatCurrency(totalAmountToDisplay, language)}
+                  </span>
+                </div>
+                <Badge variant={getPaymentBadgeVariant(order.payment_status)} size="md">
+                  {formatPaymentStatus(order.payment_status, language)}
+                </Badge>
+              </div>
+
+              {/* Status explanation */}
+              <div className={`p-3 rounded-xl border text-xs leading-relaxed ${
+                order.payment_status === 'paid'
+                  ? 'bg-emerald-950/30 border-emerald-500/30 text-emerald-200'
+                  : order.payment_status === 'postpaid'
+                  ? 'bg-purple-950/30 border-purple-500/30 text-purple-200'
+                  : 'bg-amber-950/30 border-amber-500/30 text-amber-200'
+              }`}>
+                <div className="flex items-center gap-1.5 font-bold mb-1">
+                  {order.payment_status === 'paid' && <Receipt className="w-4 h-4 text-emerald-400" />}
+                  {order.payment_status === 'postpaid' && <Clock className="w-4 h-4 text-purple-400" />}
+                  {order.payment_status === 'unpaid' && <Banknote className="w-4 h-4 text-amber-400" />}
+                  <span>{formatPaymentStatus(order.payment_status, language)}</span>
+                </div>
+                <p className="text-[11px] text-slate-300">
+                  {order.payment_status === 'paid' && t('payment_status_paid_desc')}
+                  {order.payment_status === 'postpaid' && t('payment_status_postpaid_desc')}
+                  {order.payment_status === 'unpaid' && t('payment_status_unpaid_desc')}
+                </p>
+                {order.paid_at && (
+                  <p className="text-[10px] text-slate-400 mt-1.5 pt-1.5 border-t border-slate-700/60">
+                    {language === 'ar' ? 'تاريخ وساعة السداد:' : 'Paid timestamp:'} {formatDate(order.paid_at, language)}
+                  </p>
+                )}
+              </div>
+
+              {order.payment_notes && (
+                <div className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs">
+                  <span className="text-slate-400 block text-[10px] mb-0.5 font-bold uppercase">
+                    {t('payment_notes_label')}
+                  </span>
+                  <p className="text-slate-200">{order.payment_notes}</p>
+                </div>
+              )}
+
+              {/* Authority buttons to update payment status */}
+              {(isOwner || isDriver) && (
+                <div className="pt-2 border-t border-cyan-950/80 space-y-2">
+                  <span className="text-[11px] font-bold text-slate-400 block">
+                    {language === 'ar' ? 'تغيير حالة الدفع والتحصيل:' : 'Update Payment Status:'}
+                  </span>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    <button
+                      type="button"
+                      disabled={isUpdatingPayment || order.payment_status === 'paid'}
+                      onClick={() => handleUpdatePayment('paid')}
+                      className={`p-2 rounded-xl text-xs font-bold transition-all flex flex-col items-center justify-center gap-1 ${
+                        order.payment_status === 'paid'
+                          ? 'bg-emerald-600 text-slate-950 font-black ring-2 ring-emerald-400'
+                          : 'bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-900/50'
+                      }`}
+                    >
+                      <Receipt className="w-3.5 h-3.5" />
+                      <span>{language === 'ar' ? 'مدفوع' : 'Paid'}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={isUpdatingPayment || order.payment_status === 'postpaid'}
+                      onClick={() => handleUpdatePayment('postpaid')}
+                      className={`p-2 rounded-xl text-xs font-bold transition-all flex flex-col items-center justify-center gap-1 ${
+                        order.payment_status === 'postpaid'
+                          ? 'bg-purple-600 text-white font-black ring-2 ring-purple-400'
+                          : 'bg-purple-950/40 border border-purple-500/40 text-purple-300 hover:bg-purple-900/50'
+                      }`}
+                    >
+                      <Clock className="w-3.5 h-3.5" />
+                      <span>{language === 'ar' ? 'آجل' : 'Credit'}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={isUpdatingPayment || order.payment_status === 'unpaid'}
+                      onClick={() => handleUpdatePayment('unpaid')}
+                      className={`p-2 rounded-xl text-xs font-bold transition-all flex flex-col items-center justify-center gap-1 ${
+                        order.payment_status === 'unpaid'
+                          ? 'bg-amber-600 text-slate-950 font-black ring-2 ring-amber-400'
+                          : 'bg-amber-950/40 border border-amber-500/40 text-amber-300 hover:bg-amber-900/50'
+                      }`}
+                    >
+                      <Banknote className="w-3.5 h-3.5" />
+                      <span>{language === 'ar' ? 'كاش مطلوب' : 'Unpaid'}</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </CardBody>
+          </Card>
+
           {/* Customer Card */}
           <Card>
             <CardHeader

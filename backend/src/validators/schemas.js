@@ -51,8 +51,13 @@ const createOrder = Joi.object({
       Joi.array().items(Joi.object().unknown(true)).min(1),
       Joi.string().trim().min(1)
     )
-    .required(),
-}).xor('customer_id', 'customer');
+    .optional(),
+  total_amount: Joi.number().min(0).optional(),
+  payment_status: Joi.string().valid('unpaid', 'paid', 'postpaid').optional(),
+  payment_notes: Joi.string().allow(null, '').optional(),
+})
+  .xor('customer_id', 'customer')
+  .or('items', 'total_amount');
 
 const assignOrder = Joi.object({
   driver_id: Joi.number().integer().positive().required(),
@@ -62,6 +67,13 @@ const updateOrderStatus = Joi.object({
   status: Joi.string()
     .valid('preparing', 'out_for_delivery', 'delivered')
     .required(),
+  payment_status: Joi.string().valid('unpaid', 'paid', 'postpaid').optional(),
+  payment_notes: Joi.string().allow(null, '').optional(),
+});
+
+const updatePaymentStatus = Joi.object({
+  payment_status: Joi.string().valid('unpaid', 'paid', 'postpaid').required(),
+  payment_notes: Joi.string().allow(null, '').optional(),
 });
 
 const updateOrder = Joi.object({
@@ -74,6 +86,9 @@ const updateOrder = Joi.object({
       Joi.string().trim().min(1)
     )
     .optional(),
+  total_amount: Joi.number().min(0).optional(),
+  payment_status: Joi.string().valid('unpaid', 'paid', 'postpaid').optional(),
+  payment_notes: Joi.string().allow(null, '').optional(),
   status: Joi.string()
     .valid('preparing', 'out_for_delivery', 'delivered')
     .optional(),
@@ -94,5 +109,6 @@ module.exports = {
   updateOrder,
   assignOrder,
   updateOrderStatus,
+  updatePaymentStatus,
   searchQuery,
 };

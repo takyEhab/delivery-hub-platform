@@ -32,6 +32,10 @@ CREATE TABLE orders (
   customer_id         INTEGER NOT NULL REFERENCES customers (id) ON DELETE RESTRICT,
   assigned_driver_id  INTEGER REFERENCES users (id) ON DELETE SET NULL,
   items               JSONB NOT NULL,
+  total_amount        NUMERIC(10, 2) NOT NULL DEFAULT 0.00,
+  payment_status      VARCHAR(50) NOT NULL DEFAULT 'unpaid',
+  paid_at             TIMESTAMPTZ,
+  payment_notes       TEXT,
   status              order_status NOT NULL DEFAULT 'preparing',
   created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -40,6 +44,7 @@ CREATE TABLE orders (
 CREATE INDEX idx_orders_customer_id ON orders (customer_id);
 CREATE INDEX idx_orders_assigned_driver_id ON orders (assigned_driver_id);
 CREATE INDEX idx_orders_status ON orders (status);
+CREATE INDEX idx_orders_payment_status ON orders (payment_status);
 
 -- Keep updated_at in sync
 CREATE OR REPLACE FUNCTION set_updated_at()

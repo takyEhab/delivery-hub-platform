@@ -10,6 +10,7 @@ import { OrderTable } from '../components/orders/OrderTable';
 import { AssignDriverModal } from '../components/orders/AssignDriverModal';
 import { Button } from '../components/ui/Button';
 import { TableSkeleton } from '../components/ui/Skeleton';
+import { formatCurrency } from '../utils/formatters';
 import {
   Fish,
   Plus,
@@ -20,6 +21,10 @@ import {
   CheckCircle2,
   Clock,
   Flame,
+  Banknote,
+  Receipt,
+  CreditCard,
+  DollarSign,
 } from 'lucide-react';
 
 export function Orders() {
@@ -34,6 +39,7 @@ export function Orders() {
 
   // Filters
   const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'preparing' | 'out_for_delivery' | 'delivered'
+  const [paymentFilter, setPaymentFilter] = useState('all'); // 'all' | 'unpaid' | 'postpaid' | 'paid'
   const [driverFilter, setDriverFilter] = useState('all'); // 'all' | 'unassigned' | <driverId>
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -77,10 +83,30 @@ export function Orders() {
     );
   };
 
+  // Financial Stats
+  const totalUnpaidAmount = orders
+    .filter((o) => o.payment_status === 'unpaid')
+    .reduce((sum, o) => sum + (parseFloat(o.total_amount) || 0), 0);
+  const totalPostpaidAmount = orders
+    .filter((o) => o.payment_status === 'postpaid')
+    .reduce((sum, o) => sum + (parseFloat(o.total_amount) || 0), 0);
+  const totalPaidAmount = orders
+    .filter((o) => o.payment_status === 'paid')
+    .reduce((sum, o) => sum + (parseFloat(o.total_amount) || 0), 0);
+
+  const unpaidCount = orders.filter((o) => o.payment_status === 'unpaid').length;
+  const postpaidCount = orders.filter((o) => o.payment_status === 'postpaid').length;
+  const paidCount = orders.filter((o) => o.payment_status === 'paid').length;
+
   // Client-side filtering across orders
   const filteredOrders = orders.filter((order) => {
     // Status filter
     if (statusFilter !== 'all' && order.status !== statusFilter) {
+      return false;
+    }
+
+    // Payment status filter
+    if (paymentFilter !== 'all' && order.payment_status !== paymentFilter) {
       return false;
     }
 
@@ -113,7 +139,7 @@ export function Orders() {
     return true;
   });
 
-  // Counts for tabs
+  // Counts for status tabs
   const preparingCount = orders.filter((o) => o.status === 'preparing').length;
   const inDeliveryCount = orders.filter((o) => o.status === 'out_for_delivery').length;
   const deliveredCount = orders.filter((o) => o.status === 'delivered').length;
@@ -164,14 +190,98 @@ export function Orders() {
         </div>
       </div>
 
+      {/* Financial Overview Stats Bar */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {/* Unpaid / Cash to collect */}
+        <div
+          onClick={() => setPaymentFilter(paymentFilter === 'unpaid' ? 'all' : 'unpaid')}
+          className={`cursor-pointer p-4 rounded-2xl border transition-all ${
+            paymentFilter === 'unpaid'
+              ? 'bg-amber-950/60 border-amber-400 ring-2 ring-amber-400/30'
+              : 'bg-[#05172b]/90 border-amber-500/30 hover:border-amber-400/60'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+              <Banknote className="w-4 h-4 text-amber-400" />
+              {t('total_unpaid_stat')}
+            </span>
+            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-400/10 text-amber-300 border border-amber-400/20">
+              {unpaidCount}
+            </span>
+          </div>
+          <div className="mt-2 text-2xl font-black text-amber-300">
+            {formatCurrency(totalUnpaidAmount, language)}
+          </div>
+          <p className="text-[11px] text-slate-400 mt-1">
+            {language === 'ar' ? 'مطلوب تحصيله كاش عند تسليم الطلبات' : 'Cash to collect upon delivery'}
+          </p>
+        </div>
+
+        {/* Postpaid / On Credit */}
+        <div
+          onClick={() => setPaymentFilter(paymentFilter === 'postpaid' ? 'all' : 'postpaid')}
+          className={`cursor-pointer p-4 rounded-2xl border transition-all ${
+            paymentFilter === 'postpaid'
+              ? 'bg-purple-950/60 border-purple-400 ring-2 ring-purple-400/30'
+              : 'bg-[#05172b]/90 border-purple-500/30 hover:border-purple-400/60'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-purple-300 flex items-center gap-1.5">
+              <Clock className="w-4 h-4 text-purple-400" />
+              {t('total_postpaid_stat')}
+            </span>
+            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-purple-400/10 text-purple-300 border border-purple-400/20">
+              {postpaidCount}
+            </span>
+          </div>
+          <div className="mt-2 text-2xl font-black text-purple-300">
+            {formatCurrency(totalPostpaidAmount, language)}
+          </div>
+          <p className="text-[11px] text-slate-400 mt-1">
+            {language === 'ar' ? 'تم تسليمها للعميل بدون دفع (على النوتة)' : 'Delivered on credit without payment'}
+          </p>
+        </div>
+
+        {/* Paid / Collected */}
+        <div
+          onClick={() => setPaymentFilter(paymentFilter === 'paid' ? 'all' : 'paid')}
+          className={`cursor-pointer p-4 rounded-2xl border transition-all ${
+            paymentFilter === 'paid'
+              ? 'bg-emerald-950/60 border-emerald-400 ring-2 ring-emerald-400/30'
+              : 'bg-[#05172b]/90 border-emerald-500/30 hover:border-emerald-400/60'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              {language === 'ar' ? 'إجمالي المحصل (مدفوع)' : 'Total Collected (Paid)'}
+            </span>
+            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-400/10 text-emerald-300 border border-emerald-400/20">
+              {paidCount}
+            </span>
+          </div>
+          <div className="mt-2 text-2xl font-black text-emerald-300">
+            {formatCurrency(totalPaidAmount, language)}
+          </div>
+          <p className="text-[11px] text-slate-400 mt-1">
+            {language === 'ar' ? 'طلبات مدفوعة ومحصلة بالكامل' : 'Paid in advance or upon delivery'}
+          </p>
+        </div>
+      </div>
+
       {/* Filter Tabs & Search Bar */}
       <div className="bg-[#05172b]/90 p-4 rounded-2xl border border-cyan-900/40 shadow-xl space-y-3">
         {/* Status Tab Pills */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+          <span className="text-xs font-bold text-slate-400 shrink-0">
+            {language === 'ar' ? 'حالة التوصيل:' : 'Delivery Status:'}
+          </span>
           <button
             type="button"
             onClick={() => setStatusFilter('all')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
               statusFilter === 'all'
                 ? 'bg-cyan-500 text-slate-950 shadow-md'
                 : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800 hover:text-white'
@@ -183,7 +293,7 @@ export function Orders() {
           <button
             type="button"
             onClick={() => setStatusFilter('preparing')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
               statusFilter === 'preparing'
                 ? 'bg-amber-500 text-slate-950 shadow-md'
                 : 'bg-amber-950/40 text-amber-300 border border-amber-500/30 hover:bg-amber-900/40'
@@ -196,7 +306,7 @@ export function Orders() {
           <button
             type="button"
             onClick={() => setStatusFilter('out_for_delivery')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
               statusFilter === 'out_for_delivery'
                 ? 'bg-sky-500 text-slate-950 shadow-md'
                 : 'bg-sky-950/40 text-sky-300 border border-sky-500/30 hover:bg-sky-900/40'
@@ -209,7 +319,7 @@ export function Orders() {
           <button
             type="button"
             onClick={() => setStatusFilter('delivered')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
               statusFilter === 'delivered'
                 ? 'bg-emerald-500 text-slate-950 shadow-md'
                 : 'bg-emerald-950/40 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-900/40'
@@ -217,6 +327,65 @@ export function Orders() {
           >
             <CheckCircle2 className="w-3.5 h-3.5" />
             {t('filter_delivered')} ({deliveredCount})
+          </button>
+        </div>
+
+        {/* Payment Status Tab Pills */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none pt-2 border-t border-cyan-950/60">
+          <span className="text-xs font-bold text-slate-400 shrink-0 flex items-center gap-1">
+            <Banknote className="w-3.5 h-3.5 text-cyan-400" />
+            {language === 'ar' ? 'حالة الدفع:' : 'Payment:'}
+          </span>
+
+          <button
+            type="button"
+            onClick={() => setPaymentFilter('all')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+              paymentFilter === 'all'
+                ? 'bg-teal-500 text-slate-950 shadow-md'
+                : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800 hover:text-white'
+            }`}
+          >
+            {t('filter_all_payments')}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setPaymentFilter('unpaid')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+              paymentFilter === 'unpaid'
+                ? 'bg-amber-500 text-slate-950 shadow-md'
+                : 'bg-amber-950/40 text-amber-300 border border-amber-500/30 hover:bg-amber-900/40'
+            }`}
+          >
+            <Banknote className="w-3 h-3" />
+            {t('filter_unpaid')} ({unpaidCount})
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setPaymentFilter('postpaid')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+              paymentFilter === 'postpaid'
+                ? 'bg-purple-500 text-white shadow-md'
+                : 'bg-purple-950/40 text-purple-300 border border-purple-500/30 hover:bg-purple-900/40'
+            }`}
+          >
+            <Clock className="w-3 h-3" />
+            {t('filter_postpaid')} ({postpaidCount})
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setPaymentFilter('paid')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+              paymentFilter === 'paid'
+                ? 'bg-emerald-500 text-slate-950 shadow-md'
+                : 'bg-emerald-950/40 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-900/40'
+            }`}
+          >
+            <Receipt className="w-3 h-3" />
+            {t('filter_paid')} ({paidCount})
           </button>
         </div>
 
