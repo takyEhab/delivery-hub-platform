@@ -10,6 +10,9 @@ function errorHandler(err, req, res, next) {
   }
 
   if (err.code === '23505') {
+    if (err.constraint === 'idx_customers_phone_unique' || err.detail?.includes('phone')) {
+      return res.status(400).json({ error: 'A customer with this phone number already exists' });
+    }
     return res.status(400).json({ error: 'A record with that value already exists' });
   }
 

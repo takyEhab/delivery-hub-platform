@@ -1,4 +1,5 @@
 const db = require('../../config/db');
+const { normalizePhone } = require('../../utils/phone');
 
 async function listAll() {
   const { rows } = await db.query(
@@ -28,12 +29,23 @@ async function findById(id) {
   return rows[0] || null;
 }
 
+async function findByPhone(phone) {
+  if (!phone) return null;
+  const normalized = normalizePhone(phone);
+  const { rows } = await db.query(
+    'SELECT id, name, phone, address, notes, created_at FROM customers WHERE phone = $1 OR phone = $2 LIMIT 1',
+    [normalized, phone]
+  );
+  return rows[0] || null;
+}
+
 async function create({ name, phone, address, notes }) {
+  const normalized = normalizePhone(phone);
   const { rows } = await db.query(
     `INSERT INTO customers (name, phone, address, notes)
      VALUES ($1, $2, $3, $4)
      RETURNING id, name, phone, address, notes, created_at`,
-    [name, phone, address || null, notes || null]
+    [name, normalized, address || null, notes || null]
   );
   return rows[0];
 }
@@ -46,8 +58,9 @@ async function update(id, fields) {
 
   for (const key of allowed) {
     if (fields[key] !== undefined) {
+      const val = key === 'phone' ? normalizePhone(fields[key]) : fields[key];
       sets.push(`${key} = $${i++}`);
-      values.push(fields[key]);
+      values.push(val);
     }
   }
 
@@ -92,6 +105,7 @@ module.exports = {
   listAll,
   search,
   findById,
+  findByPhone,
   create,
   update,
   deleteCustomer,

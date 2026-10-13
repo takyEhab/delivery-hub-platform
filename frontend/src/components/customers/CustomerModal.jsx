@@ -5,10 +5,18 @@ import { Button } from '../ui/Button';
 import { createCustomer, updateCustomer } from '../../api/customers';
 import { getErrorMessage } from '../../api/client';
 import { useToast } from '../../hooks/useToast';
-import { isContactPickerSupported, selectContact } from '../../utils/contacts';
+import { isContactPickerSupported, selectContact, normalizePhone } from '../../utils/contacts';
 import { Smartphone, User, Phone, MapPin, FileText, UserCheck, Trash2 } from 'lucide-react';
 
-export function CustomerModal({ isOpen, onClose, customer, onSuccess, onDelete, isOwner }) {
+export function CustomerModal({
+  isOpen,
+  onClose,
+  customer,
+  existingCustomers = [],
+  onSuccess,
+  onDelete,
+  isOwner,
+}) {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -18,7 +26,7 @@ export function CustomerModal({ isOpen, onClose, customer, onSuccess, onDelete, 
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [isPickingContact, setIsPickingContact] = useState(false);
-  const { success, error: toastError, info } = useToast();
+  const { success, error: toastError, warning, info } = useToast();
   const isEditing = Boolean(customer?.id);
 
   useEffect(() => {
@@ -53,13 +61,36 @@ export function CustomerModal({ isOpen, onClose, customer, onSuccess, onDelete, 
     try {
       const contact = await selectContact();
       if (contact) {
+        const norm = normalizePhone(contact.phone);
+        const existingMatch = (existingCustomers || []).find((c) => {
+          if (isEditing && c.id === customer?.id) return false;
+          return normalizePhone(c.phone) === norm;
+        });
+
         setFormData((prev) => ({
           ...prev,
           name: contact.name || prev.name,
           phone: contact.phone || prev.phone,
           address: contact.address || prev.address,
         }));
-        success(`Autofilled ${contact.name} (${contact.phone})!`, 'Contact Selected');
+
+        if (existingMatch) {
+          setErrors((prev) => ({
+            ...prev,
+            phone: `This phone is already registered to "${existingMatch.name}".`,
+          }));
+          warning(
+            `This contact's phone is already registered to "${existingMatch.name}". Only 1 customer per phone number is allowed.`,
+            'Duplicate Phone Number'
+          );
+        } else {
+          setErrors((prev) => {
+            const copy = { ...prev };
+            delete copy.phone;
+            return copy;
+          });
+          success(`Autofilled ${contact.name} (${contact.phone})!`, 'Contact Selected');
+        }
       }
     } catch (err) {
       toastError(err.message || 'Failed to select contact');
@@ -71,10 +102,22 @@ export function CustomerModal({ isOpen, onClose, customer, onSuccess, onDelete, 
   const validate = () => {
     const errs = {};
     if (!formData.name.trim()) errs.name = 'Customer name is required';
-    if (!formData.phone.trim()) errs.phone = 'Phone number is required';
-    else if (formData.phone.trim().length < 3)
+    if (!formData.phone.trim()) {
+      errs.phone = 'Phone number is required';
+    } else if (formData.phone.trim().length < 3) {
       errs.phone = 'Phone number must be at least 3 characters';
-    
+    } else {
+      // Check phone uniqueness against existing customers
+      const norm = normalizePhone(formData.phone);
+      const existingMatch = (existingCustomers || []).find((c) => {
+        if (isEditing && c.id === customer?.id) return false;
+        return normalizePhone(c.phone) === norm;
+      });
+      if (existingMatch) {
+        errs.phone = `This phone number is already registered to "${existingMatch.name}".`;
+      }
+    }
+
     // Note: address is optional per user request
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -85,12 +128,13 @@ export function CustomerModal({ isOpen, onClose, customer, onSuccess, onDelete, 
     if (!validate()) return;
 
     setIsLoading(true);
+    const normPhone = normalizePhone(formData.phone);
     try {
       let saved;
       if (isEditing) {
         saved = await updateCustomer(customer.id, {
           name: formData.name.trim(),
-          phone: formData.phone.trim(),
+          phone: normPhone,
           address: formData.address?.trim() || null,
           notes: formData.notes?.trim() || null,
         });
@@ -98,7 +142,7 @@ export function CustomerModal({ isOpen, onClose, customer, onSuccess, onDelete, 
       } else {
         saved = await createCustomer({
           name: formData.name.trim(),
-          phone: formData.phone.trim(),
+          phone: normPhone,
           address: formData.address?.trim() || null,
           notes: formData.notes?.trim() || null,
         });
@@ -107,7 +151,11 @@ export function CustomerModal({ isOpen, onClose, customer, onSuccess, onDelete, 
       onSuccess(saved);
       onClose();
     } catch (err) {
-      toastError(getErrorMessage(err));
+      const errMsg = getErrorMessage(err);
+      toastError(errMsg);
+      if (errMsg.toLowerCase().includes('phone') || errMsg.toLowerCase().includes('already exists')) {
+        setErrors((prev) => ({ ...prev, phone: errMsg }));
+      }
     } finally {
       setIsLoading(false);
     }

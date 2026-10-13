@@ -238,6 +238,7 @@ export function Customers() {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         customer={editingCustomer}
+        existingCustomers={customers}
         onSuccess={handleSuccess}
         onDelete={handleDeleteClick}
         isOwner={isOwner}
@@ -251,6 +252,7 @@ export function Customers() {
           setImportedContacts([]);
         }}
         contacts={importedContacts}
+        existingCustomers={customers}
         onSuccess={handleSuccess}
       />
 

@@ -29,8 +29,16 @@ async function createOrder(req, res, next) {
     let customerId = req.body.customer_id;
 
     if (req.body.customer) {
-      const created = await customersQueries.create(req.body.customer);
-      customerId = created.id;
+      const existing = await customersQueries.findByPhone(req.body.customer.phone);
+      if (existing) {
+        customerId = existing.id;
+        if (req.body.customer.address && !existing.address) {
+          await customersQueries.update(existing.id, { address: req.body.customer.address });
+        }
+      } else {
+        const created = await customersQueries.create(req.body.customer);
+        customerId = created.id;
+      }
     } else {
       const customer = await customersQueries.findById(customerId);
       if (!customer) {

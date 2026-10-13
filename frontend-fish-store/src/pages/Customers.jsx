@@ -248,6 +248,7 @@ export function Customers() {
       <CustomerModal
         isOpen={modalOpen}
         customer={editingCustomer}
+        existingCustomers={customers}
         onClose={() => {
           setModalOpen(false);
           setEditingCustomer(null);
@@ -261,6 +262,7 @@ export function Customers() {
       <ImportContactsModal
         isOpen={importModalOpen}
         contacts={importedContacts}
+        existingCustomers={customers}
         onClose={() => {
           setImportModalOpen(false);
           setImportedContacts([]);

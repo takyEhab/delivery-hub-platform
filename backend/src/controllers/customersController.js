@@ -22,7 +22,15 @@ async function searchCustomers(req, res, next) {
 
 async function createCustomer(req, res, next) {
   try {
-    const customer = await customersQueries.create(req.body);
+    const { name, phone, address, notes } = req.body;
+    const existing = await customersQueries.findByPhone(phone);
+    if (existing) {
+      throw new AppError(
+        `A customer with this phone number already exists (${existing.name})`,
+        400
+      );
+    }
+    const customer = await customersQueries.create({ name, phone, address, notes });
     res.status(201).json({ customer });
   } catch (err) {
     next(err);
@@ -32,10 +40,24 @@ async function createCustomer(req, res, next) {
 async function updateCustomer(req, res, next) {
   try {
     const { id } = req.params;
-    const customer = await customersQueries.update(id, req.body);
-    if (!customer) {
+    const { phone } = req.body;
+
+    const current = await customersQueries.findById(id);
+    if (!current) {
       throw new AppError('Customer not found', 404);
     }
+
+    if (phone) {
+      const existing = await customersQueries.findByPhone(phone);
+      if (existing && String(existing.id) !== String(id)) {
+        throw new AppError(
+          `Another customer with this phone number already exists (${existing.name})`,
+          400
+        );
+      }
+    }
+
+    const customer = await customersQueries.update(id, req.body);
     res.json({ customer });
   } catch (err) {
     next(err);

@@ -6,10 +6,18 @@ import { createCustomer, updateCustomer } from '../../api/customers';
 import { getErrorMessage } from '../../api/client';
 import { useToast } from '../../hooks/useToast';
 import { useLanguage } from '../../context/LanguageContext';
-import { isContactPickerSupported, selectContact } from '../../utils/contacts';
+import { isContactPickerSupported, selectContact, normalizePhone } from '../../utils/contacts';
 import { Smartphone, User, Phone, MapPin, FileText, UserCheck, Trash2 } from 'lucide-react';
 
-export function CustomerModal({ isOpen, onClose, customer, onSuccess, onDelete, isOwner }) {
+export function CustomerModal({
+  isOpen,
+  onClose,
+  customer,
+  existingCustomers = [],
+  onSuccess,
+  onDelete,
+  isOwner,
+}) {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -19,7 +27,7 @@ export function CustomerModal({ isOpen, onClose, customer, onSuccess, onDelete, 
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [isPickingContact, setIsPickingContact] = useState(false);
-  const { success, error: toastError, info } = useToast();
+  const { success, error: toastError, warning, info } = useToast();
   const { t, language } = useLanguage();
   const isEditing = Boolean(customer?.id);
 
@@ -57,13 +65,41 @@ export function CustomerModal({ isOpen, onClose, customer, onSuccess, onDelete, 
     try {
       const contact = await selectContact();
       if (contact) {
+        const norm = normalizePhone(contact.phone);
+        const existingMatch = (existingCustomers || []).find((c) => {
+          if (isEditing && c.id === customer?.id) return false;
+          return normalizePhone(c.phone) === norm;
+        });
+
         setFormData((prev) => ({
           ...prev,
           name: contact.name || prev.name,
           phone: contact.phone || prev.phone,
           address: contact.address || prev.address,
         }));
-        success(language === 'ar' ? `تم استيراد: ${contact.name}` : `Imported ${contact.name}!`);
+
+        if (existingMatch) {
+          setErrors((prev) => ({
+            ...prev,
+            phone:
+              language === 'ar'
+                ? `رقم الهاتف مسجل بالفعل باسم "${existingMatch.name}". لا يمكن تكرار رقم الهاتف.`
+                : `This phone is already registered to "${existingMatch.name}".`,
+          }));
+          warning(
+            language === 'ar'
+              ? `رقم الهاتف مسجل مسبقاً باسم "${existingMatch.name}". غير مسموح بتكرار رقم الهاتف.`
+              : `This contact is already registered to "${existingMatch.name}". Only 1 customer per phone is allowed.`,
+            language === 'ar' ? 'رقم مكرر' : 'Duplicate Phone'
+          );
+        } else {
+          setErrors((prev) => {
+            const copy = { ...prev };
+            delete copy.phone;
+            return copy;
+          });
+          success(language === 'ar' ? `تم استيراد: ${contact.name}` : `Imported ${contact.name}!`);
+        }
       }
     } catch (err) {
       toastError(err.message || 'Failed to select contact from device');
@@ -79,7 +115,21 @@ export function CustomerModal({ isOpen, onClose, customer, onSuccess, onDelete, 
     }
     if (!formData.phone.trim()) {
       errs.phone = language === 'ar' ? 'رقم الهاتف مطلوب' : 'Phone number is required';
+    } else {
+      // Check phone uniqueness against existing customers
+      const norm = normalizePhone(formData.phone);
+      const existingMatch = (existingCustomers || []).find((c) => {
+        if (isEditing && c.id === customer?.id) return false;
+        return normalizePhone(c.phone) === norm;
+      });
+      if (existingMatch) {
+        errs.phone =
+          language === 'ar'
+            ? `رقم الهاتف مسجل بالفعل باسم "${existingMatch.name}". لا يمكن تسجيل أكثر من عميل بنفس الرقم.`
+            : `This phone number is already registered to "${existingMatch.name}".`;
+      }
     }
+
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -89,26 +139,38 @@ export function CustomerModal({ isOpen, onClose, customer, onSuccess, onDelete, 
     if (!validate()) return;
 
     setIsLoading(true);
+    const normPhone = normalizePhone(formData.phone);
+    const payload = {
+      name: formData.name.trim(),
+      phone: normPhone,
+      address: formData.address?.trim() || null,
+      notes: formData.notes?.trim() || null,
+    };
+
     try {
       if (isEditing) {
-        await updateCustomer(customer.id, formData);
+        await updateCustomer(customer.id, payload);
         const title = language === 'ar' ? 'تم التحديث بنجاح' : 'Customer Updated';
         const msg = language === 'ar'
-          ? `تم تحديث بيانات العميل ${formData.name} بنجاح!`
-          : `Customer ${formData.name} updated successfully!`;
+          ? `تم تحديث بيانات العميل ${payload.name} بنجاح!`
+          : `Customer ${payload.name} updated successfully!`;
         success(msg, title);
       } else {
-        await createCustomer(formData);
+        await createCustomer(payload);
         const title = language === 'ar' ? 'تمت الإضافة بنجاح' : 'Customer Created';
         const msg = language === 'ar'
-          ? `تمت إضافة العميل الجديد ${formData.name} بنجاح!`
-          : `Customer ${formData.name} added successfully!`;
+          ? `تمت إضافة العميل الجديد ${payload.name} بنجاح!`
+          : `Customer ${payload.name} added successfully!`;
         success(msg, title);
       }
       onSuccess();
       onClose();
     } catch (err) {
-      toastError(getErrorMessage(err));
+      const errMsg = getErrorMessage(err);
+      toastError(errMsg);
+      if (errMsg.toLowerCase().includes('phone') || errMsg.toLowerCase().includes('already exists') || errMsg.includes('مسجل')) {
+        setErrors((prev) => ({ ...prev, phone: errMsg }));
+      }
     } finally {
       setIsLoading(false);
     }
