@@ -34,7 +34,7 @@ export function CustomerTable({ customers, onEdit, isOwner }) {
               <th className="py-4 px-4">{t('address')}</th>
               <th className="py-4 px-4">{t('notes')}</th>
               <th className="py-4 px-4">{language === 'ar' ? 'تاريخ التسجيل' : 'Registered'}</th>
-              {onEdit && <th className="py-4 px-5 text-left rtl:text-left ltr:text-right">{t('actions')}</th>}
+              {isOwner && <th className="py-4 px-5 text-left rtl:text-left ltr:text-right">{t('actions')}</th>}
             </tr>
           </thead>
           <tbody className="divide-y divide-cyan-950/60 text-slate-200">
@@ -105,7 +105,7 @@ export function CustomerTable({ customers, onEdit, isOwner }) {
                   {formatDate(c.created_at, language)}
                 </td>
 
-                {onEdit && (
+                {isOwner && (
                   <td className="py-3.5 px-5 text-left rtl:text-left ltr:text-right whitespace-nowrap">
                     <Button
                       variant="outline"
@@ -138,7 +138,7 @@ export function CustomerTable({ customers, onEdit, isOwner }) {
                   <p className="text-[11px] text-cyan-400 font-mono">ID #{c.id}</p>
                 </div>
               </div>
-              {onEdit && (
+              {isOwner && (
                 <Button
                   variant="outline"
                   size="sm"

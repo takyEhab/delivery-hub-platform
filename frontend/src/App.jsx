@@ -57,16 +57,16 @@ export function App() {
             </ProtectedRoute>
           }
         />
-
-        {/* Shared routes (Owner & Driver) */}
         <Route
           path="/customers"
           element={
-            <ProtectedRoute allowedRoles={['owner', 'driver']}>
+            <ProtectedRoute allowedRoles={['owner']}>
               <Customers />
             </ProtectedRoute>
           }
         />
+
+        {/* Shared routes (Owner & Driver) */}
         <Route
           path="/orders"
           element={

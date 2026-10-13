@@ -14,11 +14,12 @@ router.use(authenticate);
 
 router.get(
   '/search',
+  authorize('owner'),
   validate(searchQuery, 'query'),
   customersController.searchCustomers
 );
 
-router.get('/', customersController.listCustomers);
+router.get('/', authorize('owner'), customersController.listCustomers);
 
 router.post(
   '/',

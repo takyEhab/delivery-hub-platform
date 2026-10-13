@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Navigate } from 'react-router-dom';
 import { listCustomers, searchCustomers, deleteCustomer } from '../api/customers';
 import { getErrorMessage } from '../api/client';
 import { useToast } from '../hooks/useToast';
@@ -15,6 +16,9 @@ import { isContactPickerSupported, selectMultipleContacts } from '../utils/conta
 
 export function Customers() {
   const { isOwner } = useAuth();
+  if (!isOwner) {
+    return <Navigate to="/orders" replace />;
+  }
   const { error: toastError, info, success: toastSuccess } = useToast();
 
   const [customers, setCustomers] = useState([]);

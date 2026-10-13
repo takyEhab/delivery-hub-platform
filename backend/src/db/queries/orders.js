@@ -248,6 +248,14 @@ async function update(orderId, { customerId, assignedDriverId, items, status, to
   return findById(orderId);
 }
 
+async function isCustomerAssignedToDriver(customerId, driverId) {
+  const { rows } = await db.query(
+    'SELECT 1 FROM orders WHERE customer_id = $1 AND assigned_driver_id = $2 LIMIT 1',
+    [customerId, driverId]
+  );
+  return rows.length > 0;
+}
+
 module.exports = {
   create,
   findById,
@@ -257,4 +265,5 @@ module.exports = {
   updateStatus,
   updatePayment,
   update,
+  isCustomerAssignedToDriver,
 };
