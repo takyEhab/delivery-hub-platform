@@ -14,7 +14,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { OrderCard } from './OrderCard';
 import { Fish, Truck, Phone, ChevronRight, User, Edit3, Banknote } from 'lucide-react';
 
-export function OrderTable({ orders, onAssignClick, onStatusUpdated, isOwner, isDriver }) {
+export function OrderTable({ orders, onAssignClick, onStatusUpdated, onEditCustomer, isOwner, isDriver }) {
   const { t, language } = useLanguage();
 
   if (!orders || orders.length === 0) {
@@ -77,9 +77,21 @@ export function OrderTable({ orders, onAssignClick, onStatusUpdated, isOwner, is
                     </td>
 
                     <td className="py-3.5 px-4">
-                      <p className="font-bold text-white text-xs">
-                        {order.customer?.name}
-                      </p>
+                      <div className="flex items-center gap-1.5">
+                        <p className="font-bold text-white text-xs">
+                          {order.customer?.name}
+                        </p>
+                        {onEditCustomer && order.customer && (
+                          <button
+                            type="button"
+                            onClick={() => onEditCustomer(order.customer)}
+                            className="text-cyan-400 hover:text-white p-0.5 rounded hover:bg-cyan-950/60 transition-colors"
+                            title={language === 'ar' ? 'تعديل موقع وملاحظات العميل' : 'Edit customer location & notes'}
+                          >
+                            <Edit3 className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
                       {order.customer?.phone && (
                         <a
                           href={`tel:${order.customer.phone}`}
@@ -182,6 +194,7 @@ export function OrderTable({ orders, onAssignClick, onStatusUpdated, isOwner, is
             isDriver={isDriver}
             onStatusUpdated={onStatusUpdated}
             onAssignClick={onAssignClick}
+            onEditCustomer={onEditCustomer}
           />
         ))}
       </div>

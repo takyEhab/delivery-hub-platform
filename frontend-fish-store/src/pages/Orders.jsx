@@ -8,6 +8,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useLanguage } from '../context/LanguageContext';
 import { OrderTable } from '../components/orders/OrderTable';
 import { AssignDriverModal } from '../components/orders/AssignDriverModal';
+import { CustomerModal } from '../components/customers/CustomerModal';
 import { Button } from '../components/ui/Button';
 import { TableSkeleton } from '../components/ui/Skeleton';
 import { formatCurrency } from '../utils/formatters';
@@ -46,6 +47,15 @@ export function Orders() {
   // Assign Modal
   const [assignModalOpen, setAssignModalOpen] = useState(false);
   const [selectedOrderForAssign, setSelectedOrderForAssign] = useState(null);
+
+  // Customer Edit Modal
+  const [editingCustomerForOrder, setEditingCustomerForOrder] = useState(null);
+  const [customerModalOpen, setCustomerModalOpen] = useState(false);
+
+  const handleEditCustomer = (customer) => {
+    setEditingCustomerForOrder(customer);
+    setCustomerModalOpen(true);
+  };
 
   const fetchOrders = useCallback(async () => {
     setIsLoading(true);
@@ -438,6 +448,7 @@ export function Orders() {
           orders={filteredOrders}
           onAssignClick={handleAssignClick}
           onStatusUpdated={handleStatusUpdated}
+          onEditCustomer={handleEditCustomer}
           isOwner={isOwner}
           isDriver={isDriver}
         />
@@ -453,6 +464,24 @@ export function Orders() {
             setSelectedOrderForAssign(null);
           }}
           onSuccess={() => fetchOrders()}
+        />
+      )}
+
+      {/* Edit Customer Modal */}
+      {editingCustomerForOrder && (
+        <CustomerModal
+          isOpen={customerModalOpen}
+          customer={editingCustomerForOrder}
+          onClose={() => {
+            setCustomerModalOpen(false);
+            setEditingCustomerForOrder(null);
+          }}
+          isOwner={isOwner}
+          onSuccess={() => {
+            fetchOrders();
+            setCustomerModalOpen(false);
+            setEditingCustomerForOrder(null);
+          }}
         />
       )}
     </div>

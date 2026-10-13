@@ -172,22 +172,23 @@ export function CustomerModal({
     };
 
     try {
+      let result = null;
       if (isEditing) {
-        await updateCustomer(customer.id, payload);
+        result = await updateCustomer(customer.id, payload);
         const title = language === 'ar' ? 'تم التحديث بنجاح' : 'Customer Updated';
         const msg = language === 'ar'
           ? `تم تحديث بيانات العميل ${payload.name} بنجاح!`
           : `Customer ${payload.name} updated successfully!`;
         success(msg, title);
       } else {
-        await createCustomer(payload);
+        result = await createCustomer(payload);
         const title = language === 'ar' ? 'تمت الإضافة بنجاح' : 'Customer Created';
         const msg = language === 'ar'
           ? `تمت إضافة العميل الجديد ${payload.name} بنجاح!`
           : `Customer ${payload.name} added successfully!`;
         success(msg, title);
       }
-      onSuccess();
+      if (onSuccess) onSuccess(result);
       onClose();
     } catch (err) {
       const errMsg = getErrorMessage(err);

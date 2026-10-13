@@ -11,6 +11,7 @@ import { Badge } from '../components/ui/Badge';
 import { OrderStatusTimeline } from '../components/orders/OrderStatusTimeline';
 import { AssignDriverModal } from '../components/orders/AssignDriverModal';
 import { EditOrderModal } from '../components/orders/EditOrderModal';
+import { CustomerModal } from '../components/customers/CustomerModal';
 import {
   formatStatus,
   getStatusBadgeVariant,
@@ -35,6 +36,7 @@ import {
   Fish,
   Flame,
   Edit,
+  Edit3,
   Navigation,
   Banknote,
   Receipt,
@@ -56,6 +58,7 @@ export function OrderDetails() {
   const [isUpdatingPayment, setIsUpdatingPayment] = useState(false);
   const [assignModalOpen, setAssignModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [customerModalOpen, setCustomerModalOpen] = useState(false);
 
   const fetchOrderDetails = useCallback(async () => {
     setIsLoading(true);
@@ -467,6 +470,19 @@ export function OrderDetails() {
             <CardHeader
               title={t('customer')}
               description={`ID #${order.customer?.id}`}
+              action={
+                order.customer && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    icon={Edit3}
+                    onClick={() => setCustomerModalOpen(true)}
+                    className="text-xs py-1 px-2.5 border-cyan-800/60 text-cyan-300 hover:bg-cyan-950/40"
+                  >
+                    {language === 'ar' ? 'تعديل العنوان والملاحظات' : 'Edit Location & Notes'}
+                  </Button>
+                )
+              }
             />
             <CardBody className="space-y-3.5 text-xs">
               <div className="flex items-center gap-3">
@@ -607,6 +623,30 @@ export function OrderDetails() {
         onClose={() => setEditModalOpen(false)}
         onOrderUpdated={(updated) => setOrder(updated)}
       />
+
+      {/* Edit Customer Modal */}
+      {order.customer && (
+        <CustomerModal
+          isOpen={customerModalOpen}
+          customer={order.customer}
+          onClose={() => setCustomerModalOpen(false)}
+          isOwner={isOwner}
+          onSuccess={(updatedCustomer) => {
+            if (updatedCustomer) {
+              setOrder((prev) => ({
+                ...prev,
+                customer: {
+                  ...prev.customer,
+                  ...updatedCustomer,
+                },
+              }));
+            } else {
+              fetchOrderDetails();
+            }
+            setCustomerModalOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 }

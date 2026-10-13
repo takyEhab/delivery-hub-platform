@@ -9,6 +9,7 @@ import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { OrderStatusTimeline } from '../components/orders/OrderStatusTimeline';
 import { AssignDriverModal } from '../components/orders/AssignDriverModal';
+import { CustomerModal } from '../components/customers/CustomerModal';
 import {
   formatStatus,
   getStatusBadgeVariant,
@@ -28,6 +29,7 @@ import {
   Calendar,
   AlertCircle,
   Navigation,
+  Edit,
 } from 'lucide-react';
 import { buildGoogleMapsUrl } from '../utils/location';
 
@@ -41,6 +43,7 @@ export function OrderDetails() {
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [assignModalOpen, setAssignModalOpen] = useState(false);
+  const [customerModalOpen, setCustomerModalOpen] = useState(false);
 
   const fetchOrderDetails = useCallback(async () => {
     setIsLoading(true);
@@ -278,6 +281,19 @@ export function OrderDetails() {
             <CardHeader
               title="Customer Details"
               description={`ID #${order.customer?.id}`}
+              action={
+                order.customer && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    icon={Edit}
+                    onClick={() => setCustomerModalOpen(true)}
+                    className="text-xs py-1 px-2.5"
+                  >
+                    Edit Location & Notes
+                  </Button>
+                )
+              }
             />
             <CardBody className="space-y-3.5 text-xs">
               <div className="flex items-center gap-3">
@@ -409,6 +425,30 @@ export function OrderDetails() {
         onClose={() => setAssignModalOpen(false)}
         onSuccess={(updated) => setOrder(updated)}
       />
+
+      {/* Edit Customer Modal */}
+      {order.customer && (
+        <CustomerModal
+          isOpen={customerModalOpen}
+          customer={order.customer}
+          onClose={() => setCustomerModalOpen(false)}
+          isOwner={isOwner}
+          onSuccess={(updatedCustomer) => {
+            if (updatedCustomer) {
+              setOrder((prev) => ({
+                ...prev,
+                customer: {
+                  ...prev.customer,
+                  ...updatedCustomer,
+                },
+              }));
+            } else {
+              fetchOrderDetails();
+            }
+            setCustomerModalOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 }

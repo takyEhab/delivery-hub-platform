@@ -41,6 +41,7 @@ export function OrderCard({
   isOwner = false,
   onStatusUpdated,
   onAssignClick,
+  onEditCustomer,
 }) {
   const [isUpdating, setIsUpdating] = useState(false);
   const { success, error: toastError } = useToast();
@@ -140,20 +141,33 @@ export function OrderCard({
       {/* Customer and address section */}
       <div className="bg-[#030e1a]/80 rounded-xl p-3 border border-cyan-950/60 space-y-2 text-xs">
         <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 font-bold text-white">
+          <div className="flex items-center gap-1.5 font-bold text-white min-w-0">
             <User className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
             <span className="truncate">{order.customer?.name}</span>
           </div>
-          {order.customer?.phone && (
-            <a
-              href={`tel:${order.customer.phone}`}
-              className="inline-flex items-center gap-1 text-cyan-300 bg-cyan-950/60 hover:bg-cyan-900/60 px-2 py-0.5 rounded-lg font-semibold transition-colors border border-cyan-800/40"
-              dir="ltr"
-            >
-              <Phone className="w-3 h-3 text-cyan-400" />
-              <span>{order.customer.phone}</span>
-            </a>
-          )}
+          <div className="flex items-center gap-1.5 shrink-0">
+            {onEditCustomer && order.customer && (
+              <button
+                type="button"
+                onClick={() => onEditCustomer(order.customer)}
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-cyan-300 hover:text-white bg-cyan-950/70 hover:bg-cyan-900/80 px-2 py-0.5 rounded-lg border border-cyan-800/40 transition-colors"
+                title={language === 'ar' ? 'تعديل موقع وملاحظات العميل' : 'Edit customer location & notes'}
+              >
+                <Edit3 className="w-3 h-3 text-cyan-400" />
+                <span>{language === 'ar' ? 'تعديل' : 'Edit'}</span>
+              </button>
+            )}
+            {order.customer?.phone && (
+              <a
+                href={`tel:${order.customer.phone}`}
+                className="inline-flex items-center gap-1 text-cyan-300 bg-cyan-950/60 hover:bg-cyan-900/60 px-2 py-0.5 rounded-lg font-semibold transition-colors border border-cyan-800/40"
+                dir="ltr"
+              >
+                <Phone className="w-3 h-3 text-cyan-400" />
+                <span>{order.customer.phone}</span>
+              </a>
+            )}
+          </div>
         </div>
 
         {(() => {

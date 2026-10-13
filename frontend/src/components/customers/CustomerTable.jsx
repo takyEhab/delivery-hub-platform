@@ -44,7 +44,7 @@ export function CustomerTable({ customers, onEdit, onDelete, isOwner }) {
               <th className="py-3.5 px-4">Address</th>
               <th className="py-3.5 px-4">Notes</th>
               <th className="py-3.5 px-4">Registered</th>
-              {isOwner && <th className="py-3.5 px-5 text-right">Actions</th>}
+              {onEdit && <th className="py-3.5 px-5 text-right">Actions</th>}
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 text-slate-700">
@@ -121,7 +121,7 @@ export function CustomerTable({ customers, onEdit, onDelete, isOwner }) {
                   {formatDate(c.created_at)}
                 </td>
 
-                {isOwner && (
+                {onEdit && (
                   <td className="py-3.5 px-5 text-right relative">
                     <div className="flex items-center justify-end gap-1.5">
                       <Button
@@ -135,7 +135,8 @@ export function CustomerTable({ customers, onEdit, onDelete, isOwner }) {
                       </Button>
 
                       {/* Not easily accessible: tucked inside a discreet dropdown menu */}
-                      <div className="relative inline-block text-left" ref={activeMenuId === c.id ? menuRef : null}>
+                      {isOwner && onDelete && (
+                        <div className="relative inline-block text-left" ref={activeMenuId === c.id ? menuRef : null}>
                         <button
                           type="button"
                           onClick={(e) => {
@@ -167,7 +168,8 @@ export function CustomerTable({ customers, onEdit, onDelete, isOwner }) {
                             </button>
                           </div>
                         )}
-                      </div>
+                        </div>
+                      )}
                     </div>
                   </td>
                 )}
@@ -191,7 +193,7 @@ export function CustomerTable({ customers, onEdit, onDelete, isOwner }) {
                   <p className="text-[11px] text-slate-400">ID #{c.id}</p>
                 </div>
               </div>
-              {isOwner && (
+              {onEdit && (
                 <div className="flex items-center gap-1">
                   <Button
                     variant="outline"

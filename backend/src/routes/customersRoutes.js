@@ -29,7 +29,7 @@ router.post(
 
 router.patch(
   '/:id',
-  authorize('owner'),
+  authorize('owner', 'driver'),
   validate(updateCustomer),
   customersController.updateCustomer
 );
