@@ -22,7 +22,7 @@ async function searchCustomers(req, res, next) {
 
 async function createCustomer(req, res, next) {
   try {
-    const { name, phone, address, notes } = req.body;
+    const { name, phone, address, location_url, notes } = req.body;
     const existing = await customersQueries.findByPhone(phone);
     if (existing) {
       throw new AppError(
@@ -30,7 +30,7 @@ async function createCustomer(req, res, next) {
         400
       );
     }
-    const customer = await customersQueries.create({ name, phone, address, notes });
+    const customer = await customersQueries.create({ name, phone, address, location_url, notes });
     res.status(201).json({ customer });
   } catch (err) {
     next(err);

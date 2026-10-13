@@ -32,8 +32,15 @@ async function createOrder(req, res, next) {
       const existing = await customersQueries.findByPhone(req.body.customer.phone);
       if (existing) {
         customerId = existing.id;
+        const updates = {};
         if (req.body.customer.address && !existing.address) {
-          await customersQueries.update(existing.id, { address: req.body.customer.address });
+          updates.address = req.body.customer.address;
+        }
+        if (req.body.customer.location_url && !existing.location_url) {
+          updates.location_url = req.body.customer.location_url;
+        }
+        if (Object.keys(updates).length > 0) {
+          await customersQueries.update(existing.id, updates);
         }
       } else {
         const created = await customersQueries.create(req.body.customer);

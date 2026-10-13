@@ -19,7 +19,11 @@ import {
   MapPin,
   Phone,
   Smartphone,
+  Navigation,
+  ExternalLink,
+  Loader2,
 } from 'lucide-react';
+import { getCurrentGpsLocation } from '../../utils/location';
 
 export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
   const [customerMode, setCustomerMode] = useState('existing'); // 'existing' | 'new'
@@ -36,6 +40,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
     name: '',
     phone: '',
     address: '',
+    location_url: '',
     notes: '',
   });
 
@@ -46,14 +51,28 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLocatingGps, setIsLocatingGps] = useState(false);
   const { success, error: toastError } = useToast();
+
+  const handleGetGps = async () => {
+    setIsLocatingGps(true);
+    try {
+      const { url } = await getCurrentGpsLocation();
+      setInlineCustomer((prev) => ({ ...prev, location_url: url }));
+      success('Current device GPS location captured successfully!', 'GPS Captured');
+    } catch (err) {
+      toastError(err.message || 'Failed to capture GPS location');
+    } finally {
+      setIsLocatingGps(false);
+    }
+  };
 
   // Reset or initialize on open
   useEffect(() => {
     if (isOpen) {
       setSearchQuery('');
       setSelectedCustomer(null);
-      setInlineCustomer({ name: '', phone: '', address: '', notes: '' });
+      setInlineCustomer({ name: '', phone: '', address: '', location_url: '', notes: '' });
       setItems([{ name: '', quantity: 1, price: '' }]);
       setErrors({});
 
@@ -174,6 +193,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
           name: inlineCustomer.name.trim(),
           phone: inlineCustomer.phone.trim(),
           address: inlineCustomer.address?.trim() || null,
+          location_url: inlineCustomer.location_url?.trim() || null,
           notes: inlineCustomer.notes?.trim() || null,
         };
       }
@@ -368,6 +388,53 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                       setInlineCustomer({ ...inlineCustomer, address: e.target.value })
                     }
                   />
+                </div>
+                <div className="sm:col-span-2 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-medium text-slate-700">
+                      Google Maps Location (Optional)
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleGetGps}
+                        disabled={isLocatingGps}
+                        className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 hover:text-emerald-800 disabled:opacity-50"
+                      >
+                        {isLocatingGps ? (
+                          <Loader2 className="w-3 h-3 animate-spin text-emerald-600" />
+                        ) : (
+                          <Navigation className="w-3 h-3 text-emerald-600" />
+                        )}
+                        <span>{isLocatingGps ? 'Locating...' : 'Use My GPS'}</span>
+                      </button>
+                      {inlineCustomer.location_url && (
+                        <a
+                          href={inlineCustomer.location_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[11px] font-semibold text-sky-600 hover:text-sky-700 hover:underline"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                          <span>Test Link</span>
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                  <div className="relative rounded-lg shadow-sm">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                      <Navigation className="h-4 w-4 text-slate-400" />
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Paste Google Maps URL, WhatsApp link, or coordinates..."
+                      value={inlineCustomer.location_url}
+                      onChange={(e) =>
+                        setInlineCustomer({ ...inlineCustomer, location_url: e.target.value })
+                      }
+                      className="block w-full rounded-lg border border-slate-300 text-sm text-slate-900 placeholder:text-slate-400 pl-9 pr-3 py-2 transition-colors focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 hover:border-slate-400 focus:outline-none"
+                    />
+                  </div>
                 </div>
                 <div className="sm:col-span-2">
                   <Input

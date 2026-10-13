@@ -22,7 +22,9 @@ import {
   Flame,
   Utensils,
   Edit3,
+  Navigation,
 } from 'lucide-react';
+import { buildGoogleMapsUrl } from '../../utils/location';
 import { updateOrderStatus } from '../../api/orders';
 import { getErrorMessage } from '../../api/client';
 import { useToast } from '../../hooks/useToast';
@@ -121,12 +123,30 @@ export function OrderCard({
           )}
         </div>
 
-        {order.customer?.address && (
-          <div className="flex items-start gap-1.5 text-slate-300">
-            <MapPin className="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5" />
-            <span className="truncate">{order.customer.address}</span>
-          </div>
-        )}
+        {(() => {
+          const mapsUrl = buildGoogleMapsUrl(order.customer?.location_url, order.customer?.address);
+          if (!order.customer?.address && !mapsUrl) return null;
+          return (
+            <div className="flex items-center justify-between gap-2 pt-1 border-t border-cyan-950/40 text-slate-300">
+              <div className="flex items-start gap-1.5 min-w-0">
+                <MapPin className="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5" />
+                <span className="truncate">{order.customer?.address || (language === 'ar' ? 'موقع محدد على الخريطة' : 'Pinned Location')}</span>
+              </div>
+              {mapsUrl && (
+                <a
+                  href={mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-[11px] font-bold text-cyan-300 hover:text-white bg-cyan-950/70 hover:bg-cyan-900/70 px-2 py-0.5 rounded-lg border border-cyan-800/50 shrink-0 transition-colors"
+                  title={language === 'ar' ? 'فتح موقع العميل في خرائط جوجل' : 'Open in Google Maps'}
+                >
+                  <Navigation className="w-3 h-3 text-cyan-400" />
+                  <span>{language === 'ar' ? 'الخريطة' : 'Maps'}</span>
+                </a>
+              )}
+            </div>
+          );
+        })()}
       </div>
 
       {/* Seafood Items list */}

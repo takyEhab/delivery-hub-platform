@@ -11,6 +11,7 @@ const ORDER_SELECT = `
   c.name AS customer_name,
   c.phone AS customer_phone,
   c.address AS customer_address,
+  c.location_url AS customer_location_url,
   c.notes AS customer_notes,
   d.name AS driver_name,
   d.phone AS driver_phone
@@ -37,6 +38,7 @@ function mapOrder(row) {
       name: row.customer_name,
       phone: row.customer_phone,
       address: row.customer_address,
+      location_url: row.customer_location_url,
       notes: row.customer_notes,
     },
     driver: row.assigned_driver_id

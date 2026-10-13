@@ -33,7 +33,9 @@ import {
   Fish,
   Flame,
   Edit,
+  Navigation,
 } from 'lucide-react';
+import { buildGoogleMapsUrl } from '../utils/location';
 
 export function OrderDetails() {
   const { id } = useParams();
@@ -124,11 +126,10 @@ export function OrderDetails() {
     isDriver && order.assigned_driver_id === user?.id;
   const canUpdateStatus = isOwner || isAssignedToCurrentDriver;
 
-  const mapsUrl = order.customer?.address
-    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-        order.customer.address
-      )}`
-    : null;
+  const mapsUrl = buildGoogleMapsUrl(
+    order.customer?.location_url,
+    order.customer?.address
+  );
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
@@ -329,15 +330,18 @@ export function OrderDetails() {
                   <span className="leading-relaxed">{order.customer?.address || (language === 'ar' ? 'استلام من المحل' : 'Store pickup')}</span>
                 </div>
                 {mapsUrl && (
-                  <a
-                    href={mapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-[11px] font-bold text-cyan-400 hover:text-cyan-300 hover:underline"
-                  >
-                    <span>{language === 'ar' ? 'عرض على خرائط Google' : 'Open in Google Maps'}</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
+                  <div className="pt-2">
+                    <a
+                      href={mapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-xs font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-teal-400 hover:from-cyan-300 hover:to-teal-300 px-3.5 py-2 rounded-xl shadow-md transition-all"
+                    >
+                      <Navigation className="w-3.5 h-3.5 text-slate-950 fill-current" />
+                      <span>{language === 'ar' ? 'بدء التوصيل عبر خرائط Google' : 'Start Google Maps Navigation'}</span>
+                      <ExternalLink className="w-3 h-3 text-slate-950/80" />
+                    </a>
+                  </div>
                 )}
               </div>
 

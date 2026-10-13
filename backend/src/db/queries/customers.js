@@ -3,7 +3,7 @@ const { normalizePhone } = require('../../utils/phone');
 
 async function listAll() {
   const { rows } = await db.query(
-    'SELECT id, name, phone, address, notes, created_at FROM customers ORDER BY name ASC'
+    'SELECT id, name, phone, address, location_url, notes, created_at FROM customers ORDER BY name ASC'
   );
   return rows;
 }
@@ -11,7 +11,7 @@ async function listAll() {
 async function search(term) {
   const pattern = `%${term}%`;
   const { rows } = await db.query(
-    `SELECT id, name, phone, address, notes, created_at
+    `SELECT id, name, phone, address, location_url, notes, created_at
      FROM customers
      WHERE name ILIKE $1 OR phone ILIKE $1
      ORDER BY name ASC
@@ -23,7 +23,7 @@ async function search(term) {
 
 async function findById(id) {
   const { rows } = await db.query(
-    'SELECT id, name, phone, address, notes, created_at FROM customers WHERE id = $1',
+    'SELECT id, name, phone, address, location_url, notes, created_at FROM customers WHERE id = $1',
     [id]
   );
   return rows[0] || null;
@@ -33,25 +33,25 @@ async function findByPhone(phone) {
   if (!phone) return null;
   const normalized = normalizePhone(phone);
   const { rows } = await db.query(
-    'SELECT id, name, phone, address, notes, created_at FROM customers WHERE phone = $1 OR phone = $2 LIMIT 1',
+    'SELECT id, name, phone, address, location_url, notes, created_at FROM customers WHERE phone = $1 OR phone = $2 LIMIT 1',
     [normalized, phone]
   );
   return rows[0] || null;
 }
 
-async function create({ name, phone, address, notes }) {
+async function create({ name, phone, address, location_url, notes }) {
   const normalized = normalizePhone(phone);
   const { rows } = await db.query(
-    `INSERT INTO customers (name, phone, address, notes)
-     VALUES ($1, $2, $3, $4)
-     RETURNING id, name, phone, address, notes, created_at`,
-    [name, normalized, address || null, notes || null]
+    `INSERT INTO customers (name, phone, address, location_url, notes)
+     VALUES ($1, $2, $3, $4, $5)
+     RETURNING id, name, phone, address, location_url, notes, created_at`,
+    [name, normalized, address || null, location_url || null, notes || null]
   );
   return rows[0];
 }
 
 async function update(id, fields) {
-  const allowed = ['name', 'phone', 'address', 'notes'];
+  const allowed = ['name', 'phone', 'address', 'location_url', 'notes'];
   const sets = [];
   const values = [];
   let i = 1;
@@ -71,7 +71,7 @@ async function update(id, fields) {
   values.push(id);
   const { rows } = await db.query(
     `UPDATE customers SET ${sets.join(', ')} WHERE id = $${i}
-     RETURNING id, name, phone, address, notes, created_at`,
+     RETURNING id, name, phone, address, location_url, notes, created_at`,
     values
   );
   return rows[0] || null;

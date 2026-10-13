@@ -6,7 +6,8 @@ import { createCustomer, updateCustomer } from '../../api/customers';
 import { getErrorMessage } from '../../api/client';
 import { useToast } from '../../hooks/useToast';
 import { isContactPickerSupported, selectContact, normalizePhone } from '../../utils/contacts';
-import { Smartphone, User, Phone, MapPin, FileText, UserCheck, Trash2 } from 'lucide-react';
+import { getCurrentGpsLocation } from '../../utils/location';
+import { Smartphone, User, Phone, MapPin, FileText, UserCheck, Trash2, Navigation, ExternalLink, Loader2 } from 'lucide-react';
 
 export function CustomerModal({
   isOpen,
@@ -21,11 +22,13 @@ export function CustomerModal({
     name: '',
     phone: '',
     address: '',
+    location_url: '',
     notes: '',
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [isPickingContact, setIsPickingContact] = useState(false);
+  const [isLocatingGps, setIsLocatingGps] = useState(false);
   const { success, error: toastError, warning, info } = useToast();
   const isEditing = Boolean(customer?.id);
 
@@ -35,6 +38,7 @@ export function CustomerModal({
         name: customer.name || '',
         phone: customer.phone || '',
         address: customer.address || '',
+        location_url: customer.location_url || '',
         notes: customer.notes || '',
       });
     } else {
@@ -42,6 +46,7 @@ export function CustomerModal({
         name: '',
         phone: '',
         address: '',
+        location_url: '',
         notes: '',
       });
     }
@@ -123,29 +128,40 @@ export function CustomerModal({
     return Object.keys(errs).length === 0;
   };
 
+  const handleGetGps = async () => {
+    setIsLocatingGps(true);
+    try {
+      const { url } = await getCurrentGpsLocation();
+      setFormData((prev) => ({ ...prev, location_url: url }));
+      success('Current device GPS location captured successfully!', 'GPS Captured');
+    } catch (err) {
+      toastError(err.message || 'Failed to capture GPS location');
+    } finally {
+      setIsLocatingGps(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
     setIsLoading(true);
     const normPhone = normalizePhone(formData.phone);
+    const payload = {
+      name: formData.name.trim(),
+      phone: normPhone,
+      address: formData.address?.trim() || null,
+      location_url: formData.location_url?.trim() || null,
+      notes: formData.notes?.trim() || null,
+    };
+
     try {
       let saved;
       if (isEditing) {
-        saved = await updateCustomer(customer.id, {
-          name: formData.name.trim(),
-          phone: normPhone,
-          address: formData.address?.trim() || null,
-          notes: formData.notes?.trim() || null,
-        });
+        saved = await updateCustomer(customer.id, payload);
         success(`Customer ${saved.name} updated successfully!`);
       } else {
-        saved = await createCustomer({
-          name: formData.name.trim(),
-          phone: normPhone,
-          address: formData.address?.trim() || null,
-          notes: formData.notes?.trim() || null,
-        });
+        saved = await createCustomer(payload);
         success(`Customer ${saved.name} created successfully!`);
       }
       onSuccess(saved);
@@ -239,6 +255,56 @@ export function CustomerModal({
               className="block w-full rounded-lg border border-slate-300 text-sm text-slate-900 placeholder:text-slate-400 pl-9 pr-3 py-2 transition-colors focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 hover:border-slate-400 focus:outline-none"
             />
           </div>
+        </div>
+
+        {/* Google Maps Location / Link */}
+        <div className="w-full">
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-xs font-medium text-slate-700">
+              Google Maps Location (Optional)
+            </label>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleGetGps}
+                disabled={isLocatingGps}
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 hover:text-emerald-800 disabled:opacity-50"
+              >
+                {isLocatingGps ? (
+                  <Loader2 className="w-3 h-3 animate-spin text-emerald-600" />
+                ) : (
+                  <Navigation className="w-3 h-3 text-emerald-600" />
+                )}
+                <span>{isLocatingGps ? 'Locating...' : 'Use My GPS'}</span>
+              </button>
+              {formData.location_url && (
+                <a
+                  href={formData.location_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-sky-600 hover:text-sky-700 hover:underline"
+                >
+                  <ExternalLink className="w-3 h-3" />
+                  <span>Test Link</span>
+                </a>
+              )}
+            </div>
+          </div>
+          <div className="relative rounded-lg shadow-sm">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <Navigation className="h-4 w-4 text-slate-400" />
+            </div>
+            <input
+              type="text"
+              placeholder="Paste Google Maps URL, WhatsApp link, or coordinates..."
+              value={formData.location_url}
+              onChange={(e) => setFormData({ ...formData, location_url: e.target.value })}
+              className="block w-full rounded-lg border border-slate-300 text-sm text-slate-900 placeholder:text-slate-400 pl-9 pr-3 py-2 transition-colors focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 hover:border-slate-400 focus:outline-none"
+            />
+          </div>
+          <p className="text-[10px] text-slate-500 mt-1">
+            Tap "Use My GPS" or paste a Google Maps / WhatsApp location for 1-click courier navigation.
+          </p>
         </div>
 
         <div className="w-full">

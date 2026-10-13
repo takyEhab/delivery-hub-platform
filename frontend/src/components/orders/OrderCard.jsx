@@ -17,7 +17,9 @@ import {
   ChevronRight,
   Package,
   User,
+  Navigation,
 } from 'lucide-react';
+import { buildGoogleMapsUrl } from '../../utils/location';
 import { updateOrderStatus } from '../../api/orders';
 import { getErrorMessage } from '../../api/client';
 import { useToast } from '../../hooks/useToast';
@@ -100,10 +102,30 @@ export function OrderCard({
           )}
         </div>
 
-        <div className="flex items-start gap-1.5 text-slate-600">
-          <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
-          <span className="leading-snug">{order.customer?.address}</span>
-        </div>
+        {(() => {
+          const mapsUrl = buildGoogleMapsUrl(order.customer?.location_url, order.customer?.address);
+          if (!order.customer?.address && !mapsUrl) return null;
+          return (
+            <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-100 text-slate-600">
+              <div className="flex items-start gap-1.5 min-w-0">
+                <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
+                <span className="leading-snug truncate">{order.customer?.address || 'Pinned Location'}</span>
+              </div>
+              {mapsUrl && (
+                <a
+                  href={mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200 shrink-0 transition-colors"
+                  title="Open in Google Maps"
+                >
+                  <Navigation className="w-3 h-3 text-emerald-600" />
+                  <span>Maps</span>
+                </a>
+              )}
+            </div>
+          );
+        })()}
 
         {order.customer?.notes && (
           <div className="text-[11px] text-slate-500 italic pl-5">
