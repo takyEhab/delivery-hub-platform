@@ -221,7 +221,7 @@ export function OrderDetails() {
               {hasRawFish(order) && (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-black bg-cyan-950 text-cyan-300 border border-cyan-400/50 shadow-md ring-1 ring-cyan-400/30">
                   <span className="text-sm">🐟</span>
-                  <span>{language === 'ar' ? 'سمك طازج / نيء (بدون طهي)' : 'Fresh / Raw Fish (Uncooked)'}</span>
+                  <span>{language === 'ar' ? 'به سمك نيء' : 'Contains Raw Fish'}</span>
                 </span>
               )}
             </div>
@@ -338,12 +338,12 @@ export function OrderDetails() {
               description={language === 'ar' ? `قائمة الأسماك المطلوبة (${parsedItems.length} صنف)` : `Itemized list (${parsedItems.length} items)`}
             />
             {hasRawFish(order) && (
-              <div className="bg-gradient-to-r from-cyan-950/80 via-slate-900/90 to-cyan-950/80 border-b border-cyan-800/40 p-3 px-5 flex items-center gap-2.5 text-xs text-cyan-200">
-                <span className="text-base shrink-0">🐟</span>
-                <span className="font-semibold">
+              <div className="bg-cyan-950/60 border-b border-cyan-800/30 py-1.5 px-4 flex items-center gap-2 text-xs text-cyan-300">
+                <span className="text-sm">🐟</span>
+                <span className="font-bold">
                   {language === 'ar'
-                    ? 'تنبيه تحضير وتوصيل: هذا الطلب يتضمن أسماكاً طازجة / نيئة بدون طهي تتطلب سرعة التوصيل والتبريد.'
-                    : 'Handling Notice: This order contains fresh / raw uncooked seafood requiring refrigeration and prompt delivery.'}
+                    ? 'الطلب يحتوي على أصناف سمك نيء'
+                    : 'This order contains raw fish items'}
                 </span>
               </div>
             )}

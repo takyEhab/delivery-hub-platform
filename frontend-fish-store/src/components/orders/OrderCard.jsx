@@ -122,7 +122,7 @@ export function OrderCard({
             {orderHasRaw && (
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-xs font-black bg-cyan-950/90 text-cyan-300 border border-cyan-400/60 shadow-sm ring-1 ring-cyan-400/20">
                 <span>🐟</span>
-                <span>{language === 'ar' ? 'سمك طازج / نيء' : 'Raw Fish'}</span>
+                <span>{language === 'ar' ? 'به سمك نيء' : 'Contains Raw Fish'}</span>
               </span>
             )}
           </div>
@@ -221,7 +221,7 @@ export function OrderCard({
           {orderHasRaw && (
             <span className="text-[10px] font-black text-cyan-300 bg-cyan-950/90 px-2 py-0.5 rounded-full border border-cyan-400/40 flex items-center gap-1 shadow-sm">
               <span>🐟</span>
-              <span>{language === 'ar' ? 'يحتوي على سمك نيء' : 'Contains Raw Fish'}</span>
+              <span>{language === 'ar' ? 'به سمك نيء' : 'Contains Raw Fish'}</span>
             </span>
           )}
         </div>

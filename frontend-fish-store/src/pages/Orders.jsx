@@ -450,10 +450,10 @@ export function Orders({ isHistoryView = false }) {
                 ? 'bg-gradient-to-r from-cyan-400 to-teal-400 text-slate-950 font-black shadow-md shadow-cyan-500/20 ring-2 ring-cyan-300'
                 : 'bg-cyan-950/40 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-900/40'
             }`}
-            title={language === 'ar' ? 'عرض الطلبات التي تحتوي على سمك طازج / نيء فقط' : 'Filter raw / fresh fish orders only'}
+            title={language === 'ar' ? 'عرض الطلبات التي تحتوي على أصناف سمك نيء' : 'Filter orders containing raw fish items'}
           >
             <span className="text-sm">🐟</span>
-            <span>{language === 'ar' ? 'سمك نيء / طازج' : 'Raw Fish'}</span>
+            <span>{language === 'ar' ? 'به سمك نيء' : 'Contains Raw Fish'}</span>
             <span
               className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
                 rawFilter ? 'bg-slate-950 text-cyan-300' : 'bg-cyan-500/20 text-cyan-200'

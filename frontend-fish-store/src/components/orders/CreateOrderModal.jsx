@@ -315,7 +315,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
 
       if (orderMode === 'quick') {
         finalTotalAmount = parseFloat(quickAmount);
-        const rawTag = language === 'ar' ? 'سمك طازج / نيء' : 'Raw Fish';
+        const rawTag = language === 'ar' ? 'به سمك نيء' : 'Contains Raw Fish';
         const desc = quickDescription.trim();
         let itemName;
         if (desc) {
@@ -743,7 +743,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                       <span>{language === 'ar' ? 'يحتوي الطلب على سمك طازج / نيء (بدون طهي)' : 'Order contains fresh / raw fish (uncooked)'}</span>
                       {isRawFish && (
                         <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 text-[10px] font-bold border border-cyan-400/40">
-                          {language === 'ar' ? 'سمك نيء' : 'Raw Fish'}
+                          {language === 'ar' ? 'به سمك نيء' : 'Contains Raw Fish'}
                         </span>
                       )}
                     </p>

@@ -83,7 +83,7 @@ export function OrderTable({
                         {hasRawFish(order) && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black bg-cyan-950 text-cyan-300 border border-cyan-400/50 shadow-sm ring-1 ring-cyan-400/20">
                             <span className="text-xs">🐟</span>
-                            <span>{language === 'ar' ? 'سمك نيء' : 'Raw Fish'}</span>
+                            <span>{language === 'ar' ? 'به سمك نيء' : 'Contains Raw Fish'}</span>
                           </span>
                         )}
                       </div>
