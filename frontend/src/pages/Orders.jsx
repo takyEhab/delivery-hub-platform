@@ -82,6 +82,10 @@ export function Orders({ isHistoryView = false }) {
     );
   };
 
+  const handleOrderDeleted = (deletedOrderId) => {
+    setOrders((prev) => prev.filter((o) => o.id !== deletedOrderId));
+  };
+
   // Counts for tabs
   const preparingCount = orders.filter((o) => o.status === 'preparing').length;
   const inDeliveryCount = orders.filter((o) => o.status === 'out_for_delivery').length;
@@ -334,6 +338,7 @@ export function Orders({ isHistoryView = false }) {
           orders={filteredOrders}
           onAssignClick={handleAssignClick}
           onStatusUpdated={handleStatusUpdated}
+          onOrderDeleted={handleOrderDeleted}
           isOwner={isOwner}
           isDriver={isDriver}
         />

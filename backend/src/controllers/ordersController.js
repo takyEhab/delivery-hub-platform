@@ -228,6 +228,19 @@ async function updateOrder(req, res, next) {
   }
 }
 
+async function deleteOrder(req, res, next) {
+  try {
+    const orderId = req.params.id;
+    const deleted = await ordersQueries.deleteOrder(orderId);
+    if (!deleted) {
+      throw new AppError('Order not found', 404);
+    }
+    res.json({ message: 'Order deleted successfully' });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   createOrder,
   listOrders,
@@ -236,4 +249,5 @@ module.exports = {
   updateOrderStatus,
   updatePaymentStatus,
   updateOrder,
+  deleteOrder,
 };

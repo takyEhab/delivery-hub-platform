@@ -29,6 +29,7 @@ import {
   Receipt,
   CreditCard,
   DollarSign,
+  Trash2,
 } from 'lucide-react';
 import { buildGoogleMapsUrl } from '../../utils/location';
 import { updateOrderStatus, updatePaymentStatus } from '../../api/orders';
@@ -42,6 +43,7 @@ export function OrderCard({
   onStatusUpdated,
   onAssignClick,
   onEditCustomer,
+  onDeleteClick,
 }) {
   const [isUpdating, setIsUpdating] = useState(false);
   const { success, error: toastError } = useToast();
@@ -135,6 +137,17 @@ export function OrderCard({
             <span>{t('view_details')}</span>
             <ChevronRight className="w-3.5 h-3.5 rtl:rotate-180" />
           </Link>
+          {isOwner && onDeleteClick && (
+            <button
+              type="button"
+              onClick={() => onDeleteClick(order)}
+              className="text-xs font-semibold text-rose-300 hover:text-white flex items-center gap-1 py-1 px-2 rounded-lg bg-rose-950/50 hover:bg-rose-900/60 border border-rose-800/40 transition-colors"
+              title={t('delete_order')}
+            >
+              <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+              <span className="hidden sm:inline">{t('delete_order')}</span>
+            </button>
+          )}
         </div>
       </div>
 

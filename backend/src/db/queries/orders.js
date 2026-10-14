@@ -256,6 +256,11 @@ async function isCustomerAssignedToDriver(customerId, driverId) {
   return rows.length > 0;
 }
 
+async function deleteOrder(orderId) {
+  const { rowCount } = await db.query('DELETE FROM orders WHERE id = $1', [orderId]);
+  return rowCount > 0;
+}
+
 module.exports = {
   create,
   findById,
@@ -266,4 +271,5 @@ module.exports = {
   updatePayment,
   update,
   isCustomerAssignedToDriver,
+  deleteOrder,
 };

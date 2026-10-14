@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { getOrder, updateOrderStatus, updatePaymentStatus } from '../api/orders';
+import { getOrder, updateOrderStatus, updatePaymentStatus, deleteOrder } from '../api/orders';
 import { getErrorMessage } from '../api/client';
 import { useToast } from '../hooks/useToast';
 import { useAuth } from '../hooks/useAuth';
@@ -8,6 +8,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { Card, CardHeader, CardBody } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
+import { ConfirmModal } from '../components/ui/ConfirmModal';
 import { OrderStatusTimeline } from '../components/orders/OrderStatusTimeline';
 import { AssignDriverModal } from '../components/orders/AssignDriverModal';
 import { EditOrderModal } from '../components/orders/EditOrderModal';
@@ -42,6 +43,7 @@ import {
   Receipt,
   CreditCard,
   DollarSign,
+  Trash2,
 } from 'lucide-react';
 import { buildGoogleMapsUrl } from '../utils/location';
 
@@ -59,6 +61,8 @@ export function OrderDetails() {
   const [assignModalOpen, setAssignModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [customerModalOpen, setCustomerModalOpen] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchOrderDetails = useCallback(async () => {
     setIsLoading(true);
@@ -112,6 +116,25 @@ export function OrderDetails() {
       toastError(getErrorMessage(err));
     } finally {
       setIsUpdatingPayment(false);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!order) return;
+    setIsDeleting(true);
+    try {
+      await deleteOrder(order.id);
+      success(
+        language === 'ar'
+          ? `تم حذف الطلب #${order.id} بنجاح.`
+          : `Order #${order.id} was permanently deleted.`,
+        language === 'ar' ? 'تم الحذف' : 'Order Deleted'
+      );
+      navigate('/orders');
+    } catch (err) {
+      toastError(getErrorMessage(err));
+      setIsDeleting(false);
+      setConfirmDeleteOpen(false);
     }
   };
 
@@ -212,6 +235,18 @@ export function OrderDetails() {
               className="text-cyan-300 border-cyan-800/80 hover:bg-cyan-950/60"
             >
               {t('edit_order')}
+            </Button>
+          )}
+
+          {isOwner && (
+            <Button
+              variant="danger"
+              size="sm"
+              icon={Trash2}
+              onClick={() => setConfirmDeleteOpen(true)}
+              className="bg-rose-600/20 hover:bg-rose-600 border border-rose-500/40 text-rose-300 hover:text-white"
+            >
+              {t('delete_order')}
             </Button>
           )}
 
@@ -647,6 +682,23 @@ export function OrderDetails() {
           }}
         />
       )}
+
+      {/* Delete Confirmation Modal for Admin */}
+      <ConfirmModal
+        isOpen={confirmDeleteOpen}
+        onClose={() => setConfirmDeleteOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title={t('delete_order_title')}
+        message={
+          language === 'ar'
+            ? `هل أنت متأكد من رغبتك في حذف طلب الأسماك #${order?.id} للعميل "${order?.customer?.name || ''}" نهائياً؟ هذا الإجراء نهائي ولا يمكن التراجع عنه وسيتم مسح الطلب من النظام.`
+            : `Are you sure you want to permanently delete seafood order #${order?.id} for customer "${order?.customer?.name || ''}"? This action cannot be undone.`
+        }
+        confirmText={t('delete_order_btn')}
+        cancelText={t('cancel')}
+        variant="danger"
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

@@ -75,3 +75,8 @@ export async function updateOrder(orderId, orderData) {
   return res.data.order;
 }
 
+export async function deleteOrder(orderId) {
+  const res = await apiClient.delete(`/orders/${orderId}`);
+  return res.data;
+}
+

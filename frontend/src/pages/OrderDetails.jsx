@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { getOrder, updateOrderStatus } from '../api/orders';
+import { getOrder, updateOrderStatus, deleteOrder } from '../api/orders';
 import { getErrorMessage } from '../api/client';
 import { useToast } from '../hooks/useToast';
 import { useAuth } from '../hooks/useAuth';
 import { Card, CardHeader, CardBody } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
+import { ConfirmModal } from '../components/ui/ConfirmModal';
 import { OrderStatusTimeline } from '../components/orders/OrderStatusTimeline';
 import { AssignDriverModal } from '../components/orders/AssignDriverModal';
 import { CustomerModal } from '../components/customers/CustomerModal';
@@ -30,6 +31,7 @@ import {
   AlertCircle,
   Navigation,
   Edit,
+  Trash2,
 } from 'lucide-react';
 import { buildGoogleMapsUrl } from '../utils/location';
 
@@ -44,6 +46,8 @@ export function OrderDetails() {
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [assignModalOpen, setAssignModalOpen] = useState(false);
   const [customerModalOpen, setCustomerModalOpen] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchOrderDetails = useCallback(async () => {
     setIsLoading(true);
@@ -74,6 +78,20 @@ export function OrderDetails() {
       toastError(getErrorMessage(err));
     } finally {
       setIsUpdatingStatus(false);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!order) return;
+    setIsDeleting(true);
+    try {
+      await deleteOrder(order.id);
+      success(`Order #${order.id} was permanently deleted.`, 'Order Deleted');
+      navigate('/orders');
+    } catch (err) {
+      toastError(getErrorMessage(err));
+      setIsDeleting(false);
+      setConfirmDeleteOpen(false);
     }
   };
 
@@ -162,6 +180,17 @@ export function OrderDetails() {
 
         {/* Action button: Owner Assign or Driver Status update */}
         <div className="flex items-center gap-2">
+          {isOwner && (
+            <Button
+              variant="danger"
+              size="sm"
+              icon={Trash2}
+              onClick={() => setConfirmDeleteOpen(true)}
+            >
+              Delete Order
+            </Button>
+          )}
+
           {isOwner && !order.driver && (
             <Button
               variant="primary"
@@ -449,6 +478,19 @@ export function OrderDetails() {
           }}
         />
       )}
+
+      {/* Delete Confirmation Modal for Admin */}
+      <ConfirmModal
+        isOpen={confirmDeleteOpen}
+        onClose={() => setConfirmDeleteOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Order Permanently"
+        message={`Are you sure you want to permanently delete order #${order?.id} for customer "${order?.customer?.name || ''}"? This action cannot be undone.`}
+        confirmText="Delete Order"
+        cancelText="Cancel"
+        variant="danger"
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

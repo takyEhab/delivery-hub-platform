@@ -108,6 +108,11 @@ const translations = {
     mark_out_for_delivery: 'بدء التوصيل (في الطريق)',
     mark_delivered: 'تأكيد تسليم الطلب',
     revert_to_preparing: 'إعادة لقيد التجهيز',
+    delete_order: 'حذف الطلب',
+    delete_order_title: 'حذف طلب الأسماك نهائياً',
+    delete_order_confirm_desc: 'هل أنت متأكد من رغبتك في حذف هذا الطلب نهائياً؟ هذا الإجراء لا يمكن التراجع عنه وسيتم مسح الطلب من النظام.',
+    delete_order_btn: 'تأكيد حذف الطلب',
+    delete_order_success: 'تم حذف الطلب بنجاح',
 
     // Customers page
     customers_title: 'سجل عملاء أمير البحار',
@@ -284,6 +289,11 @@ const translations = {
     mark_out_for_delivery: 'Out for Delivery',
     mark_delivered: 'Mark as Delivered',
     revert_to_preparing: 'Revert to Preparing',
+    delete_order: 'Delete Order',
+    delete_order_title: 'Delete Order Permanently',
+    delete_order_confirm_desc: 'Are you sure you want to permanently delete this order? This action cannot be undone and will remove the order from the system.',
+    delete_order_btn: 'Delete Order',
+    delete_order_success: 'Order deleted successfully',
 
     // Customers page
     customers_title: 'Prince of the Seas Customers',

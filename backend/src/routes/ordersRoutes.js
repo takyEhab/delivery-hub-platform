@@ -60,4 +60,10 @@ router.patch(
   ordersController.updatePaymentStatus
 );
 
+router.delete(
+  '/:id',
+  authorize('owner'),
+  ordersController.deleteOrder
+);
+
 module.exports = router;

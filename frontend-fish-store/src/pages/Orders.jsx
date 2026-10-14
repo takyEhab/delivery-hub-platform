@@ -101,6 +101,10 @@ export function Orders({ isHistoryView = false }) {
     );
   };
 
+  const handleOrderDeleted = (deletedOrderId) => {
+    setOrders((prev) => prev.filter((o) => o.id !== deletedOrderId));
+  };
+
   // Financial Stats
   const totalUnpaidAmount = orders
     .filter((o) => o.payment_status === 'unpaid')
@@ -529,6 +533,7 @@ export function Orders({ isHistoryView = false }) {
           onAssignClick={handleAssignClick}
           onStatusUpdated={handleStatusUpdated}
           onEditCustomer={handleEditCustomer}
+          onOrderDeleted={handleOrderDeleted}
           isOwner={isOwner}
           isDriver={isDriver}
         />
