@@ -1,8 +1,12 @@
 const http = require('http');
+const https = require('https');
 
 async function request(options, data = null) {
+    const isHttps = options.port === 5173 || options.port === 5174;
+    const client = isHttps ? https : http;
+    const reqOptions = isHttps ? { ...options, rejectUnauthorized: false } : options;
     return new Promise((resolve, reject) => {
-        const req = http.request(options, (res) => {
+        const req = client.request(reqOptions, (res) => {
             let body = '';
             res.on('data', (chunk) => (body += chunk));
             res.on('end', () => {
