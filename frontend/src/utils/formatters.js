@@ -69,3 +69,37 @@ export function formatPhone(phone) {
   if (!phone) return '';
   return phone.trim();
 }
+
+/**
+ * Detect if an order or any of its items contains raw / fresh uncooked fish.
+ */
+export function hasRawFish(order) {
+  if (!order) return false;
+  if (order.is_raw_fish || order.isRawFish) return true;
+
+  const items = Array.isArray(order.items)
+    ? order.items
+    : typeof order.items === 'string'
+    ? [{ name: order.items }]
+    : [];
+
+  return items.some((item) => isRawFishItem(item));
+}
+
+/**
+ * Detect if a single order item contains raw / fresh uncooked fish.
+ */
+export function isRawFishItem(item) {
+  if (!item) return false;
+  if (item.is_raw_fish || item.isRawFish) return true;
+  const text = `${item.name || ''} ${item.description || ''} ${item.notes || ''}`.toLowerCase();
+  return (
+    text.includes('نيء') ||
+    text.includes('نيئة') ||
+    text.includes('طازجة / نيئة') ||
+    text.includes('طازج / نيء') ||
+    text.includes('raw fish') ||
+    text.includes('raw fresh') ||
+    text.includes('[raw')
+  );
+}

@@ -6,6 +6,7 @@ import {
   formatStatus,
   getStatusBadgeVariant,
   formatDate,
+  hasRawFish,
 } from '../../utils/formatters';
 import { OrderCard } from './OrderCard';
 import { Package, Truck, Phone, ChevronRight, User } from 'lucide-react';
@@ -64,13 +65,21 @@ export function OrderTable({
                     className="hover:bg-slate-50/75 transition-colors group"
                   >
                     <td className="py-3.5 px-5">
-                      <Link
-                        to={`/orders/${order.id}`}
-                        className="font-bold text-slate-900 group-hover:text-emerald-700 transition-colors"
-                      >
-                        #{order.id}
-                      </Link>
-                      <p className="text-[11px] text-slate-400">
+                      <div className="flex items-center gap-1.5">
+                        <Link
+                          to={`/orders/${order.id}`}
+                          className="font-bold text-slate-900 group-hover:text-emerald-700 transition-colors"
+                        >
+                          #{order.id}
+                        </Link>
+                        {hasRawFish(order) && (
+                          <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-cyan-50 text-cyan-700 border border-cyan-200">
+                            <span>🐟</span>
+                            <span>Raw Fish</span>
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
                         {parsedItems.length} item{parsedItems.length === 1 ? '' : 's'}
                       </p>
                     </td>

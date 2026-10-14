@@ -9,6 +9,8 @@ import {
   getPaymentBadgeVariant,
   formatDate,
   formatCurrency,
+  hasRawFish,
+  isRawFishItem,
 } from '../../utils/formatters';
 import { useLanguage } from '../../context/LanguageContext';
 import {
@@ -93,8 +95,14 @@ export function OrderCard({
 
   const totalAmountVal = parseFloat(order.total_amount) || 0;
 
+  const orderHasRaw = hasRawFish(order);
+
   return (
-    <div className="bg-[#05172b]/90 rounded-2xl border border-cyan-900/40 shadow-lg hover:border-cyan-500/40 transition-all duration-200 p-4 sm:p-5 flex flex-col justify-between gap-4">
+    <div className={`bg-[#05172b]/90 rounded-2xl border ${
+      orderHasRaw
+        ? 'border-cyan-400/60 shadow-lg shadow-cyan-950/70 ring-1 ring-cyan-400/30'
+        : 'border-cyan-900/40 shadow-lg'
+    } hover:border-cyan-400/60 transition-all duration-200 p-4 sm:p-5 flex flex-col justify-between gap-4`}>
       {/* Top row: Order ID, Total Amount, Badges */}
       <div className="flex items-start justify-between gap-2">
         <div>
@@ -111,6 +119,12 @@ export function OrderCard({
             <Badge variant={getPaymentBadgeVariant(order.payment_status)} size="sm">
               {formatPaymentStatus(order.payment_status, language)}
             </Badge>
+            {orderHasRaw && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-xs font-black bg-cyan-950/90 text-cyan-300 border border-cyan-400/60 shadow-sm ring-1 ring-cyan-400/20">
+                <span>🐟</span>
+                <span>{language === 'ar' ? 'سمك طازج / نيء' : 'Raw Fish'}</span>
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mt-1">
             <Clock className="w-3.5 h-3.5 text-cyan-400/80" />
@@ -199,21 +213,37 @@ export function OrderCard({
 
       {/* Seafood Items list */}
       <div className="space-y-1.5">
-        <div className="flex items-center gap-1 text-[11px] font-bold text-cyan-400">
-          <Fish className="w-3 h-3 text-cyan-400" />
-          <span>{t('order_items')} ({parsedItems.length}):</span>
+        <div className="flex items-center justify-between text-[11px] font-bold text-cyan-400">
+          <div className="flex items-center gap-1">
+            <Fish className="w-3 h-3 text-cyan-400" />
+            <span>{t('order_items')} ({parsedItems.length}):</span>
+          </div>
+          {orderHasRaw && (
+            <span className="text-[10px] font-black text-cyan-300 bg-cyan-950/90 px-2 py-0.5 rounded-full border border-cyan-400/40 flex items-center gap-1 shadow-sm">
+              <span>🐟</span>
+              <span>{language === 'ar' ? 'يحتوي على سمك نيء' : 'Contains Raw Fish'}</span>
+            </span>
+          )}
         </div>
-        <div className="bg-[#030e1a]/50 p-2.5 rounded-xl border border-cyan-950/40 space-y-1 text-xs max-h-24 overflow-y-auto">
-          {parsedItems.map((item, idx) => (
-            <div key={idx} className="flex justify-between items-center text-slate-200">
-              <span className="truncate max-w-[200px]">
-                • {item.name || item.description}
-              </span>
-              <span className="text-[11px] font-semibold text-cyan-300 shrink-0">
-                ×{item.quantity}
-              </span>
-            </div>
-          ))}
+        <div className="bg-[#030e1a]/50 p-2.5 rounded-xl border border-cyan-950/40 space-y-1.5 text-xs max-h-28 overflow-y-auto">
+          {parsedItems.map((item, idx) => {
+            const itemIsRaw = isRawFishItem(item);
+            return (
+              <div key={idx} className={`flex justify-between items-center ${itemIsRaw ? 'text-cyan-200 font-semibold' : 'text-slate-200'}`}>
+                <span className="truncate max-w-[210px] flex items-center gap-1.5">
+                  <span>• {item.name || item.description}</span>
+                  {itemIsRaw && (
+                    <span className="shrink-0 px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-[10px] font-black border border-cyan-400/40">
+                      {language === 'ar' ? 'نيء' : 'Raw'}
+                    </span>
+                  )}
+                </span>
+                <span className="text-[11px] font-semibold text-cyan-300 shrink-0">
+                  ×{item.quantity}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
 

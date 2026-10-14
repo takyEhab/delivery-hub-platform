@@ -7,6 +7,7 @@ import {
   getStatusBadgeVariant,
   formatDate,
   formatShortDate,
+  hasRawFish,
 } from '../../utils/formatters';
 import {
   Phone,
@@ -62,13 +63,19 @@ export function OrderCard({
       {/* Top row: Order ID, status badge, created timestamp */}
       <div className="flex items-start justify-between gap-2">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="font-bold text-slate-900 text-base">
               Order #{order.id}
             </span>
             <Badge variant={getStatusBadgeVariant(order.status)} size="sm" dot>
               {formatStatus(order.status)}
             </Badge>
+            {hasRawFish(order) && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-cyan-50 text-cyan-700 border border-cyan-200">
+                <span>🐟</span>
+                <span>Raw Fish</span>
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-1 text-[11px] text-slate-400 mt-1">
             <Clock className="w-3 h-3" />

@@ -77,7 +77,7 @@ async function runE2E() {
         },
         {
             name: 'Maria Rodriguez',
-            phone: '0509988776',
+            phone: '050' + Math.floor(1000000 + Math.random() * 9000000),
             address: '42 Palm Avenue, Suite 4B, Downtown',
             notes: 'Call when outside building',
         }

@@ -11,7 +11,7 @@ import { AssignDriverModal } from '../components/orders/AssignDriverModal';
 import { CustomerModal } from '../components/customers/CustomerModal';
 import { Button } from '../components/ui/Button';
 import { TableSkeleton } from '../components/ui/Skeleton';
-import { formatCurrency } from '../utils/formatters';
+import { formatCurrency, hasRawFish } from '../utils/formatters';
 import {
   Fish,
   Plus,
@@ -49,6 +49,7 @@ export function Orders({ isHistoryView = false }) {
   // Filters
   const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'preparing' | 'out_for_delivery' | 'delivered'
   const [paymentFilter, setPaymentFilter] = useState('all'); // 'all' | 'unpaid' | 'postpaid' | 'paid'
+  const [rawFilter, setRawFilter] = useState(false);
   const [driverFilter, setDriverFilter] = useState('all'); // 'all' | 'unassigned' | <driverId>
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -126,6 +127,7 @@ export function Orders({ isHistoryView = false }) {
   const deliveredCount = orders.filter((o) => o.status === 'delivered').length;
   const activeOrdersCount = orders.filter((o) => o.status !== 'delivered').length;
   const totalOrdersCount = orders.length;
+  const rawFishCount = orders.filter(hasRawFish).length;
 
   // Client-side filtering across orders
   const filteredOrders = orders.filter((order) => {
@@ -141,6 +143,11 @@ export function Orders({ isHistoryView = false }) {
 
     // Payment status filter
     if (paymentFilter !== 'all' && order.payment_status !== paymentFilter) {
+      return false;
+    }
+
+    // Raw fish filter
+    if (rawFilter && !hasRawFish(order)) {
       return false;
     }
 
@@ -432,6 +439,28 @@ export function Orders({ isHistoryView = false }) {
           >
             <Receipt className="w-3 h-3" />
             {t('filter_paid')} ({paidCount})
+          </button>
+
+          {/* Quick Raw Fish Filter Pill */}
+          <button
+            type="button"
+            onClick={() => setRawFilter((prev) => !prev)}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ms-auto ${
+              rawFilter
+                ? 'bg-gradient-to-r from-cyan-400 to-teal-400 text-slate-950 font-black shadow-md shadow-cyan-500/20 ring-2 ring-cyan-300'
+                : 'bg-cyan-950/40 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-900/40'
+            }`}
+            title={language === 'ar' ? 'عرض الطلبات التي تحتوي على سمك طازج / نيء فقط' : 'Filter raw / fresh fish orders only'}
+          >
+            <span className="text-sm">🐟</span>
+            <span>{language === 'ar' ? 'سمك نيء / طازج' : 'Raw Fish'}</span>
+            <span
+              className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                rawFilter ? 'bg-slate-950 text-cyan-300' : 'bg-cyan-500/20 text-cyan-200'
+              }`}
+            >
+              {rawFishCount}
+            </span>
           </button>
         </div>
 

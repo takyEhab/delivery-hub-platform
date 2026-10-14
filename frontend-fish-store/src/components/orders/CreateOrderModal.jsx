@@ -330,6 +330,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
             name: itemName,
             quantity: 1,
             price: finalTotalAmount,
+            is_raw_fish: isRawFish,
           },
         ];
       } else {

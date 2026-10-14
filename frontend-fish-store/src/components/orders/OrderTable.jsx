@@ -9,6 +9,7 @@ import {
   getPaymentBadgeVariant,
   formatDate,
   formatCurrency,
+  hasRawFish,
 } from '../../utils/formatters';
 import { useLanguage } from '../../context/LanguageContext';
 import { OrderCard } from './OrderCard';
@@ -72,13 +73,21 @@ export function OrderTable({
                     className="hover:bg-cyan-950/30 transition-colors group"
                   >
                     <td className="py-3.5 px-5">
-                      <Link
-                        to={`/orders/${order.id}`}
-                        className="font-black text-white group-hover:text-cyan-400 transition-colors text-sm"
-                      >
-                        #{order.id}
-                      </Link>
-                      <p className="text-[11px] text-cyan-400/80 font-medium">
+                      <div className="flex items-center gap-2">
+                        <Link
+                          to={`/orders/${order.id}`}
+                          className="font-black text-white group-hover:text-cyan-400 transition-colors text-sm"
+                        >
+                          #{order.id}
+                        </Link>
+                        {hasRawFish(order) && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black bg-cyan-950 text-cyan-300 border border-cyan-400/50 shadow-sm ring-1 ring-cyan-400/20">
+                            <span className="text-xs">🐟</span>
+                            <span>{language === 'ar' ? 'سمك نيء' : 'Raw Fish'}</span>
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-cyan-400/80 font-medium mt-0.5">
                         {parsedItems.length} {language === 'ar' ? 'أصناف أسماك' : 'item(s)'}
                       </p>
                     </td>

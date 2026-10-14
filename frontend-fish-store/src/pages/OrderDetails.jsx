@@ -20,6 +20,8 @@ import {
   getPaymentBadgeVariant,
   formatDate,
   formatCurrency,
+  hasRawFish,
+  isRawFishItem,
 } from '../utils/formatters';
 import {
   ArrowLeft,
@@ -216,6 +218,12 @@ export function OrderDetails() {
               <Badge variant={getPaymentBadgeVariant(order.payment_status)}>
                 {formatPaymentStatus(order.payment_status, language)}
               </Badge>
+              {hasRawFish(order) && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-black bg-cyan-950 text-cyan-300 border border-cyan-400/50 shadow-md ring-1 ring-cyan-400/30">
+                  <span className="text-sm">🐟</span>
+                  <span>{language === 'ar' ? 'سمك طازج / نيء (بدون طهي)' : 'Fresh / Raw Fish (Uncooked)'}</span>
+                </span>
+              )}
             </div>
             <p className="text-xs text-slate-400 mt-1 flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-cyan-400" />
@@ -329,6 +337,16 @@ export function OrderDetails() {
               title={t('order_items')}
               description={language === 'ar' ? `قائمة الأسماك المطلوبة (${parsedItems.length} صنف)` : `Itemized list (${parsedItems.length} items)`}
             />
+            {hasRawFish(order) && (
+              <div className="bg-gradient-to-r from-cyan-950/80 via-slate-900/90 to-cyan-950/80 border-b border-cyan-800/40 p-3 px-5 flex items-center gap-2.5 text-xs text-cyan-200">
+                <span className="text-base shrink-0">🐟</span>
+                <span className="font-semibold">
+                  {language === 'ar'
+                    ? 'تنبيه تحضير وتوصيل: هذا الطلب يتضمن أسماكاً طازجة / نيئة بدون طهي تتطلب سرعة التوصيل والتبريد.'
+                    : 'Handling Notice: This order contains fresh / raw uncooked seafood requiring refrigeration and prompt delivery.'}
+                </span>
+              </div>
+            )}
             <div className="overflow-x-auto">
               <table className="w-full text-right rtl:text-right ltr:text-left border-collapse text-xs">
                 <thead>
@@ -348,7 +366,15 @@ export function OrderDetails() {
                     return (
                       <tr key={idx} className="hover:bg-cyan-950/20">
                         <td className="py-3 px-5 font-bold text-white">
-                          {item.name || item.description || (language === 'ar' ? 'صنف أسماك' : 'Item')}
+                          <div className="flex items-center gap-2">
+                            <span>{item.name || item.description || (language === 'ar' ? 'صنف أسماك' : 'Item')}</span>
+                            {isRawFishItem(item) && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 text-[10px] font-black border border-cyan-400/40">
+                                <span>🐟</span>
+                                <span>{language === 'ar' ? 'نيء' : 'Raw'}</span>
+                              </span>
+                            )}
+                          </div>
                           {item.notes && (
                             <p className="text-[11px] text-cyan-300 font-normal mt-0.5 italic">
                               "{item.notes}"
