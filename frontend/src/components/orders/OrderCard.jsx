@@ -31,7 +31,6 @@ export function OrderCard({
   isOwner = false,
   onStatusUpdated,
   onAssignClick,
-  onDeleteClick,
 }) {
   const [isUpdating, setIsUpdating] = useState(false);
   const { success, error: toastError } = useToast();
@@ -77,26 +76,13 @@ export function OrderCard({
           </div>
         </div>
 
-        <div className="flex items-center gap-1 shrink-0">
-          <Link
-            to={`/orders/${order.id}`}
-            className="text-xs font-semibold text-emerald-600 hover:text-emerald-800 flex items-center gap-0.5 p-1 rounded hover:bg-emerald-50 transition-colors"
-          >
-            <span>Details</span>
-            <ChevronRight className="w-3.5 h-3.5" />
-          </Link>
-          {isOwner && onDeleteClick && (
-            <button
-              type="button"
-              onClick={() => onDeleteClick(order)}
-              className="text-xs font-semibold text-rose-600 hover:text-rose-800 flex items-center gap-1 p-1 rounded hover:bg-rose-50 transition-colors"
-              title="Delete Order"
-            >
-              <Trash2 className="w-3.5 h-3.5 text-rose-500" />
-              <span className="hidden sm:inline">Delete</span>
-            </button>
-          )}
-        </div>
+        <Link
+          to={`/orders/${order.id}`}
+          className="text-xs font-semibold text-emerald-600 hover:text-emerald-800 flex items-center gap-0.5 p-1 rounded hover:bg-emerald-50 transition-colors"
+        >
+          <span>Details</span>
+          <ChevronRight className="w-3.5 h-3.5" />
+        </Link>
       </div>
 
       {/* Customer and address section */}

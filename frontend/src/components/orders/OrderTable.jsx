@@ -1,55 +1,22 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
-import { ConfirmModal } from '../ui/ConfirmModal';
-import { deleteOrder } from '../../api/orders';
-import { useToast } from '../../hooks/useToast';
-import { getErrorMessage } from '../../api/client';
 import {
   formatStatus,
   getStatusBadgeVariant,
   formatDate,
 } from '../../utils/formatters';
 import { OrderCard } from './OrderCard';
-import { Package, Truck, Phone, ChevronRight, User, Trash2 } from 'lucide-react';
+import { Package, Truck, Phone, ChevronRight, User } from 'lucide-react';
 
 export function OrderTable({
   orders,
   onAssignClick,
   onStatusUpdated,
-  onOrderDeleted,
   isOwner,
   isDriver,
 }) {
-  const { success, error: toastError } = useToast();
-
-  const [orderToDelete, setOrderToDelete] = useState(null);
-  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const handleDeleteClick = (order) => {
-    setOrderToDelete(order);
-    setConfirmDeleteOpen(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!orderToDelete) return;
-    setIsDeleting(true);
-    try {
-      await deleteOrder(orderToDelete.id);
-      success(`Order #${orderToDelete.id} was permanently deleted.`, 'Order Deleted');
-      setConfirmDeleteOpen(false);
-      if (onOrderDeleted) {
-        onOrderDeleted(orderToDelete.id);
-      }
-      setOrderToDelete(null);
-    } catch (err) {
-      toastError(getErrorMessage(err));
-    } finally {
-      setIsDeleting(false);
-    }
-  };
   if (!orders || orders.length === 0) {
     return (
       <div className="text-center py-12 px-4 bg-white rounded-xl border border-slate-200/80 shadow-card">
@@ -176,18 +143,6 @@ export function OrderTable({
                             View
                           </Button>
                         </Link>
-                        {isOwner && (
-                          <Button
-                            variant="danger"
-                            size="sm"
-                            icon={Trash2}
-                            onClick={() => handleDeleteClick(order)}
-                            className="text-xs py-1 px-2.5"
-                            title="Delete Order"
-                          >
-                            Delete
-                          </Button>
-                        )}
                       </div>
                     </td>
                   </tr>
@@ -208,26 +163,9 @@ export function OrderTable({
             isDriver={isDriver}
             onStatusUpdated={onStatusUpdated}
             onAssignClick={onAssignClick}
-            onDeleteClick={handleDeleteClick}
           />
         ))}
       </div>
-
-      {/* Admin Confirm Deletion Dialog */}
-      <ConfirmModal
-        isOpen={confirmDeleteOpen}
-        onClose={() => {
-          setConfirmDeleteOpen(false);
-          setOrderToDelete(null);
-        }}
-        onConfirm={handleConfirmDelete}
-        title="Delete Order Permanently"
-        message={`Are you sure you want to permanently delete order #${orderToDelete?.id} for customer "${orderToDelete?.customer?.name || ''}"? This action cannot be undone.`}
-        confirmText="Delete Order"
-        cancelText="Cancel"
-        variant="danger"
-        isLoading={isDeleting}
-      />
     </>
   );
 }

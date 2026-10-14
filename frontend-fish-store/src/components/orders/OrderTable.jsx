@@ -1,11 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
-import { ConfirmModal } from '../ui/ConfirmModal';
-import { deleteOrder } from '../../api/orders';
-import { useToast } from '../../hooks/useToast';
-import { getErrorMessage } from '../../api/client';
 import {
   formatStatus,
   getStatusBadgeVariant,
@@ -16,51 +12,17 @@ import {
 } from '../../utils/formatters';
 import { useLanguage } from '../../context/LanguageContext';
 import { OrderCard } from './OrderCard';
-import { Fish, Truck, Phone, ChevronRight, User, Edit3, Banknote, Trash2 } from 'lucide-react';
+import { Fish, Truck, Phone, ChevronRight, User, Edit3, Banknote } from 'lucide-react';
 
 export function OrderTable({
   orders,
   onAssignClick,
   onStatusUpdated,
   onEditCustomer,
-  onOrderDeleted,
   isOwner,
   isDriver,
 }) {
   const { t, language } = useLanguage();
-  const { success, error: toastError } = useToast();
-
-  const [orderToDelete, setOrderToDelete] = useState(null);
-  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const handleDeleteClick = (order) => {
-    setOrderToDelete(order);
-    setConfirmDeleteOpen(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!orderToDelete) return;
-    setIsDeleting(true);
-    try {
-      await deleteOrder(orderToDelete.id);
-      success(
-        language === 'ar'
-          ? `تم حذف الطلب #${orderToDelete.id} بنجاح.`
-          : `Order #${orderToDelete.id} was permanently deleted.`,
-        language === 'ar' ? 'تم الحذف' : 'Order Deleted'
-      );
-      setConfirmDeleteOpen(false);
-      if (onOrderDeleted) {
-        onOrderDeleted(orderToDelete.id);
-      }
-      setOrderToDelete(null);
-    } catch (err) {
-      toastError(getErrorMessage(err));
-    } finally {
-      setIsDeleting(false);
-    }
-  };
 
   if (!orders || orders.length === 0) {
     return (
@@ -219,18 +181,6 @@ export function OrderTable({
                             {t('view_details')}
                           </Button>
                         </Link>
-                        {isOwner && (
-                          <Button
-                            variant="danger"
-                            size="sm"
-                            icon={Trash2}
-                            onClick={() => handleDeleteClick(order)}
-                            className="text-xs py-1 px-2.5 bg-rose-600/20 hover:bg-rose-600 border border-rose-500/40 text-rose-300 hover:text-white"
-                            title={t('delete_order')}
-                          >
-                            {t('delete_order')}
-                          </Button>
-                        )}
                       </div>
                     </td>
                   </tr>
@@ -252,30 +202,9 @@ export function OrderTable({
             onStatusUpdated={onStatusUpdated}
             onAssignClick={onAssignClick}
             onEditCustomer={onEditCustomer}
-            onDeleteClick={handleDeleteClick}
           />
         ))}
       </div>
-
-      {/* Admin Confirm Deletion Dialog */}
-      <ConfirmModal
-        isOpen={confirmDeleteOpen}
-        onClose={() => {
-          setConfirmDeleteOpen(false);
-          setOrderToDelete(null);
-        }}
-        onConfirm={handleConfirmDelete}
-        title={t('delete_order_title')}
-        message={
-          language === 'ar'
-            ? `هل أنت متأكد من رغبتك في حذف طلب الأسماك #${orderToDelete?.id} للعميل "${orderToDelete?.customer?.name || ''}" نهائياً؟ هذا الإجراء لا يمكن التراجع عنه وسيتم مسح الطلب من النظام.`
-            : `Are you sure you want to permanently delete seafood order #${orderToDelete?.id} for customer "${orderToDelete?.customer?.name || ''}"? This action cannot be undone.`
-        }
-        confirmText={t('delete_order_btn')}
-        cancelText={t('cancel')}
-        variant="danger"
-        isLoading={isDeleting}
-      />
     </>
   );
 }

@@ -533,7 +533,6 @@ export function Orders({ isHistoryView = false }) {
           onAssignClick={handleAssignClick}
           onStatusUpdated={handleStatusUpdated}
           onEditCustomer={handleEditCustomer}
-          onOrderDeleted={handleOrderDeleted}
           isOwner={isOwner}
           isDriver={isDriver}
         />
