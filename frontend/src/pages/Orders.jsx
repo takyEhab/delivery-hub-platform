@@ -7,9 +7,6 @@ import { useToast } from '../hooks/useToast';
 import { useAuth } from '../hooks/useAuth';
 import { OrderTable } from '../components/orders/OrderTable';
 import { AssignDriverModal } from '../components/orders/AssignDriverModal';
-import { CustomerModal } from '../components/customers/CustomerModal';
-import { ImportContactsModal } from '../components/customers/ImportContactsModal';
-import { isContactPickerSupported, selectMultipleContacts } from '../utils/contacts';
 import { Button } from '../components/ui/Button';
 import { TableSkeleton } from '../components/ui/Skeleton';
 import {
@@ -32,19 +29,13 @@ export function Orders({ isHistoryView = false }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { openCreateOrder } = useOutletContext() || {};
-  const { success, error: toastError } = useToast();
+  const { error: toastError } = useToast();
 
   const isHistory = isHistoryView || location.pathname === '/orders/history';
 
   const [orders, setOrders] = useState([]);
   const [drivers, setDrivers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Driver Customer Creation Modals
-  const [driverAddCustomerOpen, setDriverAddCustomerOpen] = useState(false);
-  const [importContactsModalOpen, setImportContactsModalOpen] = useState(false);
-  const [importedContacts, setImportedContacts] = useState([]);
-  const [isSelectingContacts, setIsSelectingContacts] = useState(false);
 
   // Filters
   const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'preparing' | 'out_for_delivery' | 'delivered'
@@ -54,26 +45,6 @@ export function Orders({ isHistoryView = false }) {
   // Assign Modal
   const [assignModalOpen, setAssignModalOpen] = useState(false);
   const [selectedOrderForAssign, setSelectedOrderForAssign] = useState(null);
-
-  const handleImportFromContacts = async () => {
-    if (!isContactPickerSupported()) {
-      toastError('Contact Picker is available on mobile browsers (e.g. Chrome on Android).');
-      return;
-    }
-
-    setIsSelectingContacts(true);
-    try {
-      const selected = await selectMultipleContacts();
-      if (selected && selected.length > 0) {
-        setImportedContacts(selected);
-        setImportContactsModalOpen(true);
-      }
-    } catch (err) {
-      toastError(err.message || 'Failed to select contacts from device');
-    } finally {
-      setIsSelectingContacts(false);
-    }
-  };
 
   const fetchOrders = useCallback(async () => {
     setIsLoading(true);
@@ -158,57 +129,6 @@ export function Orders({ isHistoryView = false }) {
 
   return (
     <div className="space-y-6">
-      {/* Top View Mode Switcher for Driver */}
-      {isDriver && (
-        <div className="flex items-center gap-2 p-1.5 bg-slate-100 rounded-xl border border-slate-200 w-full sm:w-fit">
-          <button
-            type="button"
-            onClick={() => {
-              setStatusFilter('all');
-              navigate('/orders');
-            }}
-            className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all ${
-              !isHistory
-                ? 'bg-slate-900 text-white shadow-sm'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <Bike className="w-4 h-4" />
-            <span>Active Deliveries</span>
-            <span
-              className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                !isHistory ? 'bg-slate-800 text-slate-100' : 'bg-slate-200 text-slate-700'
-              }`}
-            >
-              {activeOrdersCount}
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setStatusFilter('all');
-              navigate('/orders/history');
-            }}
-            className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all ${
-              isHistory
-                ? 'bg-slate-900 text-white shadow-sm'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
-            }`}
-          >
-            <History className="w-4 h-4" />
-            <span>Order History</span>
-            <span
-              className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                isHistory ? 'bg-slate-800 text-slate-100' : 'bg-slate-200 text-slate-700'
-              }`}
-            >
-              {totalOrdersCount}
-            </span>
-          </button>
-        </div>
-      )}
-
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -234,31 +154,6 @@ export function Orders({ isHistoryView = false }) {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {/* Driver Quick Customer Actions */}
-          {isDriver && (
-            <>
-              <Button
-                variant="outline"
-                size="sm"
-                icon={UserPlus}
-                onClick={() => setDriverAddCustomerOpen(true)}
-                className="text-xs"
-              >
-                Add Customer
-              </Button>
-
-              <Button
-                variant="outline"
-                size="sm"
-                icon={Users}
-                isLoading={isSelectingContacts}
-                onClick={handleImportFromContacts}
-                className="text-xs hidden sm:inline-flex"
-              >
-                Import Contacts
-              </Button>
-            </>
-          )}
 
           <Button
             variant="outline"
@@ -418,10 +313,10 @@ export function Orders({ isHistoryView = false }) {
               variant="outline"
               size="sm"
               icon={UserPlus}
-              onClick={() => setDriverAddCustomerOpen(true)}
+              onClick={() => navigate('/driver/customers')}
               className="text-xs"
             >
-              Add Customer
+              Add Customers
             </Button>
             <Button
               variant="outline"
@@ -456,32 +351,6 @@ export function Orders({ isHistoryView = false }) {
           onSuccess={() => fetchOrders()}
         />
       )}
-
-      {/* Driver Add Customer Modal */}
-      <CustomerModal
-        isOpen={driverAddCustomerOpen}
-        customer={null}
-        onClose={() => setDriverAddCustomerOpen(false)}
-        isOwner={false}
-        existingCustomers={[]}
-        onSuccess={() => {
-          setDriverAddCustomerOpen(false);
-          success('Customer created successfully!', 'Customer Added');
-          fetchOrders();
-        }}
-      />
-
-      {/* Driver Import Contacts Modal */}
-      <ImportContactsModal
-        isOpen={importContactsModalOpen}
-        onClose={() => setImportContactsModalOpen(false)}
-        contacts={importedContacts}
-        existingCustomers={[]}
-        onSuccess={() => {
-          setImportContactsModalOpen(false);
-          fetchOrders();
-        }}
-      />
     </div>
   );
 }

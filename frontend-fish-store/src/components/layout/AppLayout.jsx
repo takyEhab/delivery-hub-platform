@@ -38,14 +38,14 @@ export function AppLayout() {
         <Topbar
           onOpenSidebar={() => setSidebarOpen(true)}
           onNewOrderClick={isOwner ? () => setCreateOrderOpen(true) : null}
-          onAddCustomerClick={() => setAddCustomerOpen(true)}
+          onAddCustomerClick={isDriver ? () => navigate('/driver/customers') : () => setAddCustomerOpen(true)}
         />
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto relative z-10">
           <Outlet
             context={{
               openCreateOrder: () => setCreateOrderOpen(true),
-              openAddCustomer: () => setAddCustomerOpen(true),
+              openAddCustomer: isDriver ? () => navigate('/driver/customers') : () => setAddCustomerOpen(true),
             }}
           />
         </main>

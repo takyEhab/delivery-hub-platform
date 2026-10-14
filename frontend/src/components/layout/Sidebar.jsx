@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   UserCheck,
   History,
+  UserPlus,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -26,6 +27,7 @@ export function Sidebar({ isOpen, onClose }) {
     : [
         { label: 'Active Deliveries', to: '/orders', icon: Bike },
         { label: 'Delivery History', to: '/orders/history', icon: History },
+        { label: 'Add Customers', to: '/driver/customers', icon: UserPlus },
       ];
 
   return (

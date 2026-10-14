@@ -14,6 +14,7 @@ import {
   Sparkles,
   ShoppingBag,
   History,
+  UserPlus,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useLanguage } from '../../context/LanguageContext';
@@ -33,6 +34,7 @@ export function Sidebar({ isOpen, onClose }) {
     : [
         { label: language === 'ar' ? 'المهام النشطة للتوصيل' : 'Active Deliveries', to: '/orders', icon: Bike },
         { label: language === 'ar' ? 'سجل جميع الطلبات' : 'Delivery History', to: '/orders/history', icon: History },
+        { label: language === 'ar' ? 'إضافة وتسجيل عملاء' : 'Add Customers', to: '/driver/customers', icon: UserPlus },
       ];
 
   const sidebarPositionClasses = isRTL

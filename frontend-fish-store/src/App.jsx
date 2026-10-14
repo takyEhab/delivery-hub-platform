@@ -9,6 +9,7 @@ import { Dashboard } from './pages/Dashboard';
 import { Customers } from './pages/Customers';
 import { Drivers } from './pages/Drivers';
 import { Orders } from './pages/Orders';
+import { DriverCustomers } from './pages/DriverCustomers';
 import { OrderDetails } from './pages/OrderDetails';
 import { EditOrder } from './pages/EditOrder';
 import { NotFound } from './pages/NotFound';
@@ -81,6 +82,14 @@ export function App() {
           element={
             <ProtectedRoute allowedRoles={['owner', 'driver']}>
               <Orders isHistoryView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/driver/customers"
+          element={
+            <ProtectedRoute allowedRoles={['owner', 'driver']}>
+              <DriverCustomers />
             </ProtectedRoute>
           }
         />

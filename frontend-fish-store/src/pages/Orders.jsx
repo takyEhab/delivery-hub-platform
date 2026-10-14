@@ -9,8 +9,6 @@ import { useLanguage } from '../context/LanguageContext';
 import { OrderTable } from '../components/orders/OrderTable';
 import { AssignDriverModal } from '../components/orders/AssignDriverModal';
 import { CustomerModal } from '../components/customers/CustomerModal';
-import { ImportContactsModal } from '../components/customers/ImportContactsModal';
-import { isContactPickerSupported, selectMultipleContacts } from '../utils/contacts';
 import { Button } from '../components/ui/Button';
 import { TableSkeleton } from '../components/ui/Skeleton';
 import { formatCurrency } from '../utils/formatters';
@@ -48,12 +46,6 @@ export function Orders({ isHistoryView = false }) {
   const [drivers, setDrivers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Driver Customer Creation Modals
-  const [driverAddCustomerOpen, setDriverAddCustomerOpen] = useState(false);
-  const [importContactsModalOpen, setImportContactsModalOpen] = useState(false);
-  const [importedContacts, setImportedContacts] = useState([]);
-  const [isSelectingContacts, setIsSelectingContacts] = useState(false);
-
   // Filters
   const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'preparing' | 'out_for_delivery' | 'delivered'
   const [paymentFilter, setPaymentFilter] = useState('all'); // 'all' | 'unpaid' | 'postpaid' | 'paid'
@@ -71,30 +63,6 @@ export function Orders({ isHistoryView = false }) {
   const handleEditCustomer = (customer) => {
     setEditingCustomerForOrder(customer);
     setCustomerModalOpen(true);
-  };
-
-  const handleImportFromContacts = async () => {
-    if (!isContactPickerSupported()) {
-      toastError(
-        language === 'ar'
-          ? 'استيراد جهات الاتصال متاح على متصفحات الهواتف المحمولة (مثل متصفح Chrome على أندرويد). يمكنك إضافة العملاء يدوياً من الكمبيوتر.'
-          : 'Contact Picker is available on mobile browsers (e.g. Chrome on Android). You can add customers manually on desktop.'
-      );
-      return;
-    }
-
-    setIsSelectingContacts(true);
-    try {
-      const selected = await selectMultipleContacts();
-      if (selected && selected.length > 0) {
-        setImportedContacts(selected);
-        setImportContactsModalOpen(true);
-      }
-    } catch (err) {
-      toastError(err.message || 'Failed to select contacts from device');
-    } finally {
-      setIsSelectingContacts(false);
-    }
   };
 
   const fetchOrders = useCallback(async () => {
@@ -203,57 +171,6 @@ export function Orders({ isHistoryView = false }) {
 
   return (
     <div className="space-y-6">
-      {/* Top View Mode Switcher for Driver */}
-      {isDriver && (
-        <div className="flex items-center gap-2 p-1.5 bg-[#030e1a]/90 rounded-2xl border border-cyan-900/40 w-full sm:w-fit">
-          <button
-            type="button"
-            onClick={() => {
-              setStatusFilter('all');
-              navigate('/orders');
-            }}
-            className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
-              !isHistory
-                ? 'bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 shadow-md shadow-cyan-500/20 font-black'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
-            }`}
-          >
-            <Bike className="w-4 h-4" />
-            <span>{language === 'ar' ? 'المهام النشطة للتوصيل' : 'Active Deliveries'}</span>
-            <span
-              className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
-                !isHistory ? 'bg-slate-950/20 text-slate-950' : 'bg-slate-800 text-cyan-300'
-              }`}
-            >
-              {activeOrdersCount}
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setStatusFilter('all');
-              navigate('/orders/history');
-            }}
-            className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
-              isHistory
-                ? 'bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 shadow-md shadow-cyan-500/20 font-black'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
-            }`}
-          >
-            <History className="w-4 h-4" />
-            <span>{language === 'ar' ? 'سجل جميع الطلبات' : 'Order History'}</span>
-            <span
-              className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
-                isHistory ? 'bg-slate-950/20 text-slate-950' : 'bg-slate-800 text-slate-400'
-              }`}
-            >
-              {totalOrdersCount}
-            </span>
-          </button>
-        </div>
-      )}
-
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -286,31 +203,6 @@ export function Orders({ isHistoryView = false }) {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {/* Driver Quick Customer Actions */}
-          {isDriver && (
-            <>
-              <Button
-                variant="outline"
-                size="sm"
-                icon={UserPlus}
-                onClick={() => setDriverAddCustomerOpen(true)}
-                className="text-xs border-cyan-600/70 text-cyan-300 hover:bg-cyan-950/60 font-bold bg-[#020d1a]"
-              >
-                {language === 'ar' ? 'إضافة عميل' : 'Add Customer'}
-              </Button>
-
-              <Button
-                variant="outline"
-                size="sm"
-                icon={Users}
-                isLoading={isSelectingContacts}
-                onClick={handleImportFromContacts}
-                className="text-xs border-teal-600/70 text-teal-300 hover:bg-teal-950/60 font-bold bg-[#020d1a] hidden sm:inline-flex"
-              >
-                {language === 'ar' ? 'استيراد جهات اتصال' : 'Import Contacts'}
-              </Button>
-            </>
-          )}
 
           <Button
             variant="outline"
@@ -615,10 +507,10 @@ export function Orders({ isHistoryView = false }) {
               variant="outline"
               size="sm"
               icon={UserPlus}
-              onClick={() => setDriverAddCustomerOpen(true)}
+              onClick={() => navigate('/driver/customers')}
               className="text-xs border-cyan-600/60 text-cyan-300 hover:bg-cyan-950/40 font-bold"
             >
-              {language === 'ar' ? 'إضافة عميل جديد' : 'Add New Customer'}
+              {language === 'ar' ? 'إضافة وتسجيل عملاء' : 'Add Customers'}
             </Button>
             <Button
               variant="outline"
@@ -672,35 +564,6 @@ export function Orders({ isHistoryView = false }) {
           }}
         />
       )}
-
-      {/* Driver Add Customer Modal */}
-      <CustomerModal
-        isOpen={driverAddCustomerOpen}
-        customer={null}
-        onClose={() => setDriverAddCustomerOpen(false)}
-        isOwner={false}
-        existingCustomers={[]}
-        onSuccess={() => {
-          setDriverAddCustomerOpen(false);
-          success(
-            language === 'ar' ? 'تمت إضافة العميل بنجاح!' : 'Customer created successfully!',
-            language === 'ar' ? 'إضافة عميل' : 'Customer Added'
-          );
-          fetchOrders();
-        }}
-      />
-
-      {/* Driver Import Contacts Modal */}
-      <ImportContactsModal
-        isOpen={importContactsModalOpen}
-        onClose={() => setImportContactsModalOpen(false)}
-        contacts={importedContacts}
-        existingCustomers={[]}
-        onSuccess={() => {
-          setImportContactsModalOpen(false);
-          fetchOrders();
-        }}
-      />
     </div>
   );
 }
