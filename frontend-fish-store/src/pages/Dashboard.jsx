@@ -35,6 +35,9 @@ import {
   Waves,
   Sparkles,
   UtensilsCrossed,
+  Bike,
+  History,
+  UserPlus,
 } from 'lucide-react';
 
 export function Dashboard() {
@@ -210,7 +213,7 @@ export function Dashboard() {
       </div>
 
       {/* Secondary Row: Quick Actions Bar (for Owner) */}
-      {isOwner && (
+      {isOwner ? (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div
             onClick={openCreateOrder}
@@ -262,6 +265,59 @@ export function Dashboard() {
               </p>
             </div>
           </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <Link
+            to="/orders"
+            className="bg-[#05172b] hover:bg-[#082240] p-4 rounded-2xl border border-cyan-900/50 shadow-md hover:border-cyan-400/50 transition-all flex items-center gap-3.5 group"
+          >
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-600 to-teal-500 text-slate-950 flex items-center justify-center font-bold shadow-md group-hover:scale-105 transition-transform">
+              <Bike className="w-6 h-6 stroke-[2.5]" />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-white group-hover:text-cyan-300 transition-colors">
+                {language === 'ar' ? 'المهام النشطة للتوصيل' : 'Active Deliveries'}
+              </h4>
+              <p className="text-[11px] text-slate-400">
+                {language === 'ar' ? `${preparingOrders + outForDeliveryOrders} طلبات قيد التسليم` : `${preparingOrders + outForDeliveryOrders} pending orders`}
+              </p>
+            </div>
+          </Link>
+
+          <Link
+            to="/orders/history"
+            className="bg-[#05172b] hover:bg-[#082240] p-4 rounded-2xl border border-cyan-900/50 shadow-md hover:border-cyan-400/50 transition-all flex items-center gap-3.5 group"
+          >
+            <div className="w-11 h-11 rounded-2xl bg-[#030e1a] text-cyan-400 border border-cyan-800/40 flex items-center justify-center font-bold shadow-md group-hover:scale-105 transition-transform">
+              <History className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-white group-hover:text-cyan-300 transition-colors">
+                {language === 'ar' ? 'سجل جميع الطلبات' : 'Delivery History'}
+              </h4>
+              <p className="text-[11px] text-slate-400">
+                {deliveredOrders} {language === 'ar' ? 'طلبات تم تسليمها' : 'delivered orders'}
+              </p>
+            </div>
+          </Link>
+
+          <Link
+            to="/driver/customers"
+            className="bg-[#05172b] hover:bg-[#082240] p-4 rounded-2xl border border-cyan-900/50 shadow-md hover:border-cyan-400/50 transition-all flex items-center gap-3.5 group"
+          >
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-sky-600 to-blue-500 text-white flex items-center justify-center font-bold shadow-md group-hover:scale-105 transition-transform">
+              <UserPlus className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-white group-hover:text-sky-300 transition-colors">
+                {language === 'ar' ? 'إضافة وتسجيل عملاء' : 'Add Customers'}
+              </h4>
+              <p className="text-[11px] text-slate-400">
+                {language === 'ar' ? 'إضافة عميل أو استيراد جهات اتصال' : 'Register customer or import'}
+              </p>
+            </div>
+          </Link>
         </div>
       )}
 
@@ -347,63 +403,102 @@ export function Dashboard() {
           </Card>
         </div>
 
-        {/* Right Column: Driver Activity & Stats */}
+        {/* Right Column: Driver Activity & Stats (Owner) or Courier Shift Card (Driver) */}
         <div>
-          <Card>
-            <CardHeader
-              title={t('drivers_title')}
-              description={language === 'ar' ? 'طاقم مناديب التوصيل المتاح لتسليم الطلبات' : 'Available couriers ready for delivery'}
-              action={
-                <Link
-                  to="/drivers"
-                  className="text-xs font-bold text-cyan-400 hover:text-cyan-300 inline-flex items-center gap-1.5"
-                >
-                  <span>{language === 'ar' ? 'إدارة' : 'Manage'}</span>
-                  <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
-                </Link>
-              }
-            />
-            <div className="divide-y divide-cyan-950/60">
-              {drivers.length === 0 ? (
-                <div className="p-8 text-center text-xs text-slate-400">
-                  {language === 'ar' ? 'لم يتم إضافة مناديب بعد.' : 'No couriers added yet.'}
-                </div>
-              ) : (
-                drivers.map((driver) => (
-                  <div
-                    key={driver.id}
-                    className="p-3.5 flex items-center justify-between gap-3 hover:bg-cyan-950/20 transition-colors"
+          {isOwner ? (
+            <Card>
+              <CardHeader
+                title={t('drivers_title')}
+                description={language === 'ar' ? 'طاقم مناديب التوصيل المتاح لتسليم الطلبات' : 'Available couriers ready for delivery'}
+                action={
+                  <Link
+                    to="/drivers"
+                    className="text-xs font-bold text-cyan-400 hover:text-cyan-300 inline-flex items-center gap-1.5"
                   >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-cyan-700 to-sky-800 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
-                        {driver.name.charAt(0).toUpperCase()}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="font-bold text-xs text-white truncate">
-                          {driver.name}
-                        </p>
-                        <a
-                          href={`tel:${driver.phone}`}
-                          className="text-[11px] text-slate-400 hover:text-cyan-400 flex items-center gap-1"
-                          dir="ltr"
-                        >
-                          <Phone className="w-3 h-3 text-cyan-400/80" />
-                          {driver.phone}
-                        </a>
-                      </div>
-                    </div>
-                    <Badge
-                      variant={driver.is_active ? 'success' : 'neutral'}
-                      size="sm"
-                      dot={driver.is_active}
-                    >
-                      {driver.is_active ? t('driver_status_active') : t('driver_status_inactive')}
-                    </Badge>
+                    <span>{language === 'ar' ? 'إدارة' : 'Manage'}</span>
+                    <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
+                  </Link>
+                }
+              />
+              <div className="divide-y divide-cyan-950/60">
+                {drivers.length === 0 ? (
+                  <div className="p-8 text-center text-xs text-slate-400">
+                    {language === 'ar' ? 'لم يتم إضافة مناديب بعد.' : 'No couriers added yet.'}
                   </div>
-                ))
-              )}
-            </div>
-          </Card>
+                ) : (
+                  drivers.map((driver) => (
+                    <div
+                      key={driver.id}
+                      className="p-3.5 flex items-center justify-between gap-3 hover:bg-cyan-950/20 transition-colors"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-cyan-700 to-sky-800 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
+                          {driver.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-bold text-xs text-white truncate">
+                            {driver.name}
+                          </p>
+                          <a
+                            href={`tel:${driver.phone}`}
+                            className="text-[11px] text-slate-400 hover:text-cyan-400 flex items-center gap-1"
+                            dir="ltr"
+                          >
+                            <Phone className="w-3 h-3 text-cyan-400/80" />
+                            {driver.phone}
+                          </a>
+                        </div>
+                      </div>
+                      <Badge
+                        variant={driver.is_active ? 'success' : 'neutral'}
+                        size="sm"
+                        dot={driver.is_active}
+                      >
+                        {driver.is_active ? t('driver_status_active') : t('driver_status_inactive')}
+                      </Badge>
+                    </div>
+                  ))
+                )}
+              </div>
+            </Card>
+          ) : (
+            <Card>
+              <CardHeader
+                title={language === 'ar' ? 'ملخص وردية التوصيل' : 'Courier Shift Overview'}
+                description={language === 'ar' ? 'بيانات الكابتن وحالة المهام اليوم' : 'Your active status and delivery progress'}
+              />
+              <div className="p-5 space-y-4">
+                <div className="flex items-center gap-3 bg-[#030e1a]/80 p-3.5 rounded-2xl border border-cyan-900/40">
+                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 to-teal-500 text-slate-950 flex items-center justify-center font-black text-sm shadow-md">
+                    {user?.name?.charAt(0).toUpperCase() || 'C'}
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-white">{user?.name}</h4>
+                    <p className="text-xs text-cyan-400/90 font-medium" dir="ltr">{user?.phone}</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="bg-[#05172b] p-3 rounded-xl border border-cyan-900/40 text-center">
+                    <span className="text-slate-400 block text-[11px]">{language === 'ar' ? 'قيد التوصيل' : 'In Delivery'}</span>
+                    <span className="text-xl font-black text-sky-400 mt-1 block">{outForDeliveryOrders}</span>
+                  </div>
+                  <div className="bg-[#05172b] p-3 rounded-xl border border-cyan-900/40 text-center">
+                    <span className="text-slate-400 block text-[11px]">{language === 'ar' ? 'تم تسليمها' : 'Delivered'}</span>
+                    <span className="text-xl font-black text-emerald-400 mt-1 block">{deliveredOrders}</span>
+                  </div>
+                </div>
+
+                <Link
+                  to="/orders"
+                  className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 font-bold text-xs hover:from-cyan-400 hover:to-teal-400 transition-all shadow-md shadow-cyan-500/20"
+                >
+                  <Bike className="w-4 h-4" />
+                  <span>{language === 'ar' ? 'الانتقال لمهام التوصيل النشطة' : 'Go to Active Deliveries'}</span>
+                </Link>
+              </div>
+            </Card>
+          )}
         </div>
       </div>
 

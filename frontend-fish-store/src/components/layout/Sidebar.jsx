@@ -32,6 +32,7 @@ export function Sidebar({ isOpen, onClose }) {
         { label: t('nav_drivers'), to: '/drivers', icon: Truck },
       ]
     : [
+        { label: t('nav_dashboard'), to: '/dashboard', icon: LayoutDashboard },
         { label: language === 'ar' ? 'المهام النشطة للتوصيل' : 'Active Deliveries', to: '/orders', icon: Bike },
         { label: language === 'ar' ? 'سجل جميع الطلبات' : 'Delivery History', to: '/orders/history', icon: History },
         { label: language === 'ar' ? 'إضافة وتسجيل عملاء' : 'Add Customers', to: '/driver/customers', icon: UserPlus },

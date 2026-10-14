@@ -29,6 +29,9 @@ import {
   RefreshCw,
   Phone,
   UserCheck,
+  Bike,
+  History,
+  UserPlus,
 } from 'lucide-react';
 
 export function Dashboard() {
@@ -199,7 +202,7 @@ export function Dashboard() {
       </div>
 
       {/* Secondary Row: Quick Actions Bar (for Owner) */}
-      {isOwner && (
+      {isOwner ? (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div
             onClick={openCreateOrder}
@@ -251,6 +254,59 @@ export function Dashboard() {
               </p>
             </div>
           </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <Link
+            to="/orders"
+            className="bg-white hover:bg-emerald-50/50 p-4 rounded-xl border border-slate-200/80 shadow-card hover:border-emerald-300 transition-all flex items-center gap-3.5 group"
+          >
+            <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+              <Bike className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                Active Deliveries
+              </h4>
+              <p className="text-[11px] text-slate-500">
+                {preparingOrders + outForDeliveryOrders} pending orders
+              </p>
+            </div>
+          </Link>
+
+          <Link
+            to="/orders/history"
+            className="bg-white hover:bg-emerald-50/50 p-4 rounded-xl border border-slate-200/80 shadow-card hover:border-emerald-300 transition-all flex items-center gap-3.5 group"
+          >
+            <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+              <History className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                Delivery History
+              </h4>
+              <p className="text-[11px] text-slate-500">
+                {deliveredOrders} delivered orders
+              </p>
+            </div>
+          </Link>
+
+          <Link
+            to="/driver/customers"
+            className="bg-white hover:bg-emerald-50/50 p-4 rounded-xl border border-slate-200/80 shadow-card hover:border-emerald-300 transition-all flex items-center gap-3.5 group"
+          >
+            <div className="w-10 h-10 rounded-xl bg-sky-600 text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+              <UserPlus className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold text-slate-900 group-hover:text-sky-700 transition-colors">
+                Add Customers
+              </h4>
+              <p className="text-[11px] text-slate-500">
+                Register customer or import contacts
+              </p>
+            </div>
+          </Link>
         </div>
       )}
 
@@ -336,62 +392,101 @@ export function Dashboard() {
           </Card>
         </div>
 
-        {/* Right Column: Driver Activity & Stats */}
+        {/* Right Column: Driver Activity & Stats (Owner) or Courier Shift Card (Driver) */}
         <div>
-          <Card>
-            <CardHeader
-              title="Active Drivers"
-              description="Team roster available for assignments"
-              action={
-                <Link
-                  to="/drivers"
-                  className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 inline-flex items-center gap-1"
-                >
-                  <span>Manage</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              }
-            />
-            <div className="divide-y divide-slate-100">
-              {drivers.length === 0 ? (
-                <div className="p-8 text-center text-xs text-slate-400">
-                  No drivers added yet.
-                </div>
-              ) : (
-                drivers.map((driver) => (
-                  <div
-                    key={driver.id}
-                    className="p-3.5 flex items-center justify-between gap-3 hover:bg-slate-50 transition-colors"
+          {isOwner ? (
+            <Card>
+              <CardHeader
+                title="Active Drivers"
+                description="Team roster available for assignments"
+                action={
+                  <Link
+                    to="/drivers"
+                    className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 inline-flex items-center gap-1"
                   >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="w-8 h-8 rounded-full bg-sky-50 text-sky-700 flex items-center justify-center font-bold text-xs shrink-0 border border-sky-100">
-                        {driver.name.charAt(0).toUpperCase()}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="font-medium text-xs text-slate-900 truncate">
-                          {driver.name}
-                        </p>
-                        <a
-                          href={`tel:${driver.phone}`}
-                          className="text-[11px] text-slate-400 hover:text-sky-600 flex items-center gap-1"
-                        >
-                          <Phone className="w-3 h-3 text-slate-300" />
-                          {driver.phone}
-                        </a>
-                      </div>
-                    </div>
-                    <Badge
-                      variant={driver.is_active ? 'success' : 'neutral'}
-                      size="sm"
-                      dot={driver.is_active}
-                    >
-                      {driver.is_active ? 'Active' : 'Inactive'}
-                    </Badge>
+                    <span>Manage</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                }
+              />
+              <div className="divide-y divide-slate-100">
+                {drivers.length === 0 ? (
+                  <div className="p-8 text-center text-xs text-slate-400">
+                    No drivers added yet.
                   </div>
-                ))
-              )}
-            </div>
-          </Card>
+                ) : (
+                  drivers.map((driver) => (
+                    <div
+                      key={driver.id}
+                      className="p-3.5 flex items-center justify-between gap-3 hover:bg-slate-50 transition-colors"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-8 h-8 rounded-full bg-sky-50 text-sky-700 flex items-center justify-center font-bold text-xs shrink-0 border border-sky-100">
+                          {driver.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-medium text-xs text-slate-900 truncate">
+                            {driver.name}
+                          </p>
+                          <a
+                            href={`tel:${driver.phone}`}
+                            className="text-[11px] text-slate-400 hover:text-sky-600 flex items-center gap-1"
+                          >
+                            <Phone className="w-3 h-3 text-slate-300" />
+                            {driver.phone}
+                          </a>
+                        </div>
+                      </div>
+                      <Badge
+                        variant={driver.is_active ? 'success' : 'neutral'}
+                        size="sm"
+                        dot={driver.is_active}
+                      >
+                        {driver.is_active ? 'Active' : 'Inactive'}
+                      </Badge>
+                    </div>
+                  ))
+                )}
+              </div>
+            </Card>
+          ) : (
+            <Card>
+              <CardHeader
+                title="Courier Shift Overview"
+                description="Your active status and delivery progress"
+              />
+              <div className="p-5 space-y-4">
+                <div className="flex items-center gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                    {user?.name?.charAt(0).toUpperCase() || 'C'}
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-semibold text-slate-900">{user?.name}</h4>
+                    <p className="text-xs text-slate-500 font-medium">{user?.phone}</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 text-center">
+                    <span className="text-slate-500 block text-[11px]">In Delivery</span>
+                    <span className="text-xl font-bold text-sky-600 mt-1 block">{outForDeliveryOrders}</span>
+                  </div>
+                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 text-center">
+                    <span className="text-slate-500 block text-[11px]">Delivered</span>
+                    <span className="text-xl font-bold text-emerald-600 mt-1 block">{deliveredOrders}</span>
+                  </div>
+                </div>
+
+                <Link
+                  to="/orders"
+                  className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-emerald-600 text-white font-semibold text-xs hover:bg-emerald-700 transition-all shadow-sm"
+                >
+                  <Bike className="w-4 h-4" />
+                  <span>Go to Active Deliveries</span>
+                </Link>
+              </div>
+            </Card>
+          )}
         </div>
       </div>
 

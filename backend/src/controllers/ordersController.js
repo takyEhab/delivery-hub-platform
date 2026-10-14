@@ -1,6 +1,7 @@
 const ordersQueries = require('../db/queries/orders');
 const customersQueries = require('../db/queries/customers');
 const usersQueries = require('../db/queries/users');
+const notificationEmitter = require('../utils/notificationEmitter');
 const { AppError } = require('../utils/errors');
 
 const STATUS_FLOW = {
@@ -62,6 +63,13 @@ async function createOrder(req, res, next) {
       driverId: req.body.driver_id ? Number(req.body.driver_id) : null,
     });
 
+    if (order && order.assigned_driver_id) {
+      notificationEmitter.emit('order_assigned', {
+        driverId: Number(order.assigned_driver_id),
+        order,
+      });
+    }
+
     res.status(201).json({ order });
   } catch (err) {
     next(err);
@@ -119,6 +127,13 @@ async function assignOrder(req, res, next) {
     }
     if (result.alreadyAssigned) {
       throw new AppError('Order is already assigned to a driver', 400);
+    }
+
+    if (result.order && driverId) {
+      notificationEmitter.emit('order_assigned', {
+        driverId: Number(driverId),
+        order: result.order,
+      });
     }
 
     res.json({ order: result.order });
@@ -221,6 +236,13 @@ async function updateOrder(req, res, next) {
       paymentStatus: req.body.payment_status,
       paymentNotes: req.body.payment_notes,
     });
+
+    if (updated && driverId && (!existing.assigned_driver_id || Number(existing.assigned_driver_id) !== Number(driverId))) {
+      notificationEmitter.emit('order_assigned', {
+        driverId: Number(driverId),
+        order: updated,
+      });
+    }
 
     res.json({ order: updated });
   } catch (err) {

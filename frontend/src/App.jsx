@@ -14,12 +14,9 @@ import { OrderDetails } from './pages/OrderDetails';
 import { NotFound } from './pages/NotFound';
 
 function RootRedirect() {
-  const { isAuthenticated, isDriver } = useAuth();
+  const { isAuthenticated } = useAuth();
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
-  }
-  if (isDriver) {
-    return <Navigate to="/orders" replace />;
   }
   return <Navigate to="/dashboard" replace />;
 }
@@ -41,11 +38,11 @@ export function App() {
           </ProtectedRoute>
         }
       >
-        {/* Owner-only routes */}
+        {/* Main Dashboard route (Owner & Driver) */}
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute allowedRoles={['owner']}>
+            <ProtectedRoute allowedRoles={['owner', 'driver']}>
               <Dashboard />
             </ProtectedRoute>
           }

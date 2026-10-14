@@ -25,6 +25,7 @@ export function Sidebar({ isOpen, onClose }) {
         { label: 'Drivers', to: '/drivers', icon: Truck },
       ]
     : [
+        { label: 'Dashboard', to: '/dashboard', icon: LayoutDashboard },
         { label: 'Active Deliveries', to: '/orders', icon: Bike },
         { label: 'Delivery History', to: '/orders/history', icon: History },
         { label: 'Add Customers', to: '/driver/customers', icon: UserPlus },

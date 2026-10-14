@@ -5,11 +5,17 @@ const { AppError } = require('../utils/errors');
 async function authenticate(req, res, next) {
   try {
     const header = req.headers.authorization;
-    if (!header || !header.startsWith('Bearer ')) {
-      throw new AppError('Authentication required', 401);
+    let token = null;
+
+    if (header && header.startsWith('Bearer ')) {
+      token = header.slice(7);
+    } else if (req.query && req.query.token) {
+      token = req.query.token;
     }
 
-    const token = header.slice(7);
+    if (!token) {
+      throw new AppError('Authentication required', 401);
+    }
     let decoded;
     try {
       decoded = verifyToken(token);

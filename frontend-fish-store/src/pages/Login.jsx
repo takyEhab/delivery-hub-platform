@@ -24,13 +24,20 @@ export function Login() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const { t, isRTL, language } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
   const { success } = useToast();
 
   const from = location.state?.from?.pathname;
+
+  // If already logged in, redirect straight to /dashboard
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,10 +63,8 @@ export function Login() {
       // Determine redirect target based on user role
       if (from && from !== '/login') {
         navigate(from, { replace: true });
-      } else if (data.user.role === 'owner') {
-        navigate('/dashboard', { replace: true });
       } else {
-        navigate('/orders', { replace: true });
+        navigate('/dashboard', { replace: true });
       }
     } catch (err) {
       setError(getErrorMessage(err));
