@@ -55,8 +55,8 @@ export function Topbar({ onOpenSidebar, onNewOrderClick, onAddCustomerClick }) {
 
       {/* Right: Actions, Sandbox Pill, Language Switcher & User pill */}
       <div className="flex items-center gap-2.5 sm:gap-3">
-        {/* Sandbox Demo Mode Pill & Reset (Only shown when explicitly in demo mode) */}
-        {import.meta.env.VITE_DEMO_MODE === 'true' && (
+        {/* Sandbox Demo Mode Pill & Reset */}
+        {import.meta.env.VITE_DEMO_MODE !== 'false' && (
           <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-cyan-950/70 border border-cyan-500/30 text-cyan-300 text-[11px] font-bold">
             <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
             <span>{language === 'ar' ? 'عرض تجريبي' : 'Sandbox Demo'}</span>

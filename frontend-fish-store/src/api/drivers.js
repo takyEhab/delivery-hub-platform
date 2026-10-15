@@ -6,7 +6,7 @@ import {
   mockDeleteDriver,
 } from './mockStorage';
 
-const IS_DEMO = import.meta.env.VITE_DEMO_MODE === 'true';
+const IS_DEMO = import.meta.env.VITE_DEMO_MODE !== 'false';
 
 export async function listDrivers() {
   if (IS_DEMO) {
