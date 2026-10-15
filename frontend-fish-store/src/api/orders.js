@@ -10,7 +10,7 @@ import {
   mockDeleteOrder,
 } from './mockStorage';
 
-const IS_DEMO = import.meta.env.VITE_DEMO_MODE !== 'false';
+const IS_DEMO = import.meta.env.VITE_DEMO_MODE === 'true';
 
 function getCurrentUser() {
   try {

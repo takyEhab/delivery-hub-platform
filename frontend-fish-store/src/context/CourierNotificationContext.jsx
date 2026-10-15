@@ -128,8 +128,8 @@ export function CourierNotificationProvider({ children }) {
         initializedRef.current = true;
       });
 
-    // 2. Connect to Server-Sent Events stream (Skipped in standalone Demo Mode)
-    const IS_DEMO = import.meta.env.VITE_DEMO_MODE !== 'false';
+    // 2. Connect to Server-Sent Events stream (Skipped when explicitly in Demo Mode)
+    const IS_DEMO = import.meta.env.VITE_DEMO_MODE === 'true';
     if (!IS_DEMO) {
       try {
         const sseUrl = `${baseURL}/notifications/stream?token=${encodeURIComponent(token)}`;

@@ -7,7 +7,7 @@ import {
   mockDeleteCustomer,
 } from './mockStorage';
 
-const IS_DEMO = import.meta.env.VITE_DEMO_MODE !== 'false';
+const IS_DEMO = import.meta.env.VITE_DEMO_MODE === 'true';
 
 export async function listCustomers() {
   if (IS_DEMO) {

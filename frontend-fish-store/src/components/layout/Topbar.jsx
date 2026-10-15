@@ -55,20 +55,22 @@ export function Topbar({ onOpenSidebar, onNewOrderClick, onAddCustomerClick }) {
 
       {/* Right: Actions, Sandbox Pill, Language Switcher & User pill */}
       <div className="flex items-center gap-2.5 sm:gap-3">
-        {/* Sandbox Demo Mode Pill & Reset */}
-        <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-cyan-950/70 border border-cyan-500/30 text-cyan-300 text-[11px] font-bold">
-          <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-          <span>{language === 'ar' ? 'عرض تجريبي' : 'Sandbox Demo'}</span>
-          <button
-            type="button"
-            onClick={handleResetDemo}
-            title={language === 'ar' ? 'استعادة البيانات التجريبية الأولية' : 'Reset Demo Data'}
-            className="flex items-center gap-1 ml-1 rtl:ml-0 rtl:mr-1 px-1.5 py-0.5 rounded-md bg-cyan-900/60 hover:bg-cyan-800 text-cyan-200 hover:text-white transition-colors cursor-pointer"
-          >
-            <RotateCcw className="w-3 h-3" />
-            <span className="text-[10px] font-normal">{language === 'ar' ? 'استعادة' : 'Reset'}</span>
-          </button>
-        </div>
+        {/* Sandbox Demo Mode Pill & Reset (Only shown when explicitly in demo mode) */}
+        {import.meta.env.VITE_DEMO_MODE === 'true' && (
+          <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-cyan-950/70 border border-cyan-500/30 text-cyan-300 text-[11px] font-bold">
+            <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+            <span>{language === 'ar' ? 'عرض تجريبي' : 'Sandbox Demo'}</span>
+            <button
+              type="button"
+              onClick={handleResetDemo}
+              title={language === 'ar' ? 'استعادة البيانات التجريبية الأولية' : 'Reset Demo Data'}
+              className="flex items-center gap-1 ml-1 rtl:ml-0 rtl:mr-1 px-1.5 py-0.5 rounded-md bg-cyan-900/60 hover:bg-cyan-800 text-cyan-200 hover:text-white transition-colors cursor-pointer"
+            >
+              <RotateCcw className="w-3 h-3" />
+              <span className="text-[10px] font-normal">{language === 'ar' ? 'استعادة' : 'Reset'}</span>
+            </button>
+          </div>
+        )}
 
         {/* Language Switcher */}
         <LanguageToggle variant="default" />

@@ -1,7 +1,7 @@
 import { apiClient } from './client';
 import { mockLogin } from './mockStorage';
 
-const IS_DEMO = import.meta.env.VITE_DEMO_MODE !== 'false';
+const IS_DEMO = import.meta.env.VITE_DEMO_MODE === 'true';
 
 export async function login({ phone, password }) {
   if (IS_DEMO) {
