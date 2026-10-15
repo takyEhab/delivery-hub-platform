@@ -73,11 +73,24 @@ export function Login() {
     }
   };
 
-  // Quick fill helper for review and testing
-  const handleQuickFill = (testPhone, testPass) => {
+  // 1-Click instant login helper for portfolio recruiters and reviewers
+  const handleQuickLogin = async (testPhone, testPass) => {
     setPhone(testPhone);
     setPassword(testPass);
     setError('');
+    setIsLoading(true);
+    try {
+      const data = await login(testPhone, testPass);
+      const welcomeMsg = language === 'ar'
+        ? `أهلاً بك، ${data.user.name}!`
+        : `Welcome, ${data.user.name}!`;
+      success(welcomeMsg, language === 'ar' ? 'تم تسجيل الدخول التجريبي' : 'Demo Login');
+      navigate('/dashboard', { replace: true });
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -195,19 +208,21 @@ export function Login() {
             <div className="grid grid-cols-2 gap-2 text-xs">
               <button
                 type="button"
-                onClick={() => handleQuickFill('01097132814', 'changeme123')}
-                className="flex items-center justify-center gap-1.5 p-2.5 rounded-xl bg-[#031120] border border-cyan-900/50 text-slate-200 hover:text-cyan-300 hover:border-cyan-500/50 hover:bg-cyan-950/40 transition-all text-center"
+                onClick={() => handleQuickLogin('01097132814', 'changeme123')}
+                disabled={isLoading}
+                className="flex items-center justify-center gap-1.5 p-2.5 rounded-xl bg-[#031120] border border-cyan-800/60 text-cyan-200 hover:text-white hover:border-cyan-400 hover:bg-cyan-950/60 shadow-sm transition-all text-center group cursor-pointer disabled:opacity-50"
               >
-                <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0" />
-                <span className="font-semibold truncate">{t('demo_owner')}</span>
+                <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0 group-hover:scale-110 transition-transform" />
+                <span className="font-bold truncate">{t('demo_owner')}</span>
               </button>
               <button
                 type="button"
-                onClick={() => handleQuickFill('0501112233', 'driver123')}
-                className="flex items-center justify-center gap-1.5 p-2.5 rounded-xl bg-[#031120] border border-sky-900/50 text-slate-200 hover:text-sky-300 hover:border-sky-500/50 hover:bg-sky-950/40 transition-all text-center"
+                onClick={() => handleQuickLogin('0501112233', 'driver123')}
+                disabled={isLoading}
+                className="flex items-center justify-center gap-1.5 p-2.5 rounded-xl bg-[#031120] border border-sky-800/60 text-sky-200 hover:text-white hover:border-sky-400 hover:bg-sky-950/60 shadow-sm transition-all text-center group cursor-pointer disabled:opacity-50"
               >
-                <Bike className="w-4 h-4 text-sky-400 shrink-0" />
-                <span className="font-semibold truncate">{t('demo_driver')}</span>
+                <Bike className="w-4 h-4 text-sky-400 shrink-0 group-hover:scale-110 transition-transform" />
+                <span className="font-bold truncate">{t('demo_driver')}</span>
               </button>
             </div>
           </div>

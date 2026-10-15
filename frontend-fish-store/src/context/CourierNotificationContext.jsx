@@ -128,28 +128,31 @@ export function CourierNotificationProvider({ children }) {
         initializedRef.current = true;
       });
 
-    // 2. Connect to Server-Sent Events stream
-    try {
-      const sseUrl = `${baseURL}/notifications/stream?token=${encodeURIComponent(token)}`;
-      eventSource = new EventSource(sseUrl);
+    // 2. Connect to Server-Sent Events stream (Skipped in standalone Demo Mode)
+    const IS_DEMO = import.meta.env.VITE_DEMO_MODE !== 'false';
+    if (!IS_DEMO) {
+      try {
+        const sseUrl = `${baseURL}/notifications/stream?token=${encodeURIComponent(token)}`;
+        eventSource = new EventSource(sseUrl);
 
-      eventSource.onmessage = (event) => {
-        if (!isMounted) return;
-        try {
-          const data = JSON.parse(event.data);
-          if (data.type === 'order_assigned' && data.order) {
-            triggerOrderNotification(data.order);
+        eventSource.onmessage = (event) => {
+          if (!isMounted) return;
+          try {
+            const data = JSON.parse(event.data);
+            if (data.type === 'order_assigned' && data.order) {
+              triggerOrderNotification(data.order);
+            }
+          } catch (e) {
+            // ignore keep-alives or non-json
           }
-        } catch (e) {
-          // ignore keep-alives or non-json
-        }
-      };
+        };
 
-      eventSource.onerror = () => {
-        // SSE reconnects automatically
-      };
-    } catch (e) {
-      console.debug('Failed to initialize SSE:', e);
+        eventSource.onerror = () => {
+          // SSE reconnects automatically
+        };
+      } catch (e) {
+        console.debug('Failed to initialize SSE:', e);
+      }
     }
 
     // 3. Smart polling fallback every 12 seconds

@@ -57,11 +57,21 @@ export function Login() {
     }
   };
 
-  // Quick fill helper for review and testing
-  const handleQuickFill = (testPhone, testPass) => {
+  // 1-Click instant login helper for portfolio recruiters and reviewers
+  const handleQuickLogin = async (testPhone, testPass) => {
     setPhone(testPhone);
     setPassword(testPass);
     setError('');
+    setIsLoading(true);
+    try {
+      const data = await login(testPhone, testPass);
+      success(`Welcome to DeliveryHub Demo, ${data.user.name}!`, 'Demo Login Successful');
+      navigate('/dashboard', { replace: true });
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -163,19 +173,21 @@ export function Login() {
             <div className="grid grid-cols-2 gap-2 text-xs">
               <button
                 type="button"
-                onClick={() => handleQuickFill('01097132814', 'changeme123')}
-                className="flex items-center justify-center gap-1.5 p-2 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-300 hover:text-emerald-400 hover:border-emerald-500/50 transition-all text-left"
+                onClick={() => handleQuickLogin('01000000000', 'demo123')}
+                disabled={isLoading}
+                className="flex items-center justify-center gap-1.5 p-2.5 rounded-lg bg-slate-900/90 border border-emerald-600/50 text-emerald-300 hover:text-white hover:border-emerald-400 hover:bg-emerald-950/60 shadow-sm transition-all text-center cursor-pointer disabled:opacity-50 font-medium"
               >
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span className="truncate">Owner Account</span>
+                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span className="truncate">Demo Manager</span>
               </button>
               <button
                 type="button"
-                onClick={() => handleQuickFill('0501112233', 'driver123')}
-                className="flex items-center justify-center gap-1.5 p-2 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-300 hover:text-sky-400 hover:border-sky-500/50 transition-all text-left"
+                onClick={() => handleQuickLogin('01100000000', 'demo123')}
+                disabled={isLoading}
+                className="flex items-center justify-center gap-1.5 p-2.5 rounded-lg bg-slate-900/90 border border-sky-600/50 text-sky-300 hover:text-white hover:border-sky-400 hover:bg-sky-950/60 shadow-sm transition-all text-center cursor-pointer disabled:opacity-50 font-medium"
               >
-                <Bike className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-                <span className="truncate">Driver Account</span>
+                <Bike className="w-4 h-4 text-sky-400 shrink-0" />
+                <span className="truncate">Demo Courier</span>
               </button>
             </div>
           </div>

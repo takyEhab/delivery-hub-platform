@@ -104,21 +104,25 @@ export function CourierNotificationProvider({ children }) {
         initializedRef.current = true;
       });
 
-    try {
-      const sseUrl = `${baseURL}/notifications/stream?token=${encodeURIComponent(token)}`;
-      eventSource = new EventSource(sseUrl);
+    // Skip live SSE in standalone Demo Mode
+    const IS_DEMO = import.meta.env.VITE_DEMO_MODE !== 'false';
+    if (!IS_DEMO) {
+      try {
+        const sseUrl = `${baseURL}/notifications/stream?token=${encodeURIComponent(token)}`;
+        eventSource = new EventSource(sseUrl);
 
-      eventSource.onmessage = (event) => {
-        if (!isMounted) return;
-        try {
-          const data = JSON.parse(event.data);
-          if (data.type === 'order_assigned' && data.order) {
-            triggerOrderNotification(data.order);
-          }
-        } catch (e) {}
-      };
-    } catch (e) {
-      console.debug('Failed to initialize SSE:', e);
+        eventSource.onmessage = (event) => {
+          if (!isMounted) return;
+          try {
+            const data = JSON.parse(event.data);
+            if (data.type === 'order_assigned' && data.order) {
+              triggerOrderNotification(data.order);
+            }
+          } catch (e) {}
+        };
+      } catch (e) {
+        console.debug('Failed to initialize SSE:', e);
+      }
     }
 
     const pollTimer = setInterval(async () => {
