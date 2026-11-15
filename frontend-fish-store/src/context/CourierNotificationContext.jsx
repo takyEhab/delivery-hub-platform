@@ -209,32 +209,28 @@ export function CourierNotificationProvider({ children }) {
       {/* Real-time In-App Notification Banner */}
       {activeNotification && (
         <div className="fixed top-4 left-4 right-4 sm:left-auto sm:right-6 sm:w-96 z-50 animate-in slide-in-from-top-4 duration-300">
-          <div className="bg-gradient-to-r from-[#061e38] via-[#092b52] to-[#041629] border-2 border-cyan-400 rounded-2xl shadow-2xl p-4 text-white relative overflow-hidden backdrop-blur-xl">
-            {/* Glowing top line */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-500 animate-pulse" />
-
+          <div className="bg-[#0F1622] border border-blue-500/50 rounded-xl shadow-2xl p-4 text-white relative overflow-hidden">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-300 flex items-center justify-center shrink-0 border border-cyan-400/40 shadow-inner relative">
-                  <Bike className="w-5 h-5 text-cyan-300 animate-bounce" />
-                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-rose-500 rounded-full animate-ping" />
-                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-rose-500 rounded-full" />
+                <div className="w-10 h-10 rounded-xl bg-blue-950/60 text-blue-400 flex items-center justify-center shrink-0 border border-blue-800/60 relative">
+                  <Bike className="w-5 h-5 text-blue-400" />
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-blue-500 rounded-full" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-black text-white flex items-center gap-1.5">
+                  <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
                     <span>{language === 'ar' ? 'طلب جديد مسند إليك!' : 'New Order Assigned!'}</span>
-                    <span className="text-cyan-400 font-extrabold">#{activeNotification.id}</span>
+                    <span className="text-blue-400 font-mono">#{activeNotification.id}</span>
                   </h4>
                   <p className="text-xs text-slate-300 font-semibold mt-0.5">
                     {activeNotification.customer?.name}
                   </p>
                   {activeNotification.customer?.address && (
                     <p className="text-[11px] text-slate-400 truncate max-w-[210px] flex items-center gap-1 mt-0.5">
-                      <MapPin className="w-3 h-3 text-cyan-400 shrink-0" />
+                      <MapPin className="w-3 h-3 text-slate-500 shrink-0" />
                       <span>{activeNotification.customer.address}</span>
                     </p>
                   )}
-                  <p className="text-xs font-black text-emerald-300 mt-1.5">
+                  <p className="text-xs font-bold text-emerald-400 mt-1.5">
                     {formatCurrency(parseFloat(activeNotification.total_amount) || 0, language)}
                   </p>
                 </div>
@@ -243,7 +239,7 @@ export function CourierNotificationProvider({ children }) {
               <button
                 type="button"
                 onClick={dismissNotification}
-                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-cyan-950/60 transition-colors"
+                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors"
                 title="Dismiss"
               >
                 <X className="w-4 h-4" />
@@ -251,18 +247,18 @@ export function CourierNotificationProvider({ children }) {
             </div>
 
             {/* Quick Actions */}
-            <div className="mt-3.5 pt-3 border-t border-cyan-900/50 flex items-center justify-end gap-2">
+            <div className="mt-3.5 pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
               <button
                 type="button"
                 onClick={dismissNotification}
-                className="px-3 py-1.5 text-xs text-slate-300 hover:text-white rounded-xl hover:bg-slate-800/60 transition-colors"
+                className="px-3 py-1.5 text-xs text-slate-300 hover:text-white rounded-lg hover:bg-slate-800 transition-colors font-medium"
               >
                 {language === 'ar' ? 'إغلاق' : 'Dismiss'}
               </button>
               <button
                 type="button"
                 onClick={() => viewOrder(activeNotification.id)}
-                className="px-4 py-1.5 text-xs font-bold bg-gradient-to-r from-cyan-400 to-teal-400 text-slate-950 rounded-xl hover:from-cyan-300 hover:to-teal-300 shadow-md shadow-cyan-500/20 transition-all flex items-center gap-1"
+                className="px-4 py-1.5 text-xs font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-500 shadow-button transition-all flex items-center gap-1.5"
               >
                 <span>{language === 'ar' ? 'عرض الطلب الآن' : 'View Order'}</span>
                 <ExternalLink className="w-3.5 h-3.5" />

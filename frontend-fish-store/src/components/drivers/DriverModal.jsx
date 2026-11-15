@@ -157,15 +157,15 @@ export function DriverModal({ isOpen, onClose, driver, onSuccess }) {
 
         {/* Active Toggle Switch */}
         <div className="pt-2">
-          <label className="flex items-center gap-3 p-3 rounded-xl bg-[#030e1a] border border-cyan-900/40 cursor-pointer hover:bg-cyan-950/30 transition-colors">
+          <label className="flex items-center gap-3 p-3 rounded-lg bg-[#0B1019] border border-slate-800 cursor-pointer hover:bg-slate-800/40 transition-colors">
             <input
               type="checkbox"
               checked={formData.is_active}
               onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-              className="w-4 h-4 rounded text-cyan-500 focus:ring-cyan-400 bg-slate-900 border-slate-700"
+              className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 bg-[#070B12] border-slate-700"
             />
             <div className="flex flex-col">
-              <span className="text-xs font-bold text-white">
+              <span className="text-xs font-semibold text-white">
                 {language === 'ar' ? 'كابتن متاح لاستقبال الطلبات' : 'Active and available for delivery'}
               </span>
               <span className="text-[11px] text-slate-400">
@@ -175,7 +175,7 @@ export function DriverModal({ isOpen, onClose, driver, onSuccess }) {
           </label>
         </div>
 
-        <div className="pt-4 flex items-center justify-end gap-3 border-t border-cyan-950/80">
+        <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-800">
           <Button variant="outline" onClick={onClose} disabled={isLoading} className="border-slate-700 text-slate-300">
             {t('cancel')}
           </Button>
@@ -183,7 +183,6 @@ export function DriverModal({ isOpen, onClose, driver, onSuccess }) {
             type="submit"
             variant="primary"
             isLoading={isLoading}
-            className="bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 font-bold border-0"
           >
             {isEditing
               ? (language === 'ar' ? 'حفظ التعديلات' : 'Save Changes')

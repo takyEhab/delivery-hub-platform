@@ -213,10 +213,10 @@ export function ImportContactsModal({
     >
       <div className="space-y-4 text-slate-200">
         {/* Banner with stats & duplicate notice */}
-        <div className="p-3 bg-cyan-950/60 rounded-xl border border-cyan-800/40 flex items-center justify-between gap-3 text-xs">
+        <div className="p-3 bg-[#0B1019] rounded-xl border border-slate-800 flex items-center justify-between gap-3 text-xs">
           <div className="space-y-1">
-            <div className="flex items-center gap-1.5 font-bold text-cyan-200">
-              <Users className="w-4 h-4 text-cyan-400 shrink-0" />
+            <div className="flex items-center gap-1.5 font-bold text-slate-200">
+              <Users className="w-4 h-4 text-blue-400 shrink-0" />
               <span>
                 {language === 'ar'
                   ? `${newContactsCount} عميل جديد متاح للإضافة`
@@ -239,7 +239,7 @@ export function ImportContactsModal({
             <button
               type="button"
               onClick={toggleSelectAll}
-              className="text-xs font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-1.5 shrink-0 transition-colors"
+              className="text-xs font-semibold text-blue-400 hover:text-blue-300 flex items-center gap-1.5 shrink-0 transition-colors"
             >
               {selectedIndices.length === newContactsCount ? (
                 <>
@@ -257,7 +257,7 @@ export function ImportContactsModal({
         </div>
 
         {/* Contacts Checkbox List */}
-        <div className="max-h-64 overflow-y-auto divide-y divide-cyan-950/60 border border-cyan-900/40 rounded-2xl bg-[#030e1a]">
+        <div className="max-h-64 overflow-y-auto divide-y divide-slate-800/80 border border-slate-800 rounded-xl bg-[#0B1019]">
           {analyzedContacts.map((c, idx) => {
             const isSelected = selectedIndices.includes(idx);
             const isDuplicate = c.isAlreadyRegistered || c.isBatchDuplicate;
@@ -270,7 +270,7 @@ export function ImportContactsModal({
                   isDuplicate
                     ? 'bg-slate-950/60 opacity-60 cursor-not-allowed'
                     : isSelected
-                    ? 'bg-cyan-950/50 hover:bg-cyan-950/70 cursor-pointer'
+                    ? 'bg-blue-950/25 hover:bg-blue-950/40 cursor-pointer'
                     : 'hover:bg-slate-900/60 cursor-pointer'
                 }`}
               >
@@ -280,7 +280,7 @@ export function ImportContactsModal({
                       isDuplicate
                         ? 'border-slate-700 bg-slate-900 text-slate-600'
                         : isSelected
-                        ? 'bg-cyan-500 border-cyan-500 text-slate-950'
+                        ? 'bg-blue-600 border-blue-600 text-white'
                         : 'border-slate-600 bg-slate-900'
                     }`}
                   >
@@ -288,7 +288,7 @@ export function ImportContactsModal({
                   </div>
                   <div className="min-w-0">
                     <p className="text-xs font-bold text-white truncate">{c.name}</p>
-                    <p className="text-[11px] text-cyan-300/80 font-mono" dir="ltr">
+                    <p className="text-[11px] text-slate-400 font-mono" dir="ltr">
                       {c.phone}
                     </p>
                   </div>
@@ -296,15 +296,15 @@ export function ImportContactsModal({
 
                 <div className="shrink-0 text-right rtl:text-left">
                   {c.isAlreadyRegistered ? (
-                    <span className="inline-flex items-center gap-1 text-[10px] text-amber-300 bg-amber-950/60 border border-amber-800/60 font-semibold px-2 py-0.5 rounded-full">
+                    <span className="inline-flex items-center gap-1 text-[10px] text-amber-300 bg-amber-950/40 border border-amber-800/50 font-medium px-2 py-0.5 rounded-md">
                       {language === 'ar' ? 'مسجل مسبقاً' : 'Already in directory'}
                     </span>
                   ) : c.isBatchDuplicate ? (
-                    <span className="text-[10px] text-slate-400 bg-slate-800/80 px-2 py-0.5 rounded-full font-medium">
+                    <span className="text-[10px] text-slate-400 bg-slate-800/80 px-2 py-0.5 rounded-md font-medium">
                       {language === 'ar' ? 'مكرر في القائمة' : 'Duplicate in batch'}
                     </span>
                   ) : (
-                    <span className="text-[10px] text-teal-300 bg-teal-950/60 border border-teal-800/60 font-semibold px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] text-emerald-300 bg-emerald-950/40 border border-emerald-800/50 font-medium px-2 py-0.5 rounded-md">
                       {language === 'ar' ? 'جاهز للإضافة' : 'Ready to add'}
                     </span>
                   )}
@@ -323,14 +323,14 @@ export function ImportContactsModal({
             </div>
             <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
               <div
-                className="h-full bg-cyan-400 transition-all duration-200"
+                className="h-full bg-blue-600 transition-all duration-200"
                 style={{ width: `${importProgress}%` }}
               />
             </div>
           </div>
         )}
 
-        <div className="pt-4 flex items-center justify-end gap-3 border-t border-cyan-950/80">
+        <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-800">
           <Button
             variant="outline"
             onClick={onClose}
@@ -345,7 +345,6 @@ export function ImportContactsModal({
             isLoading={isSubmitting}
             disabled={selectedIndices.length === 0}
             icon={UserCheck}
-            className="bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 font-bold border-0 shadow-md shadow-cyan-500/20"
           >
             {language === 'ar'
               ? `استيراد (${selectedIndices.length}) عميل جديد`

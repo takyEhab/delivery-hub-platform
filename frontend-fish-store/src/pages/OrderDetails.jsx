@@ -31,20 +31,16 @@ import {
   Clock,
   Truck,
   CheckCircle2,
-  Package,
-  User,
   ExternalLink,
   Calendar,
   AlertCircle,
-  Fish,
+  Anchor,
   Flame,
   Edit,
   Edit3,
   Navigation,
   Banknote,
   Receipt,
-  CreditCard,
-  DollarSign,
   Trash2,
 } from 'lucide-react';
 import { buildGoogleMapsUrl } from '../utils/location';
@@ -52,7 +48,7 @@ import { buildGoogleMapsUrl } from '../utils/location';
 export function OrderDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user, isOwner, isDriver } = useAuth();
+  const { isOwner, isDriver } = useAuth();
   const { success, error: toastError } = useToast();
   const { t, language, isRTL } = useLanguage();
 
@@ -90,7 +86,7 @@ export function OrderDetails() {
       setOrder(updated);
       const title = language === 'ar' ? 'تم تحديث حالة الطلب' : 'Status Updated';
       const msg = language === 'ar'
-        ? `تم تحديث حالة طلب الأسماك #${order.id} إلى: ${formatStatus(nextStatus, 'ar')}`
+        ? `تم تحديث حالة طلب #${order.id} إلى: ${formatStatus(nextStatus, 'ar')}`
         : `Order #${order.id} status updated to ${formatStatus(nextStatus, 'en')}!`;
       success(msg, title);
     } catch (err) {
@@ -142,48 +138,52 @@ export function OrderDetails() {
 
   if (isLoading) {
     return (
-      <div className="py-20 flex flex-col items-center justify-center">
-        <div className="w-10 h-10 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-xs text-cyan-300 mt-3 font-semibold">{language === 'ar' ? 'جاري تحميل تفاصيل الطلب...' : 'Loading order details...'}</p>
+      <div className="flex flex-col items-center justify-center py-24 text-center">
+        <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-xs text-slate-400 mt-3 font-medium">
+          {language === 'ar' ? 'جاري تحميل تفاصيل الطلب...' : 'Loading order details...'}
+        </p>
       </div>
     );
   }
 
   if (!order) {
     return (
-      <div className="text-center py-16 bg-[#05172b]/90 rounded-2xl border border-cyan-900/40 shadow-xl">
-        <AlertCircle className="w-12 h-12 text-cyan-400 mx-auto mb-2" />
-        <h3 className="text-base font-bold text-white">{language === 'ar' ? 'الطلب غير موجود' : 'Order Not Found'}</h3>
+      <div className="text-center py-16 bg-[#0F1622] rounded-xl border border-slate-800 shadow-card">
+        <AlertCircle className="w-10 h-10 text-slate-400 mx-auto mb-2" />
+        <h3 className="text-base font-semibold text-white">
+          {language === 'ar' ? 'لم يتم العثور على هذا الطلب' : 'Order not found'}
+        </h3>
         <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
-          {language === 'ar' ? 'رقم الطلب غير صحيح أو غير متاح في السجلات.' : 'The requested order does not exist or you are not authorized to view it.'}
+          {language === 'ar'
+            ? 'ربما تم حذف هذا الطلب أو أن الرابط غير صحيح.'
+            : 'The requested order could not be located or was removed.'}
         </p>
-        <Link to="/orders" className="inline-block mt-4">
-          <Button variant="outline" size="sm" icon={isRTL ? ArrowRight : ArrowLeft}>
-            {language === 'ar' ? 'العودة للطلبات' : 'Back to Orders'}
-          </Button>
-        </Link>
+        <div className="mt-4">
+          <Link to="/orders">
+            <Button variant="outline" size="sm">
+              {t('back_to_orders')}
+            </Button>
+          </Link>
+        </div>
       </div>
     );
   }
 
-  // Parse items
   const parsedItems = Array.isArray(order.items)
     ? order.items
     : typeof order.items === 'string'
-    ? [{ name: order.items, quantity: 1 }]
+    ? [{ name: order.items, quantity: 1, price: 0 }]
     : [];
 
   const subtotal = parsedItems.reduce((acc, it) => {
-    const q = it.quantity || 1;
-    const p = it.price || 0;
-    return acc + q * p;
+    const qty = it.quantity || 1;
+    const price = it.price || 0;
+    return acc + qty * price;
   }, 0);
 
-  const totalAmountToDisplay = parseFloat(order.total_amount) > 0 ? parseFloat(order.total_amount) : subtotal;
-
-  const isAssignedToCurrentDriver =
-    isDriver && order.assigned_driver_id === user?.id;
-  const canUpdateStatus = isOwner || isAssignedToCurrentDriver;
+  const totalAmountToDisplay = parseFloat(order.total_amount) || subtotal || 0;
+  const canUpdateStatus = isOwner || (isDriver && order.assigned_driver_id);
 
   const mapsUrl = buildGoogleMapsUrl(
     order.customer?.location_url,
@@ -198,35 +198,34 @@ export function OrderDetails() {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="p-2.5 rounded-xl bg-slate-800/80 text-cyan-400 hover:text-white hover:bg-cyan-950/60 transition-colors border border-cyan-900/40"
+            className="p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors border border-slate-700"
             title="Go back"
           >
-            {isRTL ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
+            {isRTL ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
           </button>
           <div>
-            <div className="flex flex-wrap items-center gap-2.5">
-              <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
-                <Fish className="w-6 h-6 text-cyan-400" />
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2 font-mono">
                 <span>{t('order_number')} #{order.id}</span>
               </h1>
-              <span className="text-base font-black text-emerald-300 bg-emerald-950/70 px-2.5 py-0.5 rounded-xl border border-emerald-500/40">
+              <span className="text-sm font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/50">
                 {formatCurrency(totalAmountToDisplay, language)}
               </span>
-              <Badge variant={getStatusBadgeVariant(order.status)} dot>
+              <Badge variant={getStatusBadgeVariant(order.status)}>
                 {formatStatus(order.status, language)}
               </Badge>
               <Badge variant={getPaymentBadgeVariant(order.payment_status)}>
                 {formatPaymentStatus(order.payment_status, language)}
               </Badge>
               {hasRawFish(order) && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-black bg-cyan-950 text-cyan-300 border border-cyan-400/50 shadow-md ring-1 ring-cyan-400/30">
-                  <span className="text-sm">🐟</span>
-                  <span>{language === 'ar' ? 'به سمك نيء' : 'Contains Raw Fish'}</span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-rose-950/60 text-rose-300 border border-rose-800/50">
+                  <span>🐟</span>
+                  <span>{language === 'ar' ? 'سمك نيء' : 'Raw Fish'}</span>
                 </span>
               )}
             </div>
-            <p className="text-xs text-slate-400 mt-1 flex items-center gap-1.5">
-              <Calendar className="w-3.5 h-3.5 text-cyan-400" />
+            <p className="text-xs text-slate-400 mt-1 flex items-center gap-1.5 font-mono">
+              <Calendar className="w-3.5 h-3.5 text-slate-500" />
               <span>{formatDate(order.created_at, language)}</span>
             </p>
           </div>
@@ -240,7 +239,6 @@ export function OrderDetails() {
               size="sm"
               icon={Edit}
               onClick={() => setEditModalOpen(true)}
-              className="text-cyan-300 border-cyan-800/80 hover:bg-cyan-950/60"
             >
               {t('edit_order')}
             </Button>
@@ -252,7 +250,6 @@ export function OrderDetails() {
               size="sm"
               icon={Trash2}
               onClick={() => setConfirmDeleteOpen(true)}
-              className="bg-rose-600/20 hover:bg-rose-600 border border-rose-500/40 text-rose-300 hover:text-white"
             >
               {t('delete_order')}
             </Button>
@@ -264,7 +261,6 @@ export function OrderDetails() {
               size="sm"
               icon={Truck}
               onClick={() => setAssignModalOpen(true)}
-              className="bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 font-bold border-0"
             >
               {t('assign_driver')}
             </Button>
@@ -273,13 +269,12 @@ export function OrderDetails() {
           {canUpdateStatus && order.status === 'preparing' && (
             <Button
               variant="primary"
-              size="md"
+              size="sm"
               icon={Truck}
               isLoading={isUpdatingStatus}
               onClick={() => handleAdvanceStatus('out_for_delivery')}
-              className="bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold border-0"
             >
-              {language === 'ar' ? 'استلام الطلب وبدء التوصيل' : 'Start Delivery (Out for Delivery)'}
+              {language === 'ar' ? 'استلام الطلب وبدء التوصيل' : 'Start Delivery'}
             </Button>
           )}
 
@@ -288,21 +283,21 @@ export function OrderDetails() {
               <div className="flex items-center gap-2">
                 <Button
                   variant="primary"
-                  size="md"
+                  size="sm"
                   icon={CheckCircle2}
                   isLoading={isUpdatingStatus}
                   onClick={() => handleAdvanceStatus('delivered', 'paid')}
-                  className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold border-0"
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white"
                 >
                   {language === 'ar' ? 'تسليم + استلام كاش' : 'Delivered & Paid'}
                 </Button>
                 <Button
                   variant="outline"
-                  size="md"
+                  size="sm"
                   icon={Clock}
                   isLoading={isUpdatingStatus}
                   onClick={() => handleAdvanceStatus('delivered', 'postpaid')}
-                  className="bg-purple-950/40 border-purple-500/50 text-purple-300 hover:bg-purple-900/50 font-bold"
+                  className="text-purple-300 hover:text-white"
                 >
                   {language === 'ar' ? 'تسليم بدون دفع (آجل)' : 'Delivered on Credit'}
                 </Button>
@@ -310,11 +305,11 @@ export function OrderDetails() {
             ) : (
               <Button
                 variant="primary"
-                size="md"
+                size="sm"
                 icon={CheckCircle2}
                 isLoading={isUpdatingStatus}
                 onClick={() => handleAdvanceStatus('delivered')}
-                className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold border-0"
+                className="bg-emerald-600 hover:bg-emerald-500 text-white"
               >
                 {language === 'ar' ? 'تأكيد تسليم الطلب للعميل' : 'Mark as Delivered'}
               </Button>
@@ -324,7 +319,7 @@ export function OrderDetails() {
       </div>
 
       {/* Visual Status Progression Timeline */}
-      <Card className="p-6">
+      <Card className="p-5">
         <OrderStatusTimeline currentStatus={order.status} />
       </Card>
 
@@ -338,9 +333,9 @@ export function OrderDetails() {
               description={language === 'ar' ? `قائمة الأسماك المطلوبة (${parsedItems.length} صنف)` : `Itemized list (${parsedItems.length} items)`}
             />
             {hasRawFish(order) && (
-              <div className="bg-cyan-950/60 border-b border-cyan-800/30 py-1.5 px-4 flex items-center gap-2 text-xs text-cyan-300">
-                <span className="text-sm">🐟</span>
-                <span className="font-bold">
+              <div className="bg-rose-950/30 border-b border-rose-800/40 py-2 px-4 flex items-center gap-2 text-xs text-rose-300">
+                <span>🐟</span>
+                <span className="font-semibold">
                   {language === 'ar'
                     ? 'الطلب يحتوي على أصناف سمك نيء'
                     : 'This order contains raw fish items'}
@@ -350,44 +345,44 @@ export function OrderDetails() {
             <div className="overflow-x-auto">
               <table className="w-full text-right rtl:text-right ltr:text-left border-collapse text-xs">
                 <thead>
-                  <tr className="bg-[#030e1a] border-b border-cyan-950/80 text-cyan-400 font-bold uppercase tracking-wider">
+                  <tr className="bg-[#0B1019] border-b border-slate-800 text-slate-400 font-semibold uppercase tracking-wider">
                     <th className="py-3 px-5">{t('item_name')}</th>
                     <th className="py-3 px-4 text-center">{t('quantity')}</th>
                     <th className="py-3 px-4 text-right rtl:text-right ltr:text-right">{t('price_egp')}</th>
                     <th className="py-3 px-5 text-right rtl:text-right ltr:text-right">{t('total')}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-cyan-950/60 text-slate-200">
+                <tbody className="divide-y divide-slate-800/80 text-slate-200">
                   {parsedItems.map((item, idx) => {
                     const qty = item.quantity || 1;
                     const price = item.price || 0;
                     const itemTotal = qty * price;
 
                     return (
-                      <tr key={idx} className="hover:bg-cyan-950/20">
-                        <td className="py-3 px-5 font-bold text-white">
+                      <tr key={idx} className="hover:bg-slate-800/20">
+                        <td className="py-3 px-5 font-semibold text-white">
                           <div className="flex items-center gap-2">
                             <span>{item.name || item.description || (language === 'ar' ? 'صنف أسماك' : 'Item')}</span>
                             {isRawFishItem(item) && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 text-[10px] font-black border border-cyan-400/40">
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-rose-950 text-rose-300 text-[10px] font-semibold border border-rose-800/50">
                                 <span>🐟</span>
                                 <span>{language === 'ar' ? 'نيء' : 'Raw'}</span>
                               </span>
                             )}
                           </div>
                           {item.notes && (
-                            <p className="text-[11px] text-cyan-300 font-normal mt-0.5 italic">
+                            <p className="text-[11px] text-slate-400 font-normal mt-0.5 italic">
                               "{item.notes}"
                             </p>
                           )}
                         </td>
-                        <td className="py-3 px-4 text-center font-bold text-cyan-300">
+                        <td className="py-3 px-4 text-center font-mono font-semibold text-slate-300">
                           {qty}
                         </td>
-                        <td className="py-3 px-4 text-right rtl:text-right ltr:text-right text-slate-400">
+                        <td className="py-3 px-4 text-right rtl:text-right ltr:text-right text-slate-400 font-mono">
                           {price ? formatCurrency(price, language) : '—'}
                         </td>
-                        <td className="py-3 px-5 text-right rtl:text-right ltr:text-right font-black text-cyan-400">
+                        <td className="py-3 px-5 text-right rtl:text-right ltr:text-right font-mono font-semibold text-white">
                           {price ? formatCurrency(itemTotal, language) : '—'}
                         </td>
                       </tr>
@@ -396,14 +391,14 @@ export function OrderDetails() {
                 </tbody>
                 {subtotal > 0 && (
                   <tfoot>
-                    <tr className="border-t-2 border-cyan-900/60 bg-[#030e1a]">
+                    <tr className="border-t border-slate-800 bg-[#0B1019]">
                       <td
                         colSpan={3}
-                        className="py-3 px-5 text-right rtl:text-right ltr:text-right font-bold text-slate-300 text-xs"
+                        className="py-3 px-5 text-right rtl:text-right ltr:text-right font-semibold text-slate-300 text-xs"
                       >
                         {t('calculated_total')}:
                       </td>
-                      <td className="py-3 px-5 text-right rtl:text-right ltr:text-right font-black text-cyan-400 text-sm">
+                      <td className="py-3 px-5 text-right rtl:text-right ltr:text-right font-mono font-bold text-emerald-400 text-sm">
                         {formatCurrency(subtotal, language)}
                       </td>
                     </tr>
@@ -423,12 +418,12 @@ export function OrderDetails() {
               description={language === 'ar' ? 'تفاصيل المبلغ والتحصيل المالي للطلب' : 'Order payment and collection details'}
             />
             <CardBody className="space-y-4 text-xs">
-              <div className="p-3.5 rounded-xl bg-[#030e1a] border border-cyan-900/50 flex items-center justify-between">
+              <div className="p-3.5 rounded-lg bg-[#0B1019] border border-slate-800 flex items-center justify-between">
                 <div>
                   <span className="text-slate-400 block text-[11px] mb-0.5">
                     {t('total_amount_to_pay')}
                   </span>
-                  <span className="text-xl font-black text-emerald-300">
+                  <span className="text-xl font-bold font-mono text-emerald-400">
                     {formatCurrency(totalAmountToDisplay, language)}
                   </span>
                 </div>
@@ -438,44 +433,44 @@ export function OrderDetails() {
               </div>
 
               {/* Status explanation */}
-              <div className={`p-3 rounded-xl border text-xs leading-relaxed ${
+              <div className={`p-3 rounded-lg border text-xs leading-relaxed ${
                 order.payment_status === 'paid'
-                  ? 'bg-emerald-950/30 border-emerald-500/30 text-emerald-200'
+                  ? 'bg-emerald-950/30 border-emerald-800/50 text-emerald-300'
                   : order.payment_status === 'postpaid'
-                  ? 'bg-purple-950/30 border-purple-500/30 text-purple-200'
-                  : 'bg-amber-950/30 border-amber-500/30 text-amber-200'
+                  ? 'bg-purple-950/30 border-purple-800/50 text-purple-300'
+                  : 'bg-amber-950/30 border-amber-800/50 text-amber-300'
               }`}>
-                <div className="flex items-center gap-1.5 font-bold mb-1">
+                <div className="flex items-center gap-1.5 font-semibold mb-1">
                   {order.payment_status === 'paid' && <Receipt className="w-4 h-4 text-emerald-400" />}
                   {order.payment_status === 'postpaid' && <Clock className="w-4 h-4 text-purple-400" />}
                   {order.payment_status === 'unpaid' && <Banknote className="w-4 h-4 text-amber-400" />}
                   <span>{formatPaymentStatus(order.payment_status, language)}</span>
                 </div>
-                <p className="text-[11px] text-slate-300">
+                <p className="text-[11px] text-slate-400">
                   {order.payment_status === 'paid' && t('payment_status_paid_desc')}
                   {order.payment_status === 'postpaid' && t('payment_status_postpaid_desc')}
                   {order.payment_status === 'unpaid' && t('payment_status_unpaid_desc')}
                 </p>
                 {order.paid_at && (
-                  <p className="text-[10px] text-slate-400 mt-1.5 pt-1.5 border-t border-slate-700/60">
-                    {language === 'ar' ? 'تاريخ وساعة السداد:' : 'Paid timestamp:'} {formatDate(order.paid_at, language)}
+                  <p className="text-[10px] text-slate-500 font-mono mt-1.5 pt-1.5 border-t border-slate-800">
+                    {language === 'ar' ? 'تاريخ السداد:' : 'Paid timestamp:'} {formatDate(order.paid_at, language)}
                   </p>
                 )}
               </div>
 
               {order.payment_notes && (
-                <div className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs">
-                  <span className="text-slate-400 block text-[10px] mb-0.5 font-bold uppercase">
+                <div className="p-2.5 rounded-lg bg-[#0B1019] border border-slate-800 text-xs">
+                  <span className="text-slate-400 block text-[10px] mb-0.5 font-semibold uppercase">
                     {t('payment_notes_label')}
                   </span>
-                  <p className="text-slate-200">{order.payment_notes}</p>
+                  <p className="text-slate-300">{order.payment_notes}</p>
                 </div>
               )}
 
               {/* Authority buttons to update payment status */}
               {(isOwner || isDriver) && (
-                <div className="pt-2 border-t border-cyan-950/80 space-y-2">
-                  <span className="text-[11px] font-bold text-slate-400 block">
+                <div className="pt-2 border-t border-slate-800 space-y-2">
+                  <span className="text-[11px] font-medium text-slate-400 block">
                     {language === 'ar' ? 'تغيير حالة الدفع والتحصيل:' : 'Update Payment Status:'}
                   </span>
                   <div className="grid grid-cols-3 gap-1.5">
@@ -483,10 +478,10 @@ export function OrderDetails() {
                       type="button"
                       disabled={isUpdatingPayment || order.payment_status === 'paid'}
                       onClick={() => handleUpdatePayment('paid')}
-                      className={`p-2 rounded-xl text-xs font-bold transition-all flex flex-col items-center justify-center gap-1 ${
+                      className={`p-2 rounded-lg text-xs font-medium transition-colors flex flex-col items-center justify-center gap-1 ${
                         order.payment_status === 'paid'
-                          ? 'bg-emerald-600 text-slate-950 font-black ring-2 ring-emerald-400'
-                          : 'bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-900/50'
+                          ? 'bg-emerald-600 text-white font-semibold'
+                          : 'bg-[#0B1019] border border-slate-800 text-emerald-400 hover:bg-slate-800'
                       }`}
                     >
                       <Receipt className="w-3.5 h-3.5" />
@@ -497,10 +492,10 @@ export function OrderDetails() {
                       type="button"
                       disabled={isUpdatingPayment || order.payment_status === 'postpaid'}
                       onClick={() => handleUpdatePayment('postpaid')}
-                      className={`p-2 rounded-xl text-xs font-bold transition-all flex flex-col items-center justify-center gap-1 ${
+                      className={`p-2 rounded-lg text-xs font-medium transition-colors flex flex-col items-center justify-center gap-1 ${
                         order.payment_status === 'postpaid'
-                          ? 'bg-purple-600 text-white font-black ring-2 ring-purple-400'
-                          : 'bg-purple-950/40 border border-purple-500/40 text-purple-300 hover:bg-purple-900/50'
+                          ? 'bg-purple-600 text-white font-semibold'
+                          : 'bg-[#0B1019] border border-slate-800 text-purple-400 hover:bg-slate-800'
                       }`}
                     >
                       <Clock className="w-3.5 h-3.5" />
@@ -511,10 +506,10 @@ export function OrderDetails() {
                       type="button"
                       disabled={isUpdatingPayment || order.payment_status === 'unpaid'}
                       onClick={() => handleUpdatePayment('unpaid')}
-                      className={`p-2 rounded-xl text-xs font-bold transition-all flex flex-col items-center justify-center gap-1 ${
+                      className={`p-2 rounded-lg text-xs font-medium transition-colors flex flex-col items-center justify-center gap-1 ${
                         order.payment_status === 'unpaid'
-                          ? 'bg-amber-600 text-slate-950 font-black ring-2 ring-amber-400'
-                          : 'bg-amber-950/40 border border-amber-500/40 text-amber-300 hover:bg-amber-900/50'
+                          ? 'bg-amber-600 text-white font-semibold'
+                          : 'bg-[#0B1019] border border-slate-800 text-amber-400 hover:bg-slate-800'
                       }`}
                     >
                       <Banknote className="w-3.5 h-3.5" />
@@ -538,45 +533,45 @@ export function OrderDetails() {
                     size="sm"
                     icon={Edit3}
                     onClick={() => setCustomerModalOpen(true)}
-                    className="text-xs py-1 px-2.5 border-cyan-800/60 text-cyan-300 hover:bg-cyan-950/40"
+                    className="text-xs py-1 px-2.5"
                   >
-                    {language === 'ar' ? 'تعديل العنوان والملاحظات' : 'Edit Location & Notes'}
+                    {language === 'ar' ? 'تعديل' : 'Edit'}
                   </Button>
                 )
               }
             />
             <CardBody className="space-y-3.5 text-xs">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 to-teal-500 text-slate-950 flex items-center justify-center font-black text-sm shrink-0 shadow-md">
+                <div className="w-9 h-9 rounded-lg bg-slate-800 text-white flex items-center justify-center font-bold text-sm shrink-0">
                   {order.customer?.name?.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <h4 className="font-bold text-white text-sm">
+                  <h4 className="font-semibold text-white text-sm">
                     {order.customer?.name}
                   </h4>
-                  <p className="text-cyan-400 text-[11px] font-semibold">{language === 'ar' ? 'مستلم الطلب' : 'Recipient'}</p>
+                  <p className="text-slate-400 text-[11px]">{language === 'ar' ? 'مستلم الطلب' : 'Recipient'}</p>
                 </div>
               </div>
 
               {order.customer?.phone && (
-                <div className="pt-2 border-t border-cyan-950/80 flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-slate-300" dir="ltr">
-                    <Phone className="w-4 h-4 text-cyan-400" />
+                <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-slate-300 font-mono" dir="ltr">
+                    <Phone className="w-4 h-4 text-slate-500" />
                     <span>{order.customer.phone}</span>
                   </div>
                   <a
                     href={`tel:${order.customer.phone}`}
-                    className="text-xs font-bold text-cyan-300 hover:text-white bg-cyan-950/80 hover:bg-cyan-900/80 px-2.5 py-1 rounded-lg transition-colors border border-cyan-800/40"
+                    className="text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded transition-colors border border-slate-700"
                   >
                     {language === 'ar' ? 'اتصال بالعميل' : 'Call Customer'}
                   </a>
                 </div>
               )}
 
-              <div className="pt-2 border-t border-cyan-950/80 space-y-1.5">
+              <div className="pt-2 border-t border-slate-800 space-y-1.5">
                 <div className="flex items-start gap-2 text-slate-300">
-                  <MapPin className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-                  <span className="leading-relaxed">{order.customer?.address || (language === 'ar' ? 'استلام من المحل' : 'Store pickup')}</span>
+                  <MapPin className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
+                  <span className="leading-relaxed text-slate-400">{order.customer?.address || (language === 'ar' ? 'استلام من المحل' : 'Store pickup')}</span>
                 </div>
                 {mapsUrl && (
                   <div className="pt-2">
@@ -584,23 +579,23 @@ export function OrderDetails() {
                       href={mapsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-xs font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-teal-400 hover:from-cyan-300 hover:to-teal-300 px-3.5 py-2 rounded-xl shadow-md transition-all"
+                      className="inline-flex items-center gap-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 px-3 py-2 rounded-lg shadow-button transition-colors"
                     >
-                      <Navigation className="w-3.5 h-3.5 text-slate-950 fill-current" />
+                      <Navigation className="w-3.5 h-3.5" />
                       <span>{language === 'ar' ? 'بدء التوصيل عبر خرائط Google' : 'Start Google Maps Navigation'}</span>
-                      <ExternalLink className="w-3 h-3 text-slate-950/80" />
+                      <ExternalLink className="w-3 h-3 text-blue-200" />
                     </a>
                   </div>
                 )}
               </div>
 
               {order.customer?.notes && (
-                <div className="pt-2 border-t border-cyan-950/80">
-                  <p className="text-[11px] font-bold text-amber-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+                <div className="pt-2 border-t border-slate-800">
+                  <p className="text-[11px] font-semibold text-amber-300 uppercase tracking-wider mb-1 flex items-center gap-1">
                     <Flame className="w-3 h-3 text-amber-400" />
                     <span>{language === 'ar' ? 'تعليمات التجهيز والتوصيل:' : 'Delivery Instructions:'}</span>
                   </p>
-                  <p className="text-amber-200 italic bg-amber-950/30 p-2.5 rounded-xl border border-amber-500/30 leading-relaxed">
+                  <p className="text-amber-200/90 italic bg-amber-950/30 p-2.5 rounded-lg border border-amber-800/40 leading-relaxed">
                     "{order.customer.notes}"
                   </p>
                 </div>
@@ -618,7 +613,7 @@ export function OrderDetails() {
                     variant="outline"
                     size="sm"
                     onClick={() => setAssignModalOpen(true)}
-                    className="text-xs py-1 px-3 border-cyan-700/60 text-cyan-300 hover:bg-cyan-950/50"
+                    className="text-xs py-1 px-3"
                   >
                     {t('assign_driver')}
                   </Button>
@@ -629,27 +624,27 @@ export function OrderDetails() {
               {order.driver ? (
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 to-blue-500 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-md">
+                    <div className="w-9 h-9 rounded-lg bg-slate-800 text-white flex items-center justify-center font-bold text-sm shrink-0">
                       {order.driver.name.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <h4 className="font-bold text-white text-sm">
+                      <h4 className="font-semibold text-white text-sm">
                         {order.driver.name}
                       </h4>
-                      <p className="text-cyan-400 text-[11px]">
+                      <p className="text-slate-400 text-[11px] font-mono">
                         {language === 'ar' ? `كابتن #${order.driver.id}` : `Courier ID #${order.driver.id}`}
                       </p>
                     </div>
                   </div>
 
-                  <div className="pt-2 border-t border-cyan-950/80 flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-slate-300" dir="ltr">
-                      <Phone className="w-4 h-4 text-cyan-400" />
+                  <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-slate-300 font-mono" dir="ltr">
+                      <Phone className="w-4 h-4 text-slate-500" />
                       <span>{order.driver.phone}</span>
                     </div>
                     <a
                       href={`tel:${order.driver.phone}`}
-                      className="text-xs font-bold text-sky-300 hover:text-white bg-sky-950/80 hover:bg-sky-900/80 px-2.5 py-1 rounded-lg transition-colors border border-sky-800/40"
+                      className="text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded transition-colors border border-slate-700"
                     >
                       {language === 'ar' ? 'اتصال بالكابتن' : 'Call Courier'}
                     </a>
@@ -657,8 +652,8 @@ export function OrderDetails() {
                 </div>
               ) : (
                 <div className="text-center py-4 text-slate-400">
-                  <Truck className="w-7 h-7 mx-auto text-slate-500 mb-1" />
-                  <p className="font-bold text-slate-300">{t('unassigned')}</p>
+                  <Truck className="w-6 h-6 mx-auto text-slate-500 mb-1" />
+                  <p className="font-semibold text-slate-300">{t('unassigned')}</p>
                   <p className="text-[11px] text-slate-400 mt-0.5">
                     {language === 'ar' ? 'هذا الطلب بانتظار تعيين كابتن للتوصيل.' : 'Order is currently awaiting courier dispatch.'}
                   </p>

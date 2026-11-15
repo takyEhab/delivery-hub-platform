@@ -21,11 +21,7 @@ export function AppLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-[#031326] text-slate-100 flex flex-col relative overflow-x-hidden">
-      {/* Oceanic ambient backdrop light */}
-      <div className="fixed top-0 left-1/4 w-[600px] h-[350px] bg-cyan-600/10 blur-[140px] pointer-events-none rounded-full" />
-      <div className="fixed bottom-0 right-10 w-[500px] h-[350px] bg-ocean-600/10 blur-[130px] pointer-events-none rounded-full" />
-
+    <div className="min-h-screen bg-[#070B12] text-slate-100 flex flex-col relative overflow-x-hidden selection:bg-blue-600/30 selection:text-white">
       {/* Sidebar navigation */}
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 

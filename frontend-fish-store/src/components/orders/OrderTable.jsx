@@ -13,7 +13,7 @@ import {
 } from '../../utils/formatters';
 import { useLanguage } from '../../context/LanguageContext';
 import { OrderCard } from './OrderCard';
-import { Fish, Truck, Phone, ChevronRight, User, Edit3, Banknote } from 'lucide-react';
+import { Anchor, Truck, Phone, ChevronRight, Edit3 } from 'lucide-react';
 
 export function OrderTable({
   orders,
@@ -27,11 +27,11 @@ export function OrderTable({
 
   if (!orders || orders.length === 0) {
     return (
-      <div className="text-center py-12 px-4 bg-[#05172b]/90 rounded-2xl border border-cyan-900/40 shadow-xl">
-        <div className="w-14 h-14 rounded-2xl bg-cyan-950/60 border border-cyan-800/40 flex items-center justify-center mx-auto text-cyan-400 mb-3 shadow-inner">
-          <Fish className="w-7 h-7 stroke-[2]" />
+      <div className="text-center py-12 px-4 bg-[#0F1622] rounded-xl border border-slate-800/80 shadow-card">
+        <div className="w-12 h-12 rounded-xl bg-slate-850 border border-slate-700/60 flex items-center justify-center mx-auto text-slate-400 mb-3">
+          <Anchor className="w-6 h-6 stroke-[2]" />
         </div>
-        <h3 className="text-base font-bold text-white">{t('no_orders_found')}</h3>
+        <h3 className="text-base font-semibold text-white">{t('no_orders_found')}</h3>
         <p className="text-xs text-slate-400 max-w-sm mx-auto mt-1">
           {isDriver
             ? (language === 'ar' ? 'لا توجد طلبات توصيل مسندة إليك حالياً.' : 'You currently have no delivery orders assigned to you.')
@@ -44,21 +44,21 @@ export function OrderTable({
   return (
     <>
       {/* Desktop Table View */}
-      <div className="hidden lg:block bg-[#05172b]/90 rounded-2xl border border-cyan-900/40 shadow-xl overflow-hidden">
+      <div className="hidden lg:block bg-[#0F1622] rounded-xl border border-slate-800/80 shadow-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-right rtl:text-right ltr:text-left border-collapse text-sm">
             <thead>
-              <tr className="bg-[#030f1c] border-b border-cyan-950/80 text-cyan-400/90 font-bold text-xs uppercase tracking-wider">
-                <th className="py-4 px-5">{t('order_number')}</th>
-                <th className="py-4 px-4">{t('customer')}</th>
-                <th className="py-4 px-4">{t('total_amount_to_pay')}</th>
-                <th className="py-4 px-4">{t('status')}</th>
-                <th className="py-4 px-4">{t('driver_assigned')}</th>
-                <th className="py-4 px-4">{t('time')}</th>
-                <th className="py-4 px-5 text-left rtl:text-left ltr:text-right">{t('actions')}</th>
+              <tr className="bg-[#0B1019] border-b border-slate-800 text-slate-400 font-semibold text-xs uppercase tracking-wider">
+                <th className="py-3.5 px-5">{t('order_number')}</th>
+                <th className="py-3.5 px-4">{t('customer')}</th>
+                <th className="py-3.5 px-4">{t('total_amount_to_pay')}</th>
+                <th className="py-3.5 px-4">{t('status')}</th>
+                <th className="py-3.5 px-4">{t('driver_assigned')}</th>
+                <th className="py-3.5 px-4">{t('time')}</th>
+                <th className="py-3.5 px-5 text-left rtl:text-left ltr:text-right">{t('actions')}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-cyan-950/60 text-slate-200">
+            <tbody className="divide-y divide-slate-800/80 text-slate-200">
               {orders.map((order) => {
                 const parsedItems = Array.isArray(order.items)
                   ? order.items
@@ -70,38 +70,38 @@ export function OrderTable({
                 return (
                   <tr
                     key={order.id}
-                    className="hover:bg-cyan-950/30 transition-colors group"
+                    className="hover:bg-slate-800/30 transition-colors group"
                   >
-                    <td className="py-3.5 px-5">
+                    <td className="py-3 px-5">
                       <div className="flex items-center gap-2">
                         <Link
                           to={`/orders/${order.id}`}
-                          className="font-black text-white group-hover:text-cyan-400 transition-colors text-sm"
+                          className="font-bold text-white group-hover:text-blue-400 transition-colors text-sm font-mono"
                         >
                           #{order.id}
                         </Link>
                         {hasRawFish(order) && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black bg-cyan-950 text-cyan-300 border border-cyan-400/50 shadow-sm ring-1 ring-cyan-400/20">
-                            <span className="text-xs">🐟</span>
-                            <span>{language === 'ar' ? 'به سمك نيء' : 'Contains Raw Fish'}</span>
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-rose-950/60 text-rose-300 border border-rose-800/50">
+                            <span>🐟</span>
+                            <span>{language === 'ar' ? 'نيء' : 'Raw'}</span>
                           </span>
                         )}
                       </div>
-                      <p className="text-[11px] text-cyan-400/80 font-medium mt-0.5">
-                        {parsedItems.length} {language === 'ar' ? 'أصناف أسماك' : 'item(s)'}
+                      <p className="text-[11px] text-slate-400 font-mono mt-0.5">
+                        {parsedItems.length} {language === 'ar' ? 'أصناف' : 'item(s)'}
                       </p>
                     </td>
 
-                    <td className="py-3.5 px-4">
+                    <td className="py-3 px-4">
                       <div className="flex items-center gap-1.5">
-                        <p className="font-bold text-white text-xs">
+                        <p className="font-semibold text-white text-xs">
                           {order.customer?.name}
                         </p>
                         {onEditCustomer && order.customer && (
                           <button
                             type="button"
                             onClick={() => onEditCustomer(order.customer)}
-                            className="text-cyan-400 hover:text-white p-0.5 rounded hover:bg-cyan-950/60 transition-colors"
+                            className="text-slate-400 hover:text-white p-0.5 rounded hover:bg-slate-800 transition-colors"
                             title={language === 'ar' ? 'تعديل موقع وملاحظات العميل' : 'Edit customer location & notes'}
                           >
                             <Edit3 className="w-3 h-3" />
@@ -111,17 +111,17 @@ export function OrderTable({
                       {order.customer?.phone && (
                         <a
                           href={`tel:${order.customer.phone}`}
-                          className="text-[11px] text-slate-400 hover:text-cyan-300 inline-flex items-center gap-1 mt-0.5"
+                          className="text-[11px] text-slate-400 hover:text-blue-400 inline-flex items-center gap-1 mt-0.5 font-mono"
                           dir="ltr"
                         >
-                          <Phone className="w-3 h-3 text-cyan-400" />
+                          <Phone className="w-3 h-3 text-slate-500" />
                           {order.customer.phone}
                         </a>
                       )}
                     </td>
 
-                    <td className="py-3.5 px-4 whitespace-nowrap">
-                      <span className="font-black text-emerald-300 text-sm">
+                    <td className="py-3 px-4 whitespace-nowrap">
+                      <span className="font-bold text-emerald-400 text-sm">
                         {formatCurrency(totalAmountVal, language)}
                       </span>
                       <div className="mt-1">
@@ -131,28 +131,27 @@ export function OrderTable({
                       </div>
                     </td>
 
-                    <td className="py-3.5 px-4 whitespace-nowrap">
+                    <td className="py-3 px-4 whitespace-nowrap">
                       <Badge
                         variant={getStatusBadgeVariant(order.status)}
                         size="sm"
-                        dot
                       >
                         {formatStatus(order.status, language)}
                       </Badge>
                     </td>
 
-                    <td className="py-3.5 px-4 whitespace-nowrap">
+                    <td className="py-3 px-4 whitespace-nowrap">
                       {order.driver ? (
                         <div className="flex items-center gap-1.5 text-xs text-white">
-                          <Truck className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                          <span className="font-semibold">{order.driver.name}</span>
+                          <Truck className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          <span className="font-medium">{order.driver.name}</span>
                         </div>
                       ) : isOwner ? (
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => onAssignClick(order)}
-                          className="text-xs text-amber-300 bg-amber-950/50 hover:bg-amber-900/50 border border-amber-500/30 py-1 px-2.5 h-auto"
+                          className="text-xs text-amber-300 bg-amber-950/40 hover:bg-amber-900/40 border border-amber-800/50 py-1 px-2.5 h-auto"
                         >
                           {t('assign_driver')}
                         </Button>
@@ -161,11 +160,11 @@ export function OrderTable({
                       )}
                     </td>
 
-                    <td className="py-3.5 px-4 text-xs text-slate-400 whitespace-nowrap">
+                    <td className="py-3 px-4 text-xs text-slate-400 whitespace-nowrap font-mono">
                       {formatDate(order.created_at, language)}
                     </td>
 
-                    <td className="py-3.5 px-5 text-left rtl:text-left ltr:text-right whitespace-nowrap">
+                    <td className="py-3 px-5 text-left rtl:text-left ltr:text-right whitespace-nowrap">
                       <div className="flex items-center justify-end gap-2">
                         {isOwner && (
                           <Link to={`/orders/${order.id}/edit`}>
@@ -173,7 +172,7 @@ export function OrderTable({
                               variant="outline"
                               size="sm"
                               icon={Edit3}
-                              className="text-xs py-1 px-2.5 border-cyan-900/60 text-cyan-300 hover:text-white hover:bg-cyan-950/60 hover:border-cyan-700"
+                              className="text-xs py-1 px-2.5"
                             >
                               {t('edit_order')}
                             </Button>
@@ -185,7 +184,7 @@ export function OrderTable({
                             size="sm"
                             icon={ChevronRight}
                             iconPosition="right"
-                            className="text-xs py-1 px-3 border-cyan-800/60 text-cyan-300 hover:bg-cyan-950/40"
+                            className="text-xs py-1 px-3"
                           >
                             {t('view_details')}
                           </Button>

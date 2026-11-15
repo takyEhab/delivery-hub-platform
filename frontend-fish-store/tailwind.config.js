@@ -7,47 +7,68 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Brand is mapped to luxurious oceanic cyan & teal
-        brand: {
-          50: '#ecfeff',
-          100: '#cffafe',
-          200: '#a5f3fc',
-          300: '#67e8f9',
-          400: '#22d3ee',
-          500: '#06b6d4', // Vibrant sea cyan
-          600: '#0891b2', // Deep marine cyan
-          700: '#0e7490',
-          800: '#155e75',
-          900: '#164e63',
-          950: '#083344',
+        // Deep Obsidian & Maritime Slate Canvas
+        slate: {
+          850: '#141B28',
+          900: '#0F1622',
+          925: '#0B1019',
+          950: '#070B12',
         },
-        // Deep marine navy palette
-        ocean: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0284c7',
-          600: '#0369a1',
-          700: '#075985',
-          800: '#0c4a6e',
-          900: '#0a2540',
-          950: '#031326',
+        // Premium Maritime Royal Blue (Action / Primary)
+        maritime: {
+          50: '#EFF6FF',
+          100: '#DBEAFE',
+          200: '#BFDBFE',
+          300: '#93C5FD',
+          400: '#60A5FA',
+          500: '#3B82F6',
+          600: '#2563EB',
+          700: '#1D4ED8',
+          800: '#1E40AF',
+          900: '#1E3A8A',
+          950: '#172554',
         },
-        // Fresh seafood accent (prawn / cooked crab / citrus garnish)
+        // Culinary Warm Amber (Grill / Hearth / Preparing)
+        culinary: {
+          50: '#FFFBEB',
+          100: '#FEF3C7',
+          200: '#FDE68A',
+          300: '#FCD34D',
+          400: '#FBBF24',
+          500: '#F59E0B',
+          600: '#D97706',
+          700: '#B45309',
+          800: '#92400E',
+          900: '#78350F',
+          950: '#451A03',
+        },
+        // Fresh Catch Green (Delivered / In Stock / Paid)
+        seaweed: {
+          50: '#ECFDF5',
+          100: '#D1FAE5',
+          200: '#A7F3D0',
+          300: '#6EE7B7',
+          400: '#34D399',
+          500: '#10B981',
+          600: '#059669',
+          700: '#047857',
+          800: '#065F46',
+          900: '#064E3B',
+          950: '#022C22',
+        },
+        // Raw Fish / Seafood Coral Alert
         coral: {
-          50: '#fff7ed',
-          100: '#ffedd5',
-          200: '#fed7aa',
-          300: '#fdba74',
-          400: '#fb923c',
-          500: '#f97316',
-          600: '#ea580c',
-          700: '#c2410c',
-          800: '#9a3412',
-          900: '#7c2d12',
-          950: '#431407',
+          50: '#FFF1F2',
+          100: '#FFE4E6',
+          200: '#FECDD3',
+          300: '#FDA4AF',
+          400: '#FB7185',
+          500: '#F43F5E',
+          600: '#E11D48',
+          700: '#BE123C',
+          800: '#9F1239',
+          900: '#881337',
+          950: '#4C0519',
         },
       },
       fontFamily: {
@@ -56,15 +77,12 @@ export default {
         sans: ['Cairo', 'Outfit', 'Inter', '-apple-system', 'sans-serif'],
       },
       boxShadow: {
-        card: '0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 2px 0 rgba(0, 0, 0, 0.12)',
-        'card-hover': '0 8px 16px -2px rgba(6, 182, 212, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.1)',
-        'ocean-glow': '0 0 25px -5px rgba(6, 182, 212, 0.35)',
-        'coral-glow': '0 0 25px -5px rgba(249, 115, 22, 0.35)',
+        subtle: '0 1px 2px 0 rgba(0, 0, 0, 0.4)',
+        card: '0 1px 3px 0 rgba(0, 0, 0, 0.5), 0 1px 2px -1px rgba(0, 0, 0, 0.4)',
+        elevation: '0 4px 12px -2px rgba(0, 0, 0, 0.6), 0 2px 6px -1px rgba(0, 0, 0, 0.4)',
+        popover: '0 12px 28px -4px rgba(0, 0, 0, 0.75), 0 4px 12px -2px rgba(0, 0, 0, 0.5)',
+        button: 'inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 1px 2px rgba(0, 0, 0, 0.4)',
       },
-      backgroundImage: {
-        'ocean-gradient': 'linear-gradient(135deg, #031326 0%, #0a2540 50%, #0e3b5e 100%)',
-        'marine-card': 'linear-gradient(180deg, rgba(14, 41, 84, 0.4) 0%, rgba(3, 19, 38, 0.7) 100%)',
-      }
     },
   },
   plugins: [],

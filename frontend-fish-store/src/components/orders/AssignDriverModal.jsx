@@ -80,14 +80,14 @@ export function AssignDriverModal({ isOpen, onClose, order, onSuccess }) {
           </div>
         )}
 
-        <div className="bg-[#030e1a] p-3.5 rounded-xl border border-cyan-900/40 space-y-1.5 text-xs">
+        <div className="bg-[#0B1019] p-3.5 rounded-xl border border-slate-800 space-y-1.5 text-xs">
           <div className="flex justify-between text-slate-300">
             <span>{t('customer')}:</span>
-            <span className="font-bold text-white">{order?.customer?.name}</span>
+            <span className="font-semibold text-white">{order?.customer?.name}</span>
           </div>
           <div className="flex justify-between text-slate-300">
             <span>{t('address')}:</span>
-            <span className="font-medium text-cyan-300 text-right truncate max-w-[200px]">
+            <span className="font-medium text-slate-400 text-right truncate max-w-[200px]">
               {order?.customer?.address || '—'}
             </span>
           </div>
@@ -98,7 +98,7 @@ export function AssignDriverModal({ isOpen, onClose, order, onSuccess }) {
             {language === 'ar' ? 'جاري تحميل الكباتن المتاحين...' : 'Loading active couriers...'}
           </div>
         ) : drivers.length === 0 ? (
-          <div className="p-4 text-center bg-[#030e1a] rounded-xl border border-dashed border-cyan-800 text-xs text-slate-400">
+          <div className="p-4 text-center bg-[#0B1019] rounded-xl border border-dashed border-slate-800 text-xs text-slate-400">
             {language === 'ar' ? 'لا يوجد كباتن متاحين حالياً. يرجى تفعيل أو إضافة كابتن جديد.' : 'No active couriers available.'}
           </div>
         ) : (
@@ -116,7 +116,7 @@ export function AssignDriverModal({ isOpen, onClose, order, onSuccess }) {
           </Select>
         )}
 
-        <div className="pt-4 flex items-center justify-end gap-3 border-t border-cyan-950/80">
+        <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-800">
           <Button variant="outline" onClick={onClose} disabled={isSubmitting} className="border-slate-700 text-slate-300">
             {t('cancel')}
           </Button>
@@ -126,7 +126,6 @@ export function AssignDriverModal({ isOpen, onClose, order, onSuccess }) {
             icon={Truck}
             isLoading={isSubmitting}
             disabled={drivers.length === 0}
-            className="bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 font-bold border-0"
           >
             {language === 'ar' ? 'تأكيد التعيين' : 'Confirm Assignment'}
           </Button>

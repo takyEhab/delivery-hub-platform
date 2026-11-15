@@ -3,14 +3,14 @@ import React from 'react';
 export function Skeleton({ className = '' }) {
   return (
     <div
-      className={`animate-pulse rounded-md bg-slate-200/80 ${className}`}
+      className={`animate-pulse rounded-md bg-slate-800/80 ${className}`}
     />
   );
 }
 
 export function TableSkeleton({ rows = 5, cols = 4 }) {
   return (
-    <div className="w-full divide-y divide-slate-100">
+    <div className="w-full divide-y divide-slate-800/80">
       {Array.from({ length: rows }).map((_, rIdx) => (
         <div key={rIdx} className="flex items-center gap-4 py-4 px-4">
           {Array.from({ length: cols }).map((_, cIdx) => (

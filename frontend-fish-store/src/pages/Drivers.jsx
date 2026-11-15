@@ -83,26 +83,26 @@ export function Drivers() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
-              <Truck className="w-6 h-6 text-cyan-400 stroke-[2.2]" />
+            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+              <Truck className="w-5 h-5 text-blue-400 stroke-[2.2]" />
               <span>{t('drivers_title')}</span>
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full bg-cyan-950/80 text-cyan-300 border border-cyan-800/40 text-xs font-bold">
+            <span className="px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700 text-xs font-mono font-medium">
               {activeCount} {language === 'ar' ? 'متاح' : 'Active'} / {drivers.length} {language === 'ar' ? 'إجمالي' : 'Total'}
             </span>
           </div>
-          <p className="text-xs text-slate-300 mt-1">
+          <p className="text-xs text-slate-400 mt-1">
             {t('drivers_subtitle')}
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <Button
             variant="outline"
             size="sm"
             icon={RefreshCw}
             onClick={() => fetchDrivers()}
-            className="text-xs border-cyan-700/60 text-cyan-300 hover:bg-cyan-950/40"
+            className="text-xs"
           >
             {t('refresh')}
           </Button>
@@ -112,7 +112,7 @@ export function Drivers() {
             size="sm"
             icon={Plus}
             onClick={handleCreateClick}
-            className="text-xs bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 font-bold border-0 shadow-md shadow-cyan-500/20"
+            className="text-xs"
           >
             {t('add_driver')}
           </Button>
@@ -121,7 +121,7 @@ export function Drivers() {
 
       {/* Drivers Table / Cards */}
       {isLoading ? (
-        <div className="bg-[#05172b]/90 rounded-2xl border border-cyan-900/40 p-4">
+        <div className="bg-[#0F1622] rounded-xl border border-slate-800/80 p-4">
           <TableSkeleton rows={4} cols={5} />
         </div>
       ) : (

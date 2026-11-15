@@ -13,23 +13,16 @@ import { Button } from '../components/ui/Button';
 import { TableSkeleton } from '../components/ui/Skeleton';
 import { formatCurrency, hasRawFish } from '../utils/formatters';
 import {
-  Fish,
+  Anchor,
   Plus,
   RefreshCw,
   Search,
-  Filter,
   Truck,
   CheckCircle2,
   Clock,
-  Flame,
   Banknote,
   Receipt,
-  CreditCard,
-  DollarSign,
-  Bike,
-  History,
   UserPlus,
-  Users,
 } from 'lucide-react';
 
 export function Orders({ isHistoryView = false }) {
@@ -47,10 +40,10 @@ export function Orders({ isHistoryView = false }) {
   const [isLoading, setIsLoading] = useState(true);
 
   // Filters
-  const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'preparing' | 'out_for_delivery' | 'delivered'
-  const [paymentFilter, setPaymentFilter] = useState('all'); // 'all' | 'unpaid' | 'postpaid' | 'paid'
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [paymentFilter, setPaymentFilter] = useState('all');
   const [rawFilter, setRawFilter] = useState(false);
-  const [driverFilter, setDriverFilter] = useState('all'); // 'all' | 'unassigned' | <driverId>
+  const [driverFilter, setDriverFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Assign Modal
@@ -102,10 +95,6 @@ export function Orders({ isHistoryView = false }) {
     );
   };
 
-  const handleOrderDeleted = (deletedOrderId) => {
-    setOrders((prev) => prev.filter((o) => o.id !== deletedOrderId));
-  };
-
   // Financial Stats
   const totalUnpaidAmount = orders
     .filter((o) => o.payment_status === 'unpaid')
@@ -126,32 +115,26 @@ export function Orders({ isHistoryView = false }) {
   const inDeliveryCount = orders.filter((o) => o.status === 'out_for_delivery').length;
   const deliveredCount = orders.filter((o) => o.status === 'delivered').length;
   const activeOrdersCount = orders.filter((o) => o.status !== 'delivered').length;
-  const totalOrdersCount = orders.length;
   const rawFishCount = orders.filter(hasRawFish).length;
 
   // Client-side filtering across orders
   const filteredOrders = orders.filter((order) => {
-    // In Active Deliveries view for Driver: automatically hide delivered orders!
     if (isDriver && !isHistory && order.status === 'delivered') {
       return false;
     }
 
-    // Status filter
     if (statusFilter !== 'all' && order.status !== statusFilter) {
       return false;
     }
 
-    // Payment status filter
     if (paymentFilter !== 'all' && order.payment_status !== paymentFilter) {
       return false;
     }
 
-    // Raw fish filter
     if (rawFilter && !hasRawFish(order)) {
       return false;
     }
 
-    // Driver filter (owner only)
     if (isOwner && driverFilter !== 'all') {
       if (driverFilter === 'unassigned') {
         if (order.assigned_driver_id) return false;
@@ -160,7 +143,6 @@ export function Orders({ isHistoryView = false }) {
       }
     }
 
-    // Text search (Order ID, Customer Name, Customer Phone, Address, items)
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
       const matchId = String(order.id).includes(q);
@@ -186,8 +168,8 @@ export function Orders({ isHistoryView = false }) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
-              <Fish className="w-6 h-6 text-cyan-400 stroke-[2.2]" />
+            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+              <Anchor className="w-5 h-5 text-blue-400 stroke-[2.2]" />
               <span>
                 {isDriver
                   ? isHistory
@@ -196,11 +178,11 @@ export function Orders({ isHistoryView = false }) {
                   : t('orders_title')}
               </span>
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full bg-cyan-950/80 text-cyan-300 border border-cyan-800/40 text-xs font-bold">
+            <span className="px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700 text-xs font-mono font-medium">
               {filteredOrders.length}
             </span>
           </div>
-          <p className="text-xs text-slate-300 mt-1">
+          <p className="text-xs text-slate-400 mt-1">
             {isDriver
               ? isHistory
                 ? (language === 'ar'
@@ -213,14 +195,13 @@ export function Orders({ isHistoryView = false }) {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-
+        <div className="flex flex-wrap items-center gap-2.5">
           <Button
             variant="outline"
             size="sm"
             icon={RefreshCw}
             onClick={() => fetchOrders()}
-            className="text-xs border-cyan-700/60 text-cyan-300 hover:bg-cyan-950/40"
+            className="text-xs"
           >
             {t('refresh')}
           </Button>
@@ -231,7 +212,7 @@ export function Orders({ isHistoryView = false }) {
               size="sm"
               icon={Plus}
               onClick={openCreateOrder}
-              className="text-xs bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 font-bold border-0 shadow-md shadow-cyan-500/20"
+              className="text-xs"
             >
               {t('create_order')}
             </Button>
@@ -244,22 +225,22 @@ export function Orders({ isHistoryView = false }) {
         {/* Unpaid / Cash to collect */}
         <div
           onClick={() => setPaymentFilter(paymentFilter === 'unpaid' ? 'all' : 'unpaid')}
-          className={`cursor-pointer p-4 rounded-2xl border transition-all ${
+          className={`cursor-pointer p-4 rounded-xl border transition-colors ${
             paymentFilter === 'unpaid'
-              ? 'bg-amber-950/60 border-amber-400 ring-2 ring-amber-400/30'
-              : 'bg-[#05172b]/90 border-amber-500/30 hover:border-amber-400/60'
+              ? 'bg-[#141B1F] border-amber-500/80 ring-1 ring-amber-500/30'
+              : 'bg-[#0F1622] border-slate-800/80 hover:border-slate-700'
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+            <span className="text-xs font-medium text-amber-300 flex items-center gap-1.5">
               <Banknote className="w-4 h-4 text-amber-400" />
               {t('total_unpaid_stat')}
             </span>
-            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-400/10 text-amber-300 border border-amber-400/20">
+            <span className="text-xs font-semibold px-2 py-0.5 rounded bg-amber-950/60 text-amber-300 border border-amber-800/50">
               {unpaidCount}
             </span>
           </div>
-          <div className="mt-2 text-2xl font-black text-amber-300">
+          <div className="mt-2 text-2xl font-bold text-amber-300">
             {formatCurrency(totalUnpaidAmount, language)}
           </div>
           <p className="text-[11px] text-slate-400 mt-1">
@@ -270,22 +251,22 @@ export function Orders({ isHistoryView = false }) {
         {/* Postpaid / On Credit */}
         <div
           onClick={() => setPaymentFilter(paymentFilter === 'postpaid' ? 'all' : 'postpaid')}
-          className={`cursor-pointer p-4 rounded-2xl border transition-all ${
+          className={`cursor-pointer p-4 rounded-xl border transition-colors ${
             paymentFilter === 'postpaid'
-              ? 'bg-purple-950/60 border-purple-400 ring-2 ring-purple-400/30'
-              : 'bg-[#05172b]/90 border-purple-500/30 hover:border-purple-400/60'
+              ? 'bg-[#181520] border-purple-500/80 ring-1 ring-purple-500/30'
+              : 'bg-[#0F1622] border-slate-800/80 hover:border-slate-700'
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-purple-300 flex items-center gap-1.5">
+            <span className="text-xs font-medium text-purple-300 flex items-center gap-1.5">
               <Clock className="w-4 h-4 text-purple-400" />
               {t('total_postpaid_stat')}
             </span>
-            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-purple-400/10 text-purple-300 border border-purple-400/20">
+            <span className="text-xs font-semibold px-2 py-0.5 rounded bg-purple-950/60 text-purple-300 border border-purple-800/50">
               {postpaidCount}
             </span>
           </div>
-          <div className="mt-2 text-2xl font-black text-purple-300">
+          <div className="mt-2 text-2xl font-bold text-purple-300">
             {formatCurrency(totalPostpaidAmount, language)}
           </div>
           <p className="text-[11px] text-slate-400 mt-1">
@@ -296,22 +277,22 @@ export function Orders({ isHistoryView = false }) {
         {/* Paid / Collected */}
         <div
           onClick={() => setPaymentFilter(paymentFilter === 'paid' ? 'all' : 'paid')}
-          className={`cursor-pointer p-4 rounded-2xl border transition-all ${
+          className={`cursor-pointer p-4 rounded-xl border transition-colors ${
             paymentFilter === 'paid'
-              ? 'bg-emerald-950/60 border-emerald-400 ring-2 ring-emerald-400/30'
-              : 'bg-[#05172b]/90 border-emerald-500/30 hover:border-emerald-400/60'
+              ? 'bg-[#101A18] border-emerald-500/80 ring-1 ring-emerald-500/30'
+              : 'bg-[#0F1622] border-slate-800/80 hover:border-slate-700'
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+            <span className="text-xs font-medium text-emerald-300 flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-400" />
               {language === 'ar' ? 'إجمالي المحصل (مدفوع)' : 'Total Collected (Paid)'}
             </span>
-            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-400/10 text-emerald-300 border border-emerald-400/20">
+            <span className="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-800/50">
               {paidCount}
             </span>
           </div>
-          <div className="mt-2 text-2xl font-black text-emerald-300">
+          <div className="mt-2 text-2xl font-bold text-emerald-300">
             {formatCurrency(totalPaidAmount, language)}
           </div>
           <p className="text-[11px] text-slate-400 mt-1">
@@ -321,19 +302,19 @@ export function Orders({ isHistoryView = false }) {
       </div>
 
       {/* Filter Tabs & Search Bar */}
-      <div className="bg-[#05172b]/90 p-4 rounded-2xl border border-cyan-900/40 shadow-xl space-y-3">
+      <div className="bg-[#0F1622] p-4 rounded-xl border border-slate-800/80 shadow-card space-y-3">
         {/* Status Tab Pills */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
-          <span className="text-xs font-bold text-slate-400 shrink-0">
-            {language === 'ar' ? 'حالة التوصيل:' : 'Delivery Status:'}
+          <span className="text-xs font-medium text-slate-400 shrink-0">
+            {language === 'ar' ? 'حالة التوصيل:' : 'Status:'}
           </span>
           <button
             type="button"
             onClick={() => setStatusFilter('all')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
               statusFilter === 'all'
-                ? 'bg-cyan-500 text-slate-950 shadow-md font-black'
-                : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800 hover:text-white'
+                ? 'bg-blue-600 text-white shadow-button'
+                : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-white'
             }`}
           >
             {isDriver && !isHistory
@@ -344,23 +325,23 @@ export function Orders({ isHistoryView = false }) {
           <button
             type="button"
             onClick={() => setStatusFilter('preparing')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
               statusFilter === 'preparing'
-                ? 'bg-amber-500 text-slate-950 shadow-md font-black'
-                : 'bg-amber-950/40 text-amber-300 border border-amber-500/30 hover:bg-amber-900/40'
+                ? 'bg-amber-600 text-white shadow-button'
+                : 'bg-slate-800/80 text-amber-300/90 hover:bg-slate-700'
             }`}
           >
-            <Flame className="w-3.5 h-3.5" />
+            <Clock className="w-3.5 h-3.5" />
             {t('filter_preparing')} ({preparingCount})
           </button>
 
           <button
             type="button"
             onClick={() => setStatusFilter('out_for_delivery')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
               statusFilter === 'out_for_delivery'
-                ? 'bg-sky-500 text-slate-950 shadow-md font-black'
-                : 'bg-sky-950/40 text-sky-300 border border-sky-500/30 hover:bg-sky-900/40'
+                ? 'bg-blue-600 text-white shadow-button'
+                : 'bg-slate-800/80 text-blue-300/90 hover:bg-slate-700'
             }`}
           >
             <Truck className="w-3.5 h-3.5" />
@@ -371,10 +352,10 @@ export function Orders({ isHistoryView = false }) {
             <button
               type="button"
               onClick={() => setStatusFilter('delivered')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
                 statusFilter === 'delivered'
-                  ? 'bg-emerald-500 text-slate-950 shadow-md font-black'
-                  : 'bg-emerald-950/40 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-900/40'
+                  ? 'bg-emerald-600 text-white shadow-button'
+                  : 'bg-slate-800/80 text-emerald-300/90 hover:bg-slate-700'
               }`}
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
@@ -384,19 +365,19 @@ export function Orders({ isHistoryView = false }) {
         </div>
 
         {/* Payment Status Tab Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none pt-2 border-t border-cyan-950/60">
-          <span className="text-xs font-bold text-slate-400 shrink-0 flex items-center gap-1">
-            <Banknote className="w-3.5 h-3.5 text-cyan-400" />
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none pt-2.5 border-t border-slate-800/80">
+          <span className="text-xs font-medium text-slate-400 shrink-0 flex items-center gap-1">
+            <Banknote className="w-3.5 h-3.5 text-slate-400" />
             {language === 'ar' ? 'حالة الدفع:' : 'Payment:'}
           </span>
 
           <button
             type="button"
             onClick={() => setPaymentFilter('all')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+            className={`px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-colors ${
               paymentFilter === 'all'
-                ? 'bg-teal-500 text-slate-950 shadow-md'
-                : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800 hover:text-white'
+                ? 'bg-slate-700 text-white'
+                : 'bg-slate-800/60 text-slate-400 hover:text-slate-200'
             }`}
           >
             {t('filter_all_payments')}
@@ -405,10 +386,10 @@ export function Orders({ isHistoryView = false }) {
           <button
             type="button"
             onClick={() => setPaymentFilter('unpaid')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+            className={`px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-colors flex items-center gap-1 ${
               paymentFilter === 'unpaid'
-                ? 'bg-amber-500 text-slate-950 shadow-md'
-                : 'bg-amber-950/40 text-amber-300 border border-amber-500/30 hover:bg-amber-900/40'
+                ? 'bg-amber-600 text-white'
+                : 'bg-slate-800/60 text-amber-400/80 hover:text-amber-300'
             }`}
           >
             <Banknote className="w-3 h-3" />
@@ -418,10 +399,10 @@ export function Orders({ isHistoryView = false }) {
           <button
             type="button"
             onClick={() => setPaymentFilter('postpaid')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+            className={`px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-colors flex items-center gap-1 ${
               paymentFilter === 'postpaid'
-                ? 'bg-purple-500 text-white shadow-md'
-                : 'bg-purple-950/40 text-purple-300 border border-purple-500/30 hover:bg-purple-900/40'
+                ? 'bg-purple-600 text-white'
+                : 'bg-slate-800/60 text-purple-400/80 hover:text-purple-300'
             }`}
           >
             <Clock className="w-3 h-3" />
@@ -431,10 +412,10 @@ export function Orders({ isHistoryView = false }) {
           <button
             type="button"
             onClick={() => setPaymentFilter('paid')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+            className={`px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-colors flex items-center gap-1 ${
               paymentFilter === 'paid'
-                ? 'bg-emerald-500 text-slate-950 shadow-md'
-                : 'bg-emerald-950/40 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-900/40'
+                ? 'bg-emerald-600 text-white'
+                : 'bg-slate-800/60 text-emerald-400/80 hover:text-emerald-300'
             }`}
           >
             <Receipt className="w-3 h-3" />
@@ -445,18 +426,18 @@ export function Orders({ isHistoryView = false }) {
           <button
             type="button"
             onClick={() => setRawFilter((prev) => !prev)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ms-auto ${
+            className={`px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ms-auto ${
               rawFilter
-                ? 'bg-gradient-to-r from-cyan-400 to-teal-400 text-slate-950 font-black shadow-md shadow-cyan-500/20 ring-2 ring-cyan-300'
-                : 'bg-cyan-950/40 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-900/40'
+                ? 'bg-rose-700 text-white'
+                : 'bg-slate-800/60 text-rose-300/80 hover:text-rose-200'
             }`}
             title={language === 'ar' ? 'عرض الطلبات التي تحتوي على أصناف سمك نيء' : 'Filter orders containing raw fish items'}
           >
-            <span className="text-sm">🐟</span>
+            <span>🐟</span>
             <span>{language === 'ar' ? 'به سمك نيء' : 'Contains Raw Fish'}</span>
             <span
-              className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
-                rawFilter ? 'bg-slate-950 text-cyan-300' : 'bg-cyan-500/20 text-cyan-200'
+              className={`px-1.5 py-0.2 rounded text-[10px] font-mono ${
+                rawFilter ? 'bg-black/40 text-white' : 'bg-slate-700 text-slate-300'
               }`}
             >
               {rawFishCount}
@@ -464,31 +445,31 @@ export function Orders({ isHistoryView = false }) {
           </button>
         </div>
 
-        {/* Search and Secondary Selects */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t border-cyan-950/80">
+        {/* Search and Driver filter */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t border-slate-800/80">
           <div className="relative flex-1 max-w-md">
-            <div className="pointer-events-none absolute inset-y-0 left-0 rtl:left-auto rtl:right-0 flex items-center pl-3 rtl:pl-0 rtl:pr-3">
-              <Search className="h-4 w-4 text-cyan-400/80" />
+            <div className="pointer-events-none absolute inset-y-0 left-0 rtl:left-auto rtl:right-0 flex items-center pl-3 rtl:pl-0 rtl:pr-3 text-slate-500">
+              <Search className="h-4 w-4" />
             </div>
             <input
               type="text"
               placeholder={t('search_orders_placeholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="block w-full rounded-xl border border-slate-700/80 bg-[#020b14]/80 text-sm text-white placeholder:text-slate-500 pl-9 rtl:pl-3 rtl:pr-9 pr-3 py-2 focus:border-cyan-400 focus:outline-none transition-colors"
+              className="block w-full rounded-lg border border-slate-700/80 bg-[#0B1019] text-sm text-white placeholder:text-slate-500 pl-9 rtl:pl-3 rtl:pr-9 pr-3 py-2 focus:border-blue-500 focus:outline-none transition-colors"
             />
           </div>
 
           {/* Driver filter dropdown for Owner */}
           {isOwner && (
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-slate-300 whitespace-nowrap">
+              <span className="text-xs font-medium text-slate-400 whitespace-nowrap">
                 {language === 'ar' ? 'تصفية بالكابتن:' : 'Filter Courier:'}
               </span>
               <select
                 value={driverFilter}
                 onChange={(e) => setDriverFilter(e.target.value)}
-                className="text-xs bg-[#020b14] border border-slate-700/80 text-white rounded-xl px-3 py-2 focus:outline-none focus:border-cyan-400"
+                className="text-xs bg-[#0B1019] border border-slate-700/80 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500"
               >
                 <option value="all">{language === 'ar' ? 'جميع الكباتن' : 'All Couriers'}</option>
                 <option value="unassigned">{language === 'ar' ? 'بدون كابتن بعد' : 'Unassigned Only'}</option>
@@ -505,34 +486,34 @@ export function Orders({ isHistoryView = false }) {
 
       {/* Orders Table & Cards */}
       {isLoading ? (
-        <div className="bg-[#05172b]/90 rounded-2xl border border-cyan-900/40 p-4">
+        <div className="bg-[#0F1622] rounded-xl border border-slate-800/80 p-4">
           <TableSkeleton rows={6} cols={6} />
         </div>
       ) : filteredOrders.length === 0 && isDriver && !isHistory ? (
-        <div className="bg-[#05172b]/90 rounded-2xl border border-cyan-800/40 p-10 text-center flex flex-col items-center justify-center space-y-4 shadow-xl">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 border border-emerald-400/40 flex items-center justify-center text-3xl shadow-lg shadow-emerald-500/10">
-            🎉
+        <div className="bg-[#0F1622] rounded-xl border border-slate-800/80 p-10 text-center flex flex-col items-center justify-center space-y-4 shadow-card">
+          <div className="w-14 h-14 rounded-xl bg-emerald-950/60 border border-emerald-800/50 flex items-center justify-center text-2xl">
+            ✓
           </div>
-          <div className="max-w-md space-y-1.5">
-            <h3 className="text-lg font-black text-white">
-              {language === 'ar' ? 'عاش يا كابتن! تم تسليم جميع الطلبات بنجاح' : 'All Deliveries Complete! Great Job!'}
+          <div className="max-w-md space-y-1">
+            <h3 className="text-base font-bold text-white">
+              {language === 'ar' ? 'تم تسليم جميع المهام النشطة' : 'All Active Deliveries Complete'}
             </h3>
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-slate-400 leading-relaxed">
               {language === 'ar'
-                ? 'لا توجد طلبات نشطة معلقة في قائمتك حالياً. يمكنك مراجعة كافة الطلبات السابقة في سجل جميع الطلبات أو إضافة عملاء جدد.'
-                : 'No active deliveries pending in your queue. You can review all completed deliveries in Order History or add new customers.'}
+                ? 'لا توجد طلبات معلقة في قائمتك حالياً. يمكنك مراجعة كافة الطلبات السابقة في سجل جميع الطلبات أو إضافة عملاء جدد.'
+                : 'No active deliveries pending in your queue. You can review past deliveries in Order History or register new customers.'}
             </p>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-2.5 pt-2">
+          <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
             <Button
               variant="primary"
               size="sm"
-              icon={History}
+              icon={Clock}
               onClick={() => {
                 setStatusFilter('all');
                 navigate('/orders/history');
               }}
-              className="text-xs bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 font-bold shadow-md shadow-cyan-500/20"
+              className="text-xs"
             >
               {language === 'ar' ? 'عرض سجل جميع الطلبات' : 'View Order History'}
             </Button>
@@ -541,7 +522,7 @@ export function Orders({ isHistoryView = false }) {
               size="sm"
               icon={UserPlus}
               onClick={() => navigate('/driver/customers')}
-              className="text-xs border-cyan-600/60 text-cyan-300 hover:bg-cyan-950/40 font-bold"
+              className="text-xs"
             >
               {language === 'ar' ? 'إضافة وتسجيل عملاء' : 'Add Customers'}
             </Button>
@@ -550,7 +531,7 @@ export function Orders({ isHistoryView = false }) {
               size="sm"
               icon={RefreshCw}
               onClick={() => fetchOrders()}
-              className="text-xs border-slate-700 text-slate-300 hover:bg-slate-800/50"
+              className="text-xs"
             >
               {t('refresh')}
             </Button>

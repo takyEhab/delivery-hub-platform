@@ -394,12 +394,12 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
       <form onSubmit={handleSubmit} className="space-y-5 text-slate-200">
         {/* Customer Selector Mode Tabs */}
         <div>
-          <div className="flex items-center gap-2 p-1 bg-slate-900/90 rounded-2xl mb-3 border border-cyan-900/40">
+          <div className="flex items-center gap-2 p-1 bg-[#0B1019] rounded-xl mb-3 border border-slate-800">
             <button
               type="button"
               onClick={() => setCustomerMode('existing')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-xl transition-all ${customerMode === 'existing'
-                ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md'
+              className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-semibold rounded-lg transition-colors ${customerMode === 'existing'
+                ? 'bg-blue-600 text-white shadow-button'
                 : 'text-slate-400 hover:text-white'
                 }`}
             >
@@ -409,8 +409,8 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
             <button
               type="button"
               onClick={() => setCustomerMode('new')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-xl transition-all ${customerMode === 'new'
-                ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md'
+              className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-semibold rounded-lg transition-colors ${customerMode === 'new'
+                ? 'bg-blue-600 text-white shadow-button'
                 : 'text-slate-400 hover:text-white'
                 }`}
             >
@@ -423,27 +423,27 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
           {customerMode === 'existing' ? (
             <div className="space-y-2">
               {selectedCustomer ? (
-                <div className="p-3.5 bg-cyan-950/40 rounded-2xl border border-cyan-500/40 flex items-start justify-between gap-3 shadow-inner">
+                <div className="p-3 bg-[#0B1019] rounded-xl border border-slate-750 flex items-start justify-between gap-3 shadow-sm">
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-teal-500 text-slate-950 flex items-center justify-center font-black text-sm shrink-0 shadow-md">
+                    <div className="w-9 h-9 rounded-lg bg-slate-800 text-white flex items-center justify-center font-bold text-sm shrink-0">
                       {selectedCustomer.name.charAt(0).toUpperCase()}
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <p className="font-bold text-white text-sm">
+                        <p className="font-semibold text-white text-sm">
                           {selectedCustomer.name}
                         </p>
-                        <span className="text-[11px] text-cyan-400 font-mono">
+                        <span className="text-[11px] text-slate-400 font-mono">
                           #{selectedCustomer.id}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-300 flex items-center gap-1.5 mt-0.5" dir="ltr">
-                        <Phone className="w-3.5 h-3.5 text-cyan-400" />
+                      <p className="text-xs text-slate-400 flex items-center gap-1.5 mt-0.5 font-mono" dir="ltr">
+                        <Phone className="w-3.5 h-3.5 text-slate-500" />
                         {selectedCustomer.phone}
                       </p>
                       {selectedCustomer.address && (
-                        <p className="text-xs text-slate-300 flex items-center gap-1.5 mt-0.5">
-                          <MapPin className="w-3.5 h-3.5 text-cyan-400" />
+                        <p className="text-xs text-slate-400 flex items-center gap-1.5 mt-0.5">
+                          <MapPin className="w-3.5 h-3.5 text-slate-500" />
                           {selectedCustomer.address}
                         </p>
                       )}
@@ -454,7 +454,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                     variant="ghost"
                     size="sm"
                     onClick={() => setSelectedCustomer(null)}
-                    className="text-xs text-cyan-400 hover:text-cyan-200"
+                    className="text-xs text-slate-400 hover:text-white"
                   >
                     {language === 'ar' ? 'تغيير العميل' : 'Change'}
                   </Button>
@@ -474,7 +474,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                   />
 
                   {/* Customer search results list */}
-                  <div className="mt-2 max-h-40 overflow-y-auto border border-cyan-900/40 rounded-2xl divide-y divide-slate-800 bg-[#041222]">
+                  <div className="mt-2 max-h-40 overflow-y-auto border border-slate-800 rounded-xl divide-y divide-slate-800 bg-[#0B1019]">
                     {searchResults.length === 0 ? (
                       <div className="p-3 text-center text-xs text-slate-400">
                         {isSearching
@@ -487,17 +487,17 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                           key={cust.id}
                           type="button"
                           onClick={() => setSelectedCustomer(cust)}
-                          className="w-full text-right rtl:text-right ltr:text-left px-3.5 py-2.5 hover:bg-cyan-950/50 flex items-center justify-between transition-colors"
+                          className="w-full text-right rtl:text-right ltr:text-left px-3.5 py-2.5 hover:bg-slate-800/50 flex items-center justify-between transition-colors"
                         >
                           <div>
-                            <p className="text-xs font-bold text-white">
+                            <p className="text-xs font-semibold text-white">
                               {cust.name}
                             </p>
-                            <p className="text-[11px] text-slate-400 truncate max-w-sm" dir="ltr">
+                            <p className="text-[11px] text-slate-400 truncate max-w-sm font-mono" dir="ltr">
                               {cust.phone} {cust.address ? `• ${cust.address}` : ''}
                             </p>
                           </div>
-                          <span className="text-[11px] font-bold text-cyan-400">
+                          <span className="text-xs font-medium text-blue-400">
                             {language === 'ar' ? 'اختيار' : 'Select'}
                           </span>
                         </button>
@@ -512,12 +512,12 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
             </div>
           ) : (
             /* New Customer Inline Form */
-            <div className="p-4 bg-[#041222] rounded-2xl border border-cyan-900/40 space-y-3">
+            <div className="p-4 bg-[#0B1019] rounded-xl border border-slate-800 space-y-3">
               {/* Autofill from contact button */}
-              <div className="flex items-center justify-between p-2.5 bg-cyan-950/50 rounded-xl border border-cyan-500/30">
+              <div className="flex items-center justify-between p-2.5 bg-slate-850 rounded-lg border border-slate-800">
                 <div className="flex items-center gap-2">
-                  <Smartphone className="w-4 h-4 text-cyan-400" />
-                  <span className="text-xs font-semibold text-cyan-200">
+                  <Smartphone className="w-4 h-4 text-slate-400" />
+                  <span className="text-xs font-medium text-slate-300">
                     {language === 'ar' ? 'ملء سريع من جهات اتصال الهاتف' : 'Autofill from device contacts'}
                   </span>
                 </div>
@@ -526,7 +526,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                   variant="outline"
                   size="sm"
                   onClick={handleInlineContactPick}
-                  className="bg-cyan-900/60 border-cyan-400 text-cyan-200 hover:bg-cyan-800 text-xs py-1 px-3"
+                  className="text-xs py-1 px-3"
                 >
                   {language === 'ar' ? 'اختر جهة اتصال' : 'Choose Contact'}
                 </Button>
@@ -566,7 +566,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                 {/* Google Maps Location / Link */}
                 <div className="sm:col-span-2 space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="block text-xs font-bold text-slate-300">
+                    <label className="block text-xs font-semibold text-slate-300">
                       {language === 'ar' ? 'موقع خرائط جوجل (اختياري)' : 'Google Maps Location (Optional)'}
                     </label>
                     <div className="flex items-center gap-2">
@@ -574,12 +574,12 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                         type="button"
                         onClick={handleGetGps}
                         disabled={isLocatingGps}
-                        className="inline-flex items-center gap-1 text-[11px] font-bold text-cyan-400 hover:text-cyan-300 disabled:opacity-50 transition-colors"
+                        className="inline-flex items-center gap-1 text-[11px] font-medium text-blue-400 hover:text-blue-300 disabled:opacity-50 transition-colors"
                       >
                         {isLocatingGps ? (
-                          <Loader2 className="w-3 h-3 animate-spin text-cyan-400" />
+                          <Loader2 className="w-3 h-3 animate-spin text-blue-400" />
                         ) : (
-                          <Navigation className="w-3 h-3 text-cyan-400" />
+                          <Navigation className="w-3 h-3 text-blue-400" />
                         )}
                         <span>
                           {isLocatingGps
@@ -592,7 +592,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                           href={inlineCustomer.location_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-[11px] font-bold text-teal-300 hover:text-teal-200 hover:underline"
+                          className="inline-flex items-center gap-1 text-[11px] font-medium text-blue-400 hover:text-blue-300 hover:underline"
                         >
                           <ExternalLink className="w-3 h-3" />
                           <span>{language === 'ar' ? 'اختبار الرابط' : 'Test Link'}</span>
@@ -601,8 +601,8 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                     </div>
                   </div>
                   <div className="relative rounded-xl shadow-sm">
-                    <div className="pointer-events-none absolute inset-y-0 left-0 rtl:left-auto rtl:right-0 flex items-center pl-3 rtl:pl-0 rtl:pr-3">
-                      <Navigation className="h-4 w-4 text-cyan-400/80" />
+                    <div className="pointer-events-none absolute inset-y-0 left-0 rtl:left-auto rtl:right-0 flex items-center pl-3 rtl:pl-0 rtl:pr-3 text-slate-500">
+                      <Navigation className="h-4 w-4" />
                     </div>
                     <input
                       type="text"
@@ -615,7 +615,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                       onChange={(e) =>
                         setInlineCustomer({ ...inlineCustomer, location_url: e.target.value })
                       }
-                      className="block w-full rounded-xl border border-slate-700/80 bg-[#020b14]/80 text-sm text-white placeholder:text-slate-500 pl-10 pr-3 rtl:pl-3 rtl:pr-10 py-2.5 focus:border-cyan-400 focus:outline-none transition-colors"
+                      className="block w-full rounded-lg border border-slate-700/80 bg-[#0B1019] text-sm text-white placeholder:text-slate-500 pl-10 pr-3 rtl:pl-3 rtl:pr-10 py-2.5 focus:border-blue-500 focus:outline-none transition-colors"
                     />
                   </div>
                 </div>
@@ -635,43 +635,43 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
         </div>
 
         {/* Order Mode Toggle */}
-        <div className="p-1 bg-slate-900/90 rounded-2xl border border-cyan-900/40 flex items-center gap-2">
+        <div className="p-1 bg-[#0B1019] rounded-xl border border-slate-800 flex items-center gap-2">
           <button
             type="button"
             onClick={() => setOrderMode('quick')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-xl transition-all ${
+            className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-semibold rounded-lg transition-colors ${
               orderMode === 'quick'
-                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-950/40'
+                ? 'bg-slate-800 text-white border border-slate-700 shadow-button'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
-            <Banknote className="w-4 h-4 text-emerald-300" />
+            <Banknote className="w-4 h-4 text-emerald-400" />
             <span>{t('order_mode_quick')}</span>
           </button>
           <button
             type="button"
             onClick={() => setOrderMode('detailed')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-xl transition-all ${
+            className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-semibold rounded-lg transition-colors ${
               orderMode === 'detailed'
-                ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md shadow-cyan-950/40'
+                ? 'bg-slate-800 text-white border border-slate-700 shadow-button'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
-            <Utensils className="w-4 h-4 text-cyan-300" />
+            <Utensils className="w-4 h-4 text-blue-400" />
             <span>{t('order_mode_detailed')}</span>
           </button>
         </div>
 
         {/* Quick Amount Section (Primary Mode) */}
         {orderMode === 'quick' && (
-          <div className="p-4 bg-gradient-to-br from-[#041a29] to-[#02101e] rounded-2xl border border-emerald-500/30 space-y-3.5 shadow-lg shadow-black/20">
+          <div className="p-4 bg-[#0B1019] rounded-xl border border-slate-800 space-y-3.5 shadow-sm">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400">
+                <div className="p-1.5 rounded-lg bg-emerald-950/60 border border-emerald-800/50 text-emerald-400">
                   <Banknote className="w-4 h-4" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-emerald-300">
+                  <h4 className="text-xs font-semibold text-emerald-400">
                     {t('total_amount_to_pay')} <span className="text-rose-400">*</span>
                   </h4>
                   <p className="text-[11px] text-slate-400">
@@ -683,10 +683,10 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start">
               <div className="sm:col-span-1">
-                <label className="block text-[11px] font-bold text-slate-300 mb-1">
+                <label className="block text-[11px] font-semibold text-slate-300 mb-1">
                   {language === 'ar' ? 'المبلغ الإجمالي (ج.م) *' : 'Total Amount (EGP) *'}
                 </label>
-                <div className="relative rounded-xl shadow-sm">
+                <div className="relative rounded-lg shadow-sm">
                   <input
                     type="number"
                     step="0.01"
@@ -694,12 +694,12 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                     placeholder={t('quick_amount_placeholder')}
                     value={quickAmount}
                     onChange={(e) => setQuickAmount(e.target.value)}
-                    className={`block w-full rounded-xl border bg-[#020b14]/90 text-lg font-black text-emerald-300 placeholder:text-slate-500 px-3 py-2.5 focus:outline-none transition-colors ${
-                      errors.quickAmount ? 'border-rose-500' : 'border-emerald-500/50 focus:border-emerald-400'
+                    className={`block w-full rounded-lg border bg-[#070B12] text-lg font-bold text-emerald-400 placeholder:text-slate-500 px-3 py-2 focus:outline-none transition-colors ${
+                      errors.quickAmount ? 'border-rose-500' : 'border-emerald-800/60 focus:border-emerald-500'
                     }`}
                   />
                   <div className="pointer-events-none absolute inset-y-0 right-0 rtl:right-auto rtl:left-0 flex items-center pr-3 rtl:pr-0 rtl:pl-3">
-                    <span className="text-xs font-bold text-emerald-400/80">{t('currency')}</span>
+                    <span className="text-xs font-semibold text-emerald-400">{t('currency')}</span>
                   </div>
                 </div>
                 {errors.quickAmount && (
@@ -708,7 +708,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-[11px] font-bold text-slate-300 mb-1">
+                <label className="block text-[11px] font-semibold text-slate-300 mb-1">
                   {language === 'ar' ? 'وصف الطلب / الوجبة (اختياري)' : 'Order Description (Optional)'}
                 </label>
                 <input
@@ -716,7 +716,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                   placeholder={t('quick_desc_placeholder')}
                   value={quickDescription}
                   onChange={(e) => setQuickDescription(e.target.value)}
-                  className="block w-full rounded-xl border border-slate-700/80 bg-[#020b14]/90 text-xs text-white placeholder:text-slate-500 px-3 py-3 focus:border-emerald-400 focus:outline-none transition-colors"
+                  className="block w-full rounded-lg border border-slate-700/80 bg-[#070B12] text-xs text-white placeholder:text-slate-500 px-3 py-2.5 focus:border-blue-500 focus:outline-none transition-colors"
                 />
               </div>
             </div>
@@ -726,24 +726,24 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
               <button
                 type="button"
                 onClick={() => setIsRawFish(!isRawFish)}
-                className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all text-right rtl:text-right ltr:text-left ${
+                className={`w-full flex items-center justify-between p-3 rounded-lg border transition-colors text-right rtl:text-right ltr:text-left ${
                   isRawFish
-                    ? 'bg-cyan-950/60 border-cyan-400 text-cyan-200 ring-2 ring-cyan-400/30 shadow-lg shadow-cyan-950/50'
-                    : 'bg-[#020b14]/70 border-slate-700/70 text-slate-300 hover:border-slate-500 hover:bg-slate-900/60'
+                    ? 'bg-rose-950/40 border-rose-800/70 text-rose-200'
+                    : 'bg-[#070B12] border-slate-800 text-slate-300 hover:border-slate-700'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-lg transition-colors ${
-                    isRawFish ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'bg-slate-800/80 text-slate-400 border border-slate-700/50'
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm transition-colors ${
+                    isRawFish ? 'bg-rose-950 text-rose-300 border border-rose-800/50' : 'bg-slate-800 text-slate-400 border border-slate-700/50'
                   }`}>
                     🐟
                   </div>
                   <div>
-                    <p className="text-xs font-black text-white flex items-center gap-2">
+                    <p className="text-xs font-semibold text-white flex items-center gap-2">
                       <span>{language === 'ar' ? 'يحتوي الطلب على سمك طازج / نيء (بدون طهي)' : 'Order contains fresh / raw fish (uncooked)'}</span>
                       {isRawFish && (
-                        <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 text-[10px] font-bold border border-cyan-400/40">
-                          {language === 'ar' ? 'به سمك نيء' : 'Contains Raw Fish'}
+                        <span className="px-2 py-0.5 rounded bg-rose-950 text-rose-300 text-[10px] font-semibold border border-rose-800/50">
+                          {language === 'ar' ? 'سمك نيء' : 'Raw Fish'}
                         </span>
                       )}
                     </p>
@@ -752,10 +752,10 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                     </p>
                   </div>
                 </div>
-                <div className={`w-5 h-5 rounded-lg border flex items-center justify-center transition-all ${
+                <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${
                   isRawFish
-                    ? 'bg-cyan-400 border-cyan-300 text-slate-950'
-                    : 'border-slate-600 bg-slate-900/80'
+                    ? 'bg-rose-600 border-rose-500 text-white'
+                    : 'border-slate-700 bg-slate-900/80'
                 }`}>
                   {isRawFish && <CheckCircle2 className="w-3.5 h-3.5 stroke-[3]" />}
                 </div>
@@ -768,11 +768,11 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
         {orderMode === 'detailed' && (
           <div className="space-y-3">
             {/* Quick Seafood Menu Picker */}
-            <div className="p-3.5 bg-[#031120] rounded-2xl border border-cyan-900/50 space-y-2.5">
+            <div className="p-3.5 bg-[#0B1019] rounded-xl border border-slate-800 space-y-2.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Fish className="w-4 h-4 text-cyan-400" />
-                  <span className="text-xs font-bold text-cyan-300">
+                  <Fish className="w-4 h-4 text-blue-400" />
+                  <span className="text-xs font-semibold text-slate-300">
                     {t('quick_menu_title')}
                   </span>
                 </div>
@@ -785,10 +785,10 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                     key={cat.category}
                     type="button"
                     onClick={() => setActiveCategoryTab(idx)}
-                    className={`px-3 py-1.5 rounded-lg font-bold shrink-0 transition-all ${
+                    className={`px-3 py-1.5 rounded-lg font-medium shrink-0 transition-colors ${
                       activeCategoryTab === idx
-                        ? 'bg-cyan-500 text-slate-950 shadow-md'
-                        : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800 hover:text-white'
+                        ? 'bg-blue-600 text-white shadow-button'
+                        : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-white'
                     }`}
                   >
                     {language === 'ar' ? cat.categoryNameAr : cat.categoryNameEn}
@@ -803,12 +803,12 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                     key={idx}
                     type="button"
                     onClick={() => handleAddPreset(preset)}
-                    className="flex items-center justify-between gap-1 p-2 rounded-xl bg-slate-900/90 border border-cyan-900/40 hover:border-cyan-400 hover:bg-cyan-950/60 text-xs text-slate-200 transition-all text-right rtl:text-right ltr:text-left group"
+                    className="flex items-center justify-between gap-1 p-2 rounded-lg bg-[#070B12] border border-slate-800 hover:border-slate-700 hover:bg-slate-800/40 text-xs text-slate-200 transition-colors text-right rtl:text-right ltr:text-left group"
                   >
-                    <span className="font-semibold truncate text-[11px] group-hover:text-cyan-300">
+                    <span className="font-medium truncate text-[11px] group-hover:text-white">
                       {language === 'ar' ? preset.nameAr : preset.nameEn}
                     </span>
-                    <span className="text-[10px] font-bold text-amber-400 shrink-0 bg-amber-400/10 px-1.5 py-0.5 rounded border border-amber-400/20">
+                    <span className="text-[10px] font-mono text-amber-300 shrink-0 bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-800/50">
                       {preset.price} {t('currency')}
                     </span>
                   </button>
@@ -817,7 +817,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
 
               {/* Quick Cooking Styles Chips */}
               <div className="pt-2 border-t border-slate-800/80">
-                <span className="text-[11px] font-bold text-slate-400 block mb-1.5">
+                <span className="text-[11px] font-medium text-slate-400 block mb-1.5">
                   {language === 'ar' ? 'طرق التسوية السريعة (تضاف للملاحظات):' : 'Quick Cooking Styles:'}
                 </span>
                 <div className="flex flex-wrap gap-1.5">
@@ -826,7 +826,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                       key={idx}
                       type="button"
                       onClick={() => handleAppendCookingStyle(style)}
-                      className="px-2 py-1 rounded-lg bg-orange-950/30 border border-orange-500/30 hover:bg-orange-900/50 text-[11px] font-semibold text-orange-300 transition-all"
+                      className="px-2 py-1 rounded bg-slate-800/80 border border-slate-700/60 hover:bg-slate-700 text-[11px] font-medium text-slate-300 transition-colors"
                     >
                       {language === 'ar' ? style.ar : style.en}
                     </button>
@@ -839,8 +839,8 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
             <div className="space-y-3 pt-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <ShoppingBag className="w-4 h-4 text-cyan-400" />
-                  <h4 className="text-xs font-bold text-cyan-300 uppercase tracking-wider">
+                  <ShoppingBag className="w-4 h-4 text-slate-400" />
+                  <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
                     {t('order_items')}
                   </h4>
                 </div>
@@ -850,7 +850,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                   size="sm"
                   icon={Plus}
                   onClick={addItemRow}
-                  className="text-xs py-1 px-3 bg-cyan-950/40 border-cyan-700/60 text-cyan-300 hover:bg-cyan-900/50"
+                  className="text-xs py-1 px-3"
                 >
                   {t('add_another_item')}
                 </Button>
@@ -860,7 +860,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                 {items.map((it, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center gap-2 p-2 rounded-xl bg-[#041222] border border-cyan-900/40"
+                    className="flex items-center gap-2 p-2 rounded-lg bg-[#0B1019] border border-slate-800"
                   >
                     <div className="flex-1">
                       <input
@@ -868,7 +868,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                         placeholder={t('item_placeholder')}
                         value={it.name}
                         onChange={(e) => updateItemRow(idx, 'name', e.target.value)}
-                        className="w-full text-xs bg-slate-900/90 border border-slate-700 rounded-lg px-2.5 py-2 text-white focus:outline-none focus:border-cyan-400"
+                        className="w-full text-xs bg-[#070B12] border border-slate-700 rounded-lg px-2.5 py-2 text-white focus:outline-none focus:border-blue-500"
                       />
                     </div>
                     <div className="w-20">
@@ -878,7 +878,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                         placeholder={t('quantity')}
                         value={it.quantity}
                         onChange={(e) => updateItemRow(idx, 'quantity', e.target.value)}
-                        className="w-full text-xs text-center bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-2 text-white focus:outline-none focus:border-cyan-400"
+                        className="w-full text-xs text-center bg-[#070B12] border border-slate-700 rounded-lg px-2 py-2 text-white focus:outline-none focus:border-blue-500 font-mono"
                       />
                     </div>
                     <div className="w-28">
@@ -889,7 +889,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
                         placeholder={t('price_egp')}
                         value={it.price}
                         onChange={(e) => updateItemRow(idx, 'price', e.target.value)}
-                        className="w-full text-xs bg-slate-900/90 border border-slate-700 rounded-lg px-2.5 py-2 text-white focus:outline-none focus:border-cyan-400"
+                        className="w-full text-xs bg-[#070B12] border border-slate-700 rounded-lg px-2.5 py-2 text-white focus:outline-none focus:border-blue-500 font-mono"
                       />
                     </div>
                     <button
@@ -912,7 +912,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
               {calculateTotal() > 0 && (
                 <div className="flex justify-end items-center gap-3 pt-2 text-xs">
                   <span className="text-slate-400">{t('calculated_total')}:</span>
-                  <span className="font-extrabold text-cyan-400 text-base">
+                  <span className="font-bold text-emerald-400 text-base font-mono">
                     {formatCurrency(calculateTotal(), language)}
                   </span>
                 </div>
@@ -921,11 +921,11 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
           </div>
         )}
 
-        {/* PAYMENT & COLLECTION STATUS SECTION (Core Feature) */}
-        <div className="p-4 bg-[#031527] rounded-2xl border border-cyan-800/40 space-y-3">
+        {/* PAYMENT & COLLECTION STATUS SECTION */}
+        <div className="p-4 bg-[#0B1019] rounded-xl border border-slate-800 space-y-3">
           <div className="flex items-center gap-2">
-            <CreditCard className="w-4 h-4 text-cyan-400" />
-            <span className="text-xs font-bold text-cyan-300">
+            <CreditCard className="w-4 h-4 text-slate-400" />
+            <span className="text-xs font-semibold text-slate-300">
               {t('payment_status')}
             </span>
           </div>
@@ -935,14 +935,14 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
             <button
               type="button"
               onClick={() => setPaymentStatus('unpaid')}
-              className={`p-3 rounded-xl border text-right rtl:text-right ltr:text-left transition-all ${
+              className={`p-3 rounded-lg border text-right rtl:text-right ltr:text-left transition-colors ${
                 paymentStatus === 'unpaid'
-                  ? 'bg-amber-950/40 border-amber-500 shadow-md ring-1 ring-amber-500/50'
-                  : 'bg-slate-900/80 border-slate-800 hover:border-slate-700'
+                  ? 'bg-[#141B1F] border-amber-500/80 ring-1 ring-amber-500/30'
+                  : 'bg-[#070B12] border-slate-800 hover:border-slate-700'
               }`}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="font-bold text-xs text-amber-300 flex items-center gap-1.5">
+                <span className="font-semibold text-xs text-amber-300 flex items-center gap-1.5">
                   <Banknote className="w-3.5 h-3.5" />
                   {t('payment_status_unpaid')}
                 </span>
@@ -959,14 +959,14 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
             <button
               type="button"
               onClick={() => setPaymentStatus('paid')}
-              className={`p-3 rounded-xl border text-right rtl:text-right ltr:text-left transition-all ${
+              className={`p-3 rounded-lg border text-right rtl:text-right ltr:text-left transition-colors ${
                 paymentStatus === 'paid'
-                  ? 'bg-emerald-950/40 border-emerald-500 shadow-md ring-1 ring-emerald-500/50'
-                  : 'bg-slate-900/80 border-slate-800 hover:border-slate-700'
+                  ? 'bg-[#101A18] border-emerald-500/80 ring-1 ring-emerald-500/30'
+                  : 'bg-[#070B12] border-slate-800 hover:border-slate-700'
               }`}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="font-bold text-xs text-emerald-300 flex items-center gap-1.5">
+                <span className="font-semibold text-xs text-emerald-300 flex items-center gap-1.5">
                   <Receipt className="w-3.5 h-3.5" />
                   {t('payment_status_paid')}
                 </span>
@@ -983,14 +983,14 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
             <button
               type="button"
               onClick={() => setPaymentStatus('postpaid')}
-              className={`p-3 rounded-xl border text-right rtl:text-right ltr:text-left transition-all ${
+              className={`p-3 rounded-lg border text-right rtl:text-right ltr:text-left transition-colors ${
                 paymentStatus === 'postpaid'
-                  ? 'bg-purple-950/40 border-purple-500 shadow-md ring-1 ring-purple-500/50'
-                  : 'bg-slate-900/80 border-slate-800 hover:border-slate-700'
+                  ? 'bg-[#181520] border-purple-500/80 ring-1 ring-purple-500/30'
+                  : 'bg-[#070B12] border-slate-800 hover:border-slate-700'
               }`}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="font-bold text-xs text-purple-300 flex items-center gap-1.5">
+                <span className="font-semibold text-xs text-purple-300 flex items-center gap-1.5">
                   <Clock className="w-3.5 h-3.5" />
                   {t('payment_status_postpaid')}
                 </span>
@@ -1011,20 +1011,20 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
               placeholder={t('payment_notes_placeholder')}
               value={paymentNotes}
               onChange={(e) => setPaymentNotes(e.target.value)}
-              className="block w-full rounded-xl border border-slate-700/80 bg-[#020b14]/80 text-xs text-white placeholder:text-slate-500 px-3 py-2.5 focus:border-cyan-400 focus:outline-none transition-colors"
+              className="block w-full rounded-lg border border-slate-700/80 bg-[#070B12] text-xs text-white placeholder:text-slate-500 px-3 py-2.5 focus:border-blue-500 focus:outline-none transition-colors"
             />
           </div>
         </div>
 
         {/* Optional Driver Assignment Section */}
-        <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-900/90 to-slate-950/90 border border-slate-800 space-y-2.5">
+        <div className="p-4 rounded-xl bg-[#0B1019] border border-slate-800 space-y-2.5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/20">
+              <div className="p-1.5 rounded-lg bg-slate-800 text-slate-300">
                 <Truck className="w-4 h-4" />
               </div>
               <div>
-                <label htmlFor="order-driver-select" className="text-xs font-bold text-slate-200">
+                <label htmlFor="order-driver-select" className="text-xs font-semibold text-slate-200">
                   {language === 'ar' ? 'تعيين كابتن التوصيل (اختياري)' : 'Assign Courier (Optional)'}
                 </label>
                 <p className="text-[11px] text-slate-400">
@@ -1035,7 +1035,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
               </div>
             </div>
             {driverId && (
-              <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-teal-950 text-teal-300 border border-teal-700">
+              <span className="text-[10px] px-2 py-0.5 rounded font-medium bg-blue-950/80 text-blue-300 border border-blue-800/60">
                 {language === 'ar' ? 'تم اختيار كابتن' : 'Assigned'}
               </span>
             )}
@@ -1047,7 +1047,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
               value={driverId}
               onChange={(e) => setDriverId(e.target.value)}
               disabled={isLoadingDrivers}
-              className="w-full rounded-xl border border-slate-700/80 bg-[#020b14]/80 text-xs text-white px-3 py-2.5 focus:border-cyan-400 focus:outline-none transition-colors"
+              className="w-full rounded-lg border border-slate-700/80 bg-[#070B12] text-xs text-white px-3 py-2.5 focus:border-blue-500 focus:outline-none transition-colors"
             >
               <option value="">
                 {language === 'ar'
@@ -1073,7 +1073,6 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }) {
             variant="primary"
             isLoading={isSubmitting}
             icon={Plus}
-            className="bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 font-bold border-0"
           >
             {t('submit_create_order')}
           </Button>

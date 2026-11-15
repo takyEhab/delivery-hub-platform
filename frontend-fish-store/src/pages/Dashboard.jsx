@@ -7,7 +7,7 @@ import { getErrorMessage } from '../api/client';
 import { useToast } from '../hooks/useToast';
 import { useAuth } from '../hooks/useAuth';
 import { useLanguage } from '../context/LanguageContext';
-import { Card, CardHeader, CardBody } from '../components/ui/Card';
+import { Card, CardHeader } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { CustomerModal } from '../components/customers/CustomerModal';
@@ -26,15 +26,9 @@ import {
   Users,
   Plus,
   ArrowRight,
-  TrendingUp,
   RefreshCw,
   Phone,
-  UserCheck,
-  Fish,
-  Flame,
-  Waves,
-  Sparkles,
-  UtensilsCrossed,
+  Anchor,
   Bike,
   History,
   UserPlus,
@@ -42,7 +36,7 @@ import {
 
 export function Dashboard() {
   const { isOwner, user } = useAuth();
-  const { t, language, isRTL } = useLanguage();
+  const { t, language } = useLanguage();
   const { openCreateOrder } = useOutletContext() || {};
   const { error: toastError } = useToast();
 
@@ -97,34 +91,33 @@ export function Dashboard() {
   const deliveredOrders = orders.filter((o) => o.status === 'delivered').length;
   const activeDrivers = drivers.filter((d) => d.is_active).length;
   const totalCustomers = customers.length;
-
   const recentOrders = orders.slice(0, 6);
 
   return (
     <div className="space-y-6">
-      {/* Page Header with Quick Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-[#071c33] via-[#0b294a] to-[#071c33] p-6 rounded-3xl border border-cyan-900/40 shadow-xl relative overflow-hidden">
-        <div className="relative z-10">
-          <div className="flex items-center gap-2 mb-1 text-cyan-400 text-xs font-bold uppercase tracking-wider">
-            <Fish className="w-4 h-4 text-cyan-400 animate-pulse" />
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#0F1622] p-5 sm:p-6 rounded-2xl border border-slate-800/80 shadow-card">
+        <div>
+          <div className="flex items-center gap-2 mb-1 text-slate-400 text-xs font-medium">
+            <Anchor className="w-3.5 h-3.5 text-blue-400" />
             <span>{t('store_name')} — {t('store_tagline')}</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
             {t('dashboard_title')}
           </h1>
-          <p className="text-xs sm:text-sm text-slate-300 mt-1">
+          <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
             {t('dashboard_subtitle')}
           </p>
         </div>
 
-        <div className="flex items-center gap-2 relative z-10 shrink-0">
+        <div className="flex items-center gap-2.5 shrink-0">
           <Button
             variant="outline"
             size="sm"
             icon={RefreshCw}
             isLoading={isRefreshing}
             onClick={() => fetchData(true)}
-            className="text-xs border-cyan-700/60 text-cyan-300 hover:bg-cyan-950/40"
+            className="text-xs"
           >
             {t('refresh')}
           </Button>
@@ -135,7 +128,7 @@ export function Dashboard() {
               size="sm"
               icon={Plus}
               onClick={openCreateOrder}
-              className="text-xs bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 font-bold border-0 shadow-md shadow-cyan-500/20"
+              className="text-xs"
             >
               {t('create_order')}
             </Button>
@@ -143,71 +136,79 @@ export function Dashboard() {
         </div>
       </div>
 
-      {/* KPI Stats Grid with Oceanic Design */}
+      {/* KPI Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Orders */}
-        <Card className="p-4 sm:p-5 relative overflow-hidden border-cyan-900/40 bg-gradient-to-b from-[#08203c]/90 to-[#041222]/90 hover:border-cyan-500/40 transition-all group">
+        <Card className="p-4 sm:p-5">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-300">{t('total_orders')}</span>
-            <div className="w-9 h-9 rounded-xl bg-cyan-500/20 text-cyan-300 flex items-center justify-center border border-cyan-400/30 group-hover:scale-110 transition-transform">
-              <Fish className="w-5 h-5 text-cyan-400" />
+            <span className="text-xs font-semibold text-slate-400">{t('total_orders')}</span>
+            <div className="w-8 h-8 rounded-lg bg-slate-800/80 border border-slate-700/60 text-slate-300 flex items-center justify-center">
+              <Package className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl sm:text-4xl font-black text-white">
+            <span className="text-2xl sm:text-3xl font-bold text-white">
               {isLoading ? '—' : totalOrders}
             </span>
-            <span className="text-[11px] font-semibold text-cyan-400">{language === 'ar' ? 'طلب مسجل' : 'orders'}</span>
+            <span className="text-[11px] text-slate-500 font-medium">
+              {language === 'ar' ? 'طلب مسجل' : 'orders'}
+            </span>
           </div>
         </Card>
 
         {/* Preparing */}
-        <Card className="p-4 sm:p-5 relative overflow-hidden border-amber-900/40 bg-gradient-to-b from-[#1c1507]/90 to-[#0c0a03]/90 hover:border-amber-500/40 transition-all group">
+        <Card className="p-4 sm:p-5 border-t-2 border-t-amber-500/80">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-amber-200">{t('preparing_seafood')}</span>
-            <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center border border-amber-400/30 group-hover:scale-110 transition-transform">
-              <Flame className="w-5 h-5 text-amber-400" />
+            <span className="text-xs font-semibold text-amber-300/90">{t('preparing_seafood')}</span>
+            <div className="w-8 h-8 rounded-lg bg-amber-950/60 border border-amber-800/50 text-amber-400 flex items-center justify-center">
+              <Clock className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl sm:text-4xl font-black text-amber-400">
+            <span className="text-2xl sm:text-3xl font-bold text-amber-400">
               {isLoading ? '—' : preparingOrders}
             </span>
-            <span className="text-[11px] font-semibold text-amber-300/80">{language === 'ar' ? 'في المطبخ والشواية' : 'in kitchen'}</span>
+            <span className="text-[11px] text-amber-400/70 font-medium">
+              {language === 'ar' ? 'قيد التجهيز' : 'in kitchen'}
+            </span>
           </div>
         </Card>
 
         {/* Out for Delivery */}
-        <Card className="p-4 sm:p-5 relative overflow-hidden border-sky-900/40 bg-gradient-to-b from-[#071c33]/90 to-[#030e1a]/90 hover:border-sky-500/40 transition-all group">
+        <Card className="p-4 sm:p-5 border-t-2 border-t-blue-500/80">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-sky-200">
+            <span className="text-xs font-semibold text-blue-300/90">
               {t('out_for_delivery')}
             </span>
-            <div className="w-9 h-9 rounded-xl bg-sky-500/20 text-sky-300 flex items-center justify-center border border-sky-400/30 group-hover:scale-110 transition-transform">
-              <Truck className="w-5 h-5 text-sky-400" />
+            <div className="w-8 h-8 rounded-lg bg-blue-950/60 border border-blue-800/50 text-blue-400 flex items-center justify-center">
+              <Truck className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl sm:text-4xl font-black text-sky-400">
+            <span className="text-2xl sm:text-3xl font-bold text-blue-400">
               {isLoading ? '—' : outForDeliveryOrders}
             </span>
-            <span className="text-[11px] font-semibold text-sky-300/80">{language === 'ar' ? 'مع الكابتن' : 'on the road'}</span>
+            <span className="text-[11px] text-blue-400/70 font-medium">
+              {language === 'ar' ? 'مع الكابتن' : 'on road'}
+            </span>
           </div>
         </Card>
 
         {/* Delivered Orders */}
-        <Card className="p-4 sm:p-5 relative overflow-hidden border-emerald-900/40 bg-gradient-to-b from-[#062016]/90 to-[#02120b]/90 hover:border-emerald-500/40 transition-all group">
+        <Card className="p-4 sm:p-5 border-t-2 border-t-emerald-500/80">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-emerald-200">{t('delivered_orders')}</span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center border border-emerald-400/30 group-hover:scale-110 transition-transform">
-              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+            <span className="text-xs font-semibold text-emerald-300/90">{t('delivered_orders')}</span>
+            <div className="w-8 h-8 rounded-lg bg-emerald-950/60 border border-emerald-800/50 text-emerald-400 flex items-center justify-center">
+              <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl sm:text-4xl font-black text-emerald-400">
+            <span className="text-2xl sm:text-3xl font-bold text-emerald-400">
               {isLoading ? '—' : deliveredOrders}
             </span>
-            <span className="text-[11px] font-semibold text-emerald-300/80">{language === 'ar' ? 'تم الاستلام' : 'delivered'}</span>
+            <span className="text-[11px] text-emerald-400/70 font-medium">
+              {language === 'ar' ? 'تم التسليم' : 'delivered'}
+            </span>
           </div>
         </Card>
       </div>
@@ -217,33 +218,33 @@ export function Dashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div
             onClick={openCreateOrder}
-            className="cursor-pointer bg-[#05172b] hover:bg-[#082240] p-4 rounded-2xl border border-cyan-900/50 shadow-md hover:border-cyan-400/50 transition-all flex items-center gap-3.5 group"
+            className="cursor-pointer bg-[#0F1622] hover:bg-[#131B2A] p-4 rounded-xl border border-slate-800/80 hover:border-slate-700 shadow-sm transition-colors flex items-center gap-3.5 group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-600 to-teal-500 text-slate-950 flex items-center justify-center font-bold shadow-md group-hover:scale-105 transition-transform">
-              <Plus className="w-6 h-6 stroke-[2.5]" />
+            <div className="w-10 h-10 rounded-lg bg-blue-600 text-white flex items-center justify-center shadow-button">
+              <Plus className="w-5 h-5 stroke-[2.5]" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-white group-hover:text-cyan-300 transition-colors">
+              <h4 className="text-sm font-semibold text-white group-hover:text-blue-400 transition-colors">
                 {t('create_order')}
               </h4>
-              <p className="text-[11px] text-slate-400">
-                {language === 'ar' ? 'تسجيل طلب أسماك لعميل حالي أو جديد' : 'New seafood order with existing or inline customer'}
+              <p className="text-xs text-slate-400">
+                {language === 'ar' ? 'تسجيل طلب أسماك لعميل جديد أو حالي' : 'New seafood order for customer'}
               </p>
             </div>
           </div>
 
           <div
             onClick={() => setCustomerModalOpen(true)}
-            className="cursor-pointer bg-[#05172b] hover:bg-[#082240] p-4 rounded-2xl border border-cyan-900/50 shadow-md hover:border-cyan-400/50 transition-all flex items-center gap-3.5 group"
+            className="cursor-pointer bg-[#0F1622] hover:bg-[#131B2A] p-4 rounded-xl border border-slate-800/80 hover:border-slate-700 shadow-sm transition-colors flex items-center gap-3.5 group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-[#030e1a] text-cyan-400 border border-cyan-800/40 flex items-center justify-center font-bold shadow-md group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-lg bg-[#0B1019] text-slate-300 border border-slate-700/60 flex items-center justify-center">
               <Users className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-white group-hover:text-cyan-300 transition-colors">
+              <h4 className="text-sm font-semibold text-white group-hover:text-slate-200 transition-colors">
                 {t('add_customer')}
               </h4>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-xs text-slate-400">
                 {totalCustomers} {t('total_customers')}
               </p>
             </div>
@@ -251,16 +252,16 @@ export function Dashboard() {
 
           <div
             onClick={() => setDriverModalOpen(true)}
-            className="cursor-pointer bg-[#05172b] hover:bg-[#082240] p-4 rounded-2xl border border-cyan-900/50 shadow-md hover:border-cyan-400/50 transition-all flex items-center gap-3.5 group"
+            className="cursor-pointer bg-[#0F1622] hover:bg-[#131B2A] p-4 rounded-xl border border-slate-800/80 hover:border-slate-700 shadow-sm transition-colors flex items-center gap-3.5 group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-sky-600 to-blue-500 text-white flex items-center justify-center font-bold shadow-md group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-lg bg-[#0B1019] text-blue-400 border border-slate-700/60 flex items-center justify-center">
               <Truck className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-white group-hover:text-sky-300 transition-colors">
+              <h4 className="text-sm font-semibold text-white group-hover:text-blue-300 transition-colors">
                 {t('add_driver')}
               </h4>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-xs text-slate-400">
                 {activeDrivers} {t('active_couriers')}
               </p>
             </div>
@@ -270,16 +271,16 @@ export function Dashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Link
             to="/orders"
-            className="bg-[#05172b] hover:bg-[#082240] p-4 rounded-2xl border border-cyan-900/50 shadow-md hover:border-cyan-400/50 transition-all flex items-center gap-3.5 group"
+            className="bg-[#0F1622] hover:bg-[#131B2A] p-4 rounded-xl border border-slate-800/80 hover:border-slate-700 shadow-sm transition-colors flex items-center gap-3.5 group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-600 to-teal-500 text-slate-950 flex items-center justify-center font-bold shadow-md group-hover:scale-105 transition-transform">
-              <Bike className="w-6 h-6 stroke-[2.5]" />
+            <div className="w-10 h-10 rounded-lg bg-blue-600 text-white flex items-center justify-center shadow-button">
+              <Bike className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-white group-hover:text-cyan-300 transition-colors">
+              <h4 className="text-sm font-semibold text-white group-hover:text-blue-400 transition-colors">
                 {language === 'ar' ? 'المهام النشطة للتوصيل' : 'Active Deliveries'}
               </h4>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-xs text-slate-400">
                 {language === 'ar' ? `${preparingOrders + outForDeliveryOrders} طلبات قيد التسليم` : `${preparingOrders + outForDeliveryOrders} pending orders`}
               </p>
             </div>
@@ -287,16 +288,16 @@ export function Dashboard() {
 
           <Link
             to="/orders/history"
-            className="bg-[#05172b] hover:bg-[#082240] p-4 rounded-2xl border border-cyan-900/50 shadow-md hover:border-cyan-400/50 transition-all flex items-center gap-3.5 group"
+            className="bg-[#0F1622] hover:bg-[#131B2A] p-4 rounded-xl border border-slate-800/80 hover:border-slate-700 shadow-sm transition-colors flex items-center gap-3.5 group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-[#030e1a] text-cyan-400 border border-cyan-800/40 flex items-center justify-center font-bold shadow-md group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-lg bg-[#0B1019] text-slate-300 border border-slate-700/60 flex items-center justify-center">
               <History className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-white group-hover:text-cyan-300 transition-colors">
+              <h4 className="text-sm font-semibold text-white group-hover:text-slate-200 transition-colors">
                 {language === 'ar' ? 'سجل جميع الطلبات' : 'Delivery History'}
               </h4>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-xs text-slate-400">
                 {deliveredOrders} {language === 'ar' ? 'طلبات تم تسليمها' : 'delivered orders'}
               </p>
             </div>
@@ -304,16 +305,16 @@ export function Dashboard() {
 
           <Link
             to="/driver/customers"
-            className="bg-[#05172b] hover:bg-[#082240] p-4 rounded-2xl border border-cyan-900/50 shadow-md hover:border-cyan-400/50 transition-all flex items-center gap-3.5 group"
+            className="bg-[#0F1622] hover:bg-[#131B2A] p-4 rounded-xl border border-slate-800/80 hover:border-slate-700 shadow-sm transition-colors flex items-center gap-3.5 group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-sky-600 to-blue-500 text-white flex items-center justify-center font-bold shadow-md group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-lg bg-[#0B1019] text-blue-400 border border-slate-700/60 flex items-center justify-center">
               <UserPlus className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-white group-hover:text-sky-300 transition-colors">
+              <h4 className="text-sm font-semibold text-white group-hover:text-blue-300 transition-colors">
                 {language === 'ar' ? 'إضافة وتسجيل عملاء' : 'Add Customers'}
               </h4>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-xs text-slate-400">
                 {language === 'ar' ? 'إضافة عميل أو استيراد جهات اتصال' : 'Register customer or import'}
               </p>
             </div>
@@ -328,18 +329,18 @@ export function Dashboard() {
           <Card>
             <CardHeader
               title={t('recent_orders')}
-              description={language === 'ar' ? 'أحدث الوجبات والأسماك المطلوبة اليوم في المحل' : 'Latest seafood orders created in Prince of the Seas'}
+              description={language === 'ar' ? 'أحدث الوجبات والأسماك المطلوبة اليوم' : 'Latest seafood orders created'}
               action={
                 <Link
                   to="/orders"
-                  className="text-xs font-bold text-cyan-400 hover:text-cyan-300 inline-flex items-center gap-1.5"
+                  className="text-xs font-semibold text-blue-400 hover:text-blue-300 inline-flex items-center gap-1.5"
                 >
                   <span>{t('view_all_orders')}</span>
                   <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
                 </Link>
               }
             />
-            <div className="divide-y divide-cyan-950/60">
+            <div className="divide-y divide-slate-800/80">
               {recentOrders.length === 0 ? (
                 <div className="p-8 text-center text-xs text-slate-400">
                   {t('no_recent_orders')}
@@ -348,21 +349,20 @@ export function Dashboard() {
                 recentOrders.map((order) => (
                   <div
                     key={order.id}
-                    className="p-4 hover:bg-cyan-950/20 transition-colors flex items-center justify-between gap-4"
+                    className="p-4 hover:bg-slate-800/20 transition-colors flex items-center justify-between gap-4"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-10 h-10 rounded-xl bg-cyan-950/60 border border-cyan-800/40 text-cyan-300 flex items-center justify-center font-black text-xs shrink-0 shadow-inner">
+                      <div className="w-10 h-10 rounded-lg bg-[#0B1019] border border-slate-800 text-slate-300 flex items-center justify-center font-mono font-semibold text-xs shrink-0">
                         #{order.id}
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
-                          <p className="font-bold text-sm text-white truncate">
+                          <p className="font-semibold text-sm text-white truncate">
                             {order.customer?.name}
                           </p>
                           <Badge
                             variant={getStatusBadgeVariant(order.status)}
                             size="sm"
-                            dot
                           >
                             {formatStatus(order.status, language)}
                           </Badge>
@@ -375,23 +375,23 @@ export function Dashboard() {
 
                     <div className="flex items-center gap-3 shrink-0">
                       <div className="text-right rtl:text-left hidden sm:block">
-                        <p className="text-xs text-slate-300 font-semibold">
+                        <p className="text-xs text-slate-300 font-medium">
                           {order.driver ? (
-                            <span className="flex items-center gap-1 text-cyan-300">
-                              <Truck className="w-3 h-3 text-cyan-400" />
+                            <span className="flex items-center gap-1 text-slate-300">
+                              <Truck className="w-3 h-3 text-slate-400" />
                               {order.driver.name}
                             </span>
                           ) : (
-                            <span className="text-amber-400 italic font-normal text-[11px]">{t('unassigned')}</span>
+                            <span className="text-amber-400 text-xs">{t('unassigned')}</span>
                           )}
                         </p>
-                        <p className="text-[10px] text-slate-400 mt-0.5">
+                        <p className="text-[11px] text-slate-500 font-mono mt-0.5">
                           {formatShortDate(order.created_at, language)}
                         </p>
                       </div>
 
                       <Link to={`/orders/${order.id}`}>
-                        <Button variant="outline" size="sm" className="text-xs py-1 px-3 border-cyan-800/60 text-cyan-300 hover:bg-cyan-950/40">
+                        <Button variant="outline" size="sm" className="text-xs py-1 px-3">
                           {t('view_details')}
                         </Button>
                       </Link>
@@ -409,18 +409,18 @@ export function Dashboard() {
             <Card>
               <CardHeader
                 title={t('drivers_title')}
-                description={language === 'ar' ? 'طاقم مناديب التوصيل المتاح لتسليم الطلبات' : 'Available couriers ready for delivery'}
+                description={language === 'ar' ? 'طاقم مناديب التوصيل المتاح' : 'Available couriers ready for delivery'}
                 action={
                   <Link
                     to="/drivers"
-                    className="text-xs font-bold text-cyan-400 hover:text-cyan-300 inline-flex items-center gap-1.5"
+                    className="text-xs font-semibold text-blue-400 hover:text-blue-300 inline-flex items-center gap-1.5"
                   >
                     <span>{language === 'ar' ? 'إدارة' : 'Manage'}</span>
                     <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
                   </Link>
                 }
               />
-              <div className="divide-y divide-cyan-950/60">
+              <div className="divide-y divide-slate-800/80">
                 {drivers.length === 0 ? (
                   <div className="p-8 text-center text-xs text-slate-400">
                     {language === 'ar' ? 'لم يتم إضافة مناديب بعد.' : 'No couriers added yet.'}
@@ -429,22 +429,22 @@ export function Dashboard() {
                   drivers.map((driver) => (
                     <div
                       key={driver.id}
-                      className="p-3.5 flex items-center justify-between gap-3 hover:bg-cyan-950/20 transition-colors"
+                      className="p-3.5 flex items-center justify-between gap-3 hover:bg-slate-800/20 transition-colors"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-cyan-700 to-sky-800 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
+                        <div className="w-8 h-8 rounded-lg bg-slate-800 text-white flex items-center justify-center font-bold text-xs shrink-0">
                           {driver.name.charAt(0).toUpperCase()}
                         </div>
                         <div className="min-w-0">
-                          <p className="font-bold text-xs text-white truncate">
+                          <p className="font-semibold text-xs text-white truncate">
                             {driver.name}
                           </p>
                           <a
                             href={`tel:${driver.phone}`}
-                            className="text-[11px] text-slate-400 hover:text-cyan-400 flex items-center gap-1"
+                            className="text-[11px] text-slate-400 hover:text-blue-400 flex items-center gap-1 font-mono"
                             dir="ltr"
                           >
-                            <Phone className="w-3 h-3 text-cyan-400/80" />
+                            <Phone className="w-3 h-3 text-slate-500" />
                             {driver.phone}
                           </a>
                         </div>
@@ -452,7 +452,6 @@ export function Dashboard() {
                       <Badge
                         variant={driver.is_active ? 'success' : 'neutral'}
                         size="sm"
-                        dot={driver.is_active}
                       >
                         {driver.is_active ? t('driver_status_active') : t('driver_status_inactive')}
                       </Badge>
@@ -468,30 +467,30 @@ export function Dashboard() {
                 description={language === 'ar' ? 'بيانات الكابتن وحالة المهام اليوم' : 'Your active status and delivery progress'}
               />
               <div className="p-5 space-y-4">
-                <div className="flex items-center gap-3 bg-[#030e1a]/80 p-3.5 rounded-2xl border border-cyan-900/40">
-                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 to-teal-500 text-slate-950 flex items-center justify-center font-black text-sm shadow-md">
+                <div className="flex items-center gap-3 bg-[#0B1019] p-3.5 rounded-xl border border-slate-800">
+                  <div className="w-10 h-10 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-button">
                     {user?.name?.charAt(0).toUpperCase() || 'C'}
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-white">{user?.name}</h4>
-                    <p className="text-xs text-cyan-400/90 font-medium" dir="ltr">{user?.phone}</p>
+                    <h4 className="text-sm font-semibold text-white">{user?.name}</h4>
+                    <p className="text-xs text-slate-400 font-mono" dir="ltr">{user?.phone}</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 text-xs">
-                  <div className="bg-[#05172b] p-3 rounded-xl border border-cyan-900/40 text-center">
+                  <div className="bg-[#0B1019] p-3 rounded-lg border border-slate-800 text-center">
                     <span className="text-slate-400 block text-[11px]">{language === 'ar' ? 'قيد التوصيل' : 'In Delivery'}</span>
-                    <span className="text-xl font-black text-sky-400 mt-1 block">{outForDeliveryOrders}</span>
+                    <span className="text-xl font-bold text-blue-400 mt-1 block">{outForDeliveryOrders}</span>
                   </div>
-                  <div className="bg-[#05172b] p-3 rounded-xl border border-cyan-900/40 text-center">
+                  <div className="bg-[#0B1019] p-3 rounded-lg border border-slate-800 text-center">
                     <span className="text-slate-400 block text-[11px]">{language === 'ar' ? 'تم تسليمها' : 'Delivered'}</span>
-                    <span className="text-xl font-black text-emerald-400 mt-1 block">{deliveredOrders}</span>
+                    <span className="text-xl font-bold text-emerald-400 mt-1 block">{deliveredOrders}</span>
                   </div>
                 </div>
 
                 <Link
                   to="/orders"
-                  className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 font-bold text-xs hover:from-cyan-400 hover:to-teal-400 transition-all shadow-md shadow-cyan-500/20"
+                  className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs shadow-button transition-colors"
                 >
                   <Bike className="w-4 h-4" />
                   <span>{language === 'ar' ? 'الانتقال لمهام التوصيل النشطة' : 'Go to Active Deliveries'}</span>

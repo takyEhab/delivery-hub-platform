@@ -18,7 +18,7 @@ export function ConfirmModal({
     <Modal isOpen={isOpen} onClose={onClose} maxWidth="max-w-md">
       <div className="flex items-start gap-4">
         <div
-          className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${
+          className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
             variant === 'danger'
               ? 'bg-rose-950/70 text-rose-400 border border-rose-500/30'
               : 'bg-amber-950/70 text-amber-400 border border-amber-500/30'
@@ -32,7 +32,7 @@ export function ConfirmModal({
         </div>
       </div>
 
-      <div className="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-cyan-950/80">
+      <div className="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-slate-800/80">
         <Button variant="outline" onClick={onClose} disabled={isLoading} className="border-slate-700 text-slate-300">
           {cancelText}
         </Button>

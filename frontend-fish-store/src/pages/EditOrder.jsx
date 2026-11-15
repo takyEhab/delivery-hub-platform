@@ -210,8 +210,8 @@ export function EditOrder() {
   if (isLoading) {
     return (
       <div className="py-20 flex flex-col items-center justify-center">
-        <div className="w-10 h-10 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-xs text-cyan-300 mt-3 font-semibold">
+        <div className="w-8 h-8 border-2 border-slate-700 border-t-blue-500 rounded-full animate-spin"></div>
+        <p className="text-xs text-slate-400 mt-3 font-medium">
           {language === 'ar' ? 'جاري تحميل بيانات الطلب...' : 'Loading order details...'}
         </p>
       </div>
@@ -220,8 +220,8 @@ export function EditOrder() {
 
   if (!order) {
     return (
-      <div className="text-center py-16 bg-[#05172b]/90 rounded-2xl border border-cyan-900/40 shadow-xl max-w-lg mx-auto">
-        <AlertCircle className="w-12 h-12 text-cyan-400 mx-auto mb-2" />
+      <div className="text-center py-16 bg-[#0F1622] rounded-xl border border-slate-800 shadow-sm max-w-lg mx-auto">
+        <AlertCircle className="w-10 h-10 text-slate-400 mx-auto mb-2" />
         <h3 className="text-base font-bold text-white">{language === 'ar' ? 'الطلب غير موجود' : 'Order Not Found'}</h3>
         <Link to="/orders" className="inline-block mt-4">
           <Button variant="outline" size="sm" icon={isRTL ? ArrowRight : ArrowLeft}>
@@ -240,14 +240,14 @@ export function EditOrder() {
           <button
             type="button"
             onClick={() => navigate(`/orders/${id}`)}
-            className="p-2.5 rounded-xl bg-slate-800/80 text-cyan-400 hover:text-white hover:bg-cyan-950/60 transition-colors border border-cyan-900/40"
+            className="p-2 rounded-lg bg-[#0F1622] text-slate-400 hover:text-white hover:bg-slate-800 transition-colors border border-slate-800"
             title="Go back"
           >
             {isRTL ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
           </button>
           <div>
             <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
-              <Fish className="w-6 h-6 text-cyan-400" />
+              <Fish className="w-6 h-6 text-blue-500" />
               <span>{t('edit_order_title')}{order.id}</span>
             </h1>
             <p className="text-xs text-slate-400 mt-1">
@@ -271,7 +271,6 @@ export function EditOrder() {
             icon={Save}
             isLoading={isSubmitting}
             onClick={handleSubmit}
-            className="bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 font-bold border-0 shadow-md shadow-cyan-500/20"
           >
             {t('save_changes')}
           </Button>
@@ -281,21 +280,21 @@ export function EditOrder() {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Customer Information Preview */}
         {order.customer && (
-          <Card className="p-4 bg-[#030e1a]">
+          <Card className="p-4 bg-[#0B1019] border-slate-800">
             <div className="flex items-center justify-between flex-wrap gap-3 text-xs">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 to-teal-500 text-slate-950 flex items-center justify-center font-black text-sm">
+                <div className="w-9 h-9 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-button">
                   {order.customer.name.charAt(0).toUpperCase()}
                 </div>
                 <div>
                   <p className="font-bold text-white text-sm">{order.customer.name}</p>
-                  <p className="text-cyan-300" dir="ltr">{order.customer.phone}</p>
+                  <p className="text-slate-400 font-mono text-xs" dir="ltr">{order.customer.phone}</p>
                 </div>
               </div>
               {order.customer.address && (
                 <div className="text-right rtl:text-left text-slate-400 max-w-sm truncate">
                   <span className="flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                    <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                     {order.customer.address}
                   </span>
                 </div>
@@ -313,18 +312,18 @@ export function EditOrder() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
             {/* Status Selection */}
             <div>
-              <label className="block text-xs font-bold text-cyan-300 mb-2 flex items-center gap-1.5">
-                <Clock className="w-4 h-4 text-cyan-400" />
+              <label className="block text-xs font-semibold text-slate-300 mb-2 flex items-center gap-1.5">
+                <Clock className="w-4 h-4 text-slate-400" />
                 <span>{t('order_status_label')}</span>
               </label>
               <div className="grid grid-cols-3 gap-2">
                 <button
                   type="button"
                   onClick={() => setStatus('preparing')}
-                  className={`py-2.5 px-1 text-center rounded-xl text-xs font-bold transition-all border ${
+                  className={`py-2 px-1 text-center rounded-lg text-xs font-medium transition-all border ${
                     status === 'preparing'
-                      ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-md'
-                      : 'bg-slate-900/80 text-amber-300 border-amber-500/20 hover:bg-amber-950/40'
+                      ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-sm'
+                      : 'bg-[#0B1019] text-amber-400 border-slate-800 hover:bg-slate-800/60'
                   }`}
                 >
                   {language === 'ar' ? 'قيد التجهيز' : 'Preparing'}
@@ -332,10 +331,10 @@ export function EditOrder() {
                 <button
                   type="button"
                   onClick={() => setStatus('out_for_delivery')}
-                  className={`py-2.5 px-1 text-center rounded-xl text-xs font-bold transition-all border ${
+                  className={`py-2 px-1 text-center rounded-lg text-xs font-medium transition-all border ${
                     status === 'out_for_delivery'
-                      ? 'bg-sky-500 text-slate-950 border-sky-400 shadow-md'
-                      : 'bg-slate-900/80 text-sky-300 border-sky-500/20 hover:bg-sky-950/40'
+                      ? 'bg-blue-600 text-white border-blue-600 shadow-button'
+                      : 'bg-[#0B1019] text-blue-400 border-slate-800 hover:bg-slate-800/60'
                   }`}
                 >
                   {language === 'ar' ? 'في الطريق' : 'Out for Delivery'}
@@ -343,10 +342,10 @@ export function EditOrder() {
                 <button
                   type="button"
                   onClick={() => setStatus('delivered')}
-                  className={`py-2.5 px-1 text-center rounded-xl text-xs font-bold transition-all border ${
+                  className={`py-2 px-1 text-center rounded-lg text-xs font-medium transition-all border ${
                     status === 'delivered'
-                      ? 'bg-emerald-500 text-slate-950 border-emerald-400 shadow-md'
-                      : 'bg-slate-900/80 text-emerald-300 border-emerald-500/20 hover:bg-emerald-950/40'
+                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                      : 'bg-[#0B1019] text-emerald-400 border-slate-800 hover:bg-slate-800/60'
                   }`}
                 >
                   {language === 'ar' ? 'تم التسليم' : 'Delivered'}
@@ -356,14 +355,14 @@ export function EditOrder() {
 
             {/* Courier Selection */}
             <div>
-              <label className="block text-xs font-bold text-cyan-300 mb-2 flex items-center gap-1.5">
-                <Truck className="w-4 h-4 text-cyan-400" />
+              <label className="block text-xs font-semibold text-slate-300 mb-2 flex items-center gap-1.5">
+                <Truck className="w-4 h-4 text-slate-400" />
                 <span>{language === 'ar' ? 'الكابتن المسؤول' : 'Assigned Courier'}</span>
               </label>
               <select
                 value={driverId}
                 onChange={(e) => setDriverId(e.target.value)}
-                className="w-full text-xs bg-[#020b14] border border-slate-700/80 text-white rounded-xl px-3.5 py-3 focus:outline-none focus:border-cyan-400"
+                className="w-full text-xs bg-[#0B1019] border border-slate-700/80 text-white rounded-lg px-3 py-2.5 focus:outline-none focus:border-blue-500 transition-colors"
               >
                 <option value="">{language === 'ar' ? 'بدون كابتن (غير مسند)' : 'Unassigned'}</option>
                 {drivers.map((d) => (
@@ -389,10 +388,10 @@ export function EditOrder() {
                   key={cat.category}
                   type="button"
                   onClick={() => setActiveCategoryTab(idx)}
-                  className={`px-3.5 py-2 rounded-xl font-bold shrink-0 transition-all ${
+                  className={`px-3 py-1.5 rounded-lg font-medium shrink-0 transition-all text-xs ${
                     activeCategoryTab === idx
-                      ? 'bg-cyan-500 text-slate-950 shadow-md'
-                      : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800 hover:text-white'
+                      ? 'bg-blue-600 text-white shadow-button'
+                      : 'bg-[#0B1019] border border-slate-800 text-slate-400 hover:text-white'
                   }`}
                 >
                   {language === 'ar' ? cat.categoryNameAr : cat.categoryNameEn}
@@ -406,20 +405,20 @@ export function EditOrder() {
                   key={idx}
                   type="button"
                   onClick={() => handleAddPreset(preset)}
-                  className="flex items-center justify-between gap-1 p-2.5 rounded-xl bg-[#030e1a] border border-cyan-900/40 hover:border-cyan-400 hover:bg-cyan-950/60 text-xs text-slate-200 transition-all text-right rtl:text-right ltr:text-left group"
+                  className="flex items-center justify-between gap-1 p-2.5 rounded-lg bg-[#0B1019] border border-slate-800 hover:border-slate-700 hover:bg-slate-900/60 text-xs text-slate-200 transition-all text-right rtl:text-right ltr:text-left group"
                 >
-                  <span className="font-bold truncate text-[11px] group-hover:text-cyan-300">
+                  <span className="font-medium truncate text-xs group-hover:text-white">
                     {language === 'ar' ? preset.nameAr : preset.nameEn}
                   </span>
-                  <span className="text-[10px] font-bold text-amber-400 shrink-0 bg-amber-400/10 px-1.5 py-0.5 rounded border border-amber-400/20">
+                  <span className="text-[11px] font-mono text-emerald-400 shrink-0 bg-emerald-950/30 px-1.5 py-0.5 rounded border border-emerald-800/40">
                     {preset.price} {t('currency')}
                   </span>
                 </button>
               ))}
             </div>
 
-            <div className="pt-3 border-t border-cyan-950/80">
-              <span className="text-[11px] font-bold text-slate-400 block mb-1.5">
+            <div className="pt-3 border-t border-slate-800">
+              <span className="text-[11px] font-medium text-slate-400 block mb-1.5">
                 {language === 'ar' ? 'طرق التسوية السريعة:' : 'Quick Cooking Styles:'}
               </span>
               <div className="flex flex-wrap gap-1.5">
@@ -428,7 +427,7 @@ export function EditOrder() {
                     key={idx}
                     type="button"
                     onClick={() => handleAppendCookingStyle(style)}
-                    className="px-2.5 py-1 rounded-lg bg-orange-950/30 border border-orange-500/30 hover:bg-orange-900/50 text-[11px] font-semibold text-orange-300 transition-all"
+                    className="px-2.5 py-1 rounded-md bg-amber-950/20 border border-amber-800/40 hover:bg-amber-900/40 text-[11px] font-medium text-amber-300 transition-all"
                   >
                     {language === 'ar' ? style.ar : style.en}
                   </button>
@@ -442,7 +441,7 @@ export function EditOrder() {
         <Card className="p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <ShoppingBag className="w-5 h-5 text-cyan-400" />
+              <ShoppingBag className="w-5 h-5 text-slate-400" />
               <h3 className="text-base font-bold text-white tracking-tight">
                 {t('order_items')}
               </h3>
@@ -453,7 +452,7 @@ export function EditOrder() {
               size="sm"
               icon={Plus}
               onClick={addItemRow}
-              className="text-xs py-1.5 px-3 bg-cyan-950/40 border-cyan-700/60 text-cyan-300 hover:bg-cyan-900/50"
+              className="text-xs py-1.5 px-3 border-slate-700 text-slate-300 hover:text-white"
             >
               {t('add_another_item')}
             </Button>
@@ -463,7 +462,7 @@ export function EditOrder() {
             {items.map((it, idx) => (
               <div
                 key={idx}
-                className="flex items-center gap-2 p-2.5 rounded-xl bg-[#030e1a] border border-cyan-900/40"
+                className="flex items-center gap-2 p-2.5 rounded-lg bg-[#0B1019] border border-slate-800"
               >
                 <div className="flex-1">
                   <input
@@ -471,7 +470,7 @@ export function EditOrder() {
                     placeholder={t('item_placeholder')}
                     value={it.name}
                     onChange={(e) => updateItemRow(idx, 'name', e.target.value)}
-                    className="w-full text-xs bg-slate-900/90 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-400"
+                    className="w-full text-xs bg-[#070B12] border border-slate-700/80 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500 transition-colors"
                   />
                 </div>
                 <div className="w-24">
@@ -481,7 +480,7 @@ export function EditOrder() {
                     placeholder={t('quantity')}
                     value={it.quantity}
                     onChange={(e) => updateItemRow(idx, 'quantity', e.target.value)}
-                    className="w-full text-xs text-center bg-slate-900/90 border border-slate-700 rounded-lg px-2 py-2 text-white focus:outline-none focus:border-cyan-400"
+                    className="w-full text-xs text-center bg-[#070B12] border border-slate-700/80 rounded-lg px-2 py-2 text-white focus:outline-none focus:border-blue-500 transition-colors"
                   />
                 </div>
                 <div className="w-28">
@@ -492,14 +491,14 @@ export function EditOrder() {
                     placeholder={t('price_egp')}
                     value={it.price}
                     onChange={(e) => updateItemRow(idx, 'price', e.target.value)}
-                    className="w-full text-xs bg-slate-900/90 border border-slate-700 rounded-lg px-2.5 py-2 text-white focus:outline-none focus:border-cyan-400"
+                    className="w-full text-xs bg-[#070B12] border border-slate-700/80 rounded-lg px-2.5 py-2 text-white focus:outline-none focus:border-blue-500 transition-colors font-mono"
                   />
                 </div>
                 <button
                   type="button"
                   onClick={() => removeItemRow(idx)}
                   disabled={items.length <= 1}
-                  className="p-2 text-slate-400 hover:text-rose-400 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                  className="p-2 text-slate-500 hover:text-rose-400 disabled:opacity-30 disabled:pointer-events-none transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -512,9 +511,9 @@ export function EditOrder() {
           )}
 
           {calculateTotal() > 0 && (
-            <div className="flex justify-end items-center gap-3 pt-4 mt-4 border-t border-cyan-950/80 text-xs">
-              <span className="text-slate-400 font-semibold">{t('calculated_total')}:</span>
-              <span className="font-black text-cyan-400 text-lg">
+            <div className="flex justify-end items-center gap-3 pt-4 mt-4 border-t border-slate-800 text-xs">
+              <span className="text-slate-400 font-medium">{t('calculated_total')}:</span>
+              <span className="font-bold text-white font-mono text-base">
                 {formatCurrency(calculateTotal(), language)}
               </span>
             </div>
@@ -537,7 +536,6 @@ export function EditOrder() {
             size="lg"
             isLoading={isSubmitting}
             icon={Save}
-            className="bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 font-bold border-0 shadow-lg shadow-cyan-500/25"
           >
             {t('save_changes')}
           </Button>

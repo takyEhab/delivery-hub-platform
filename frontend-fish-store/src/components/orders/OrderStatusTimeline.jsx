@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flame, Truck, CheckCircle2, Fish } from 'lucide-react';
+import { Flame, Truck, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 
 export function OrderStatusTimeline({ currentStatus }) {
@@ -35,12 +35,12 @@ export function OrderStatusTimeline({ currentStatus }) {
   const currentIndex = STEPS.findIndex((s) => s.key === currentStatus);
 
   return (
-    <div className="w-full py-3">
+    <div className="w-full py-2">
       <div className="flex items-center justify-between relative">
         {/* Connecting line */}
-        <div className="absolute left-8 right-8 top-1/2 -translate-y-1/2 h-1 bg-slate-800 -z-0">
+        <div className="absolute left-8 right-8 top-1/2 -translate-y-1/2 h-0.5 bg-slate-800 -z-0">
           <div
-            className="h-full bg-gradient-to-r from-cyan-500 to-emerald-400 transition-all duration-500"
+            className="h-full bg-blue-600 transition-all duration-300"
             style={{
               width:
                 currentIndex <= 0
@@ -57,14 +57,12 @@ export function OrderStatusTimeline({ currentStatus }) {
           const Icon = step.icon;
           const isCompleted = idx < currentIndex;
           const isCurrent = idx === currentIndex;
-          const isPending = idx > currentIndex;
 
-          let circleClass = 'bg-[#041222] border-2 border-slate-700 text-slate-500';
+          let circleClass = 'bg-[#0B1019] border border-slate-700 text-slate-500';
           if (isCompleted) {
-            circleClass = 'bg-gradient-to-tr from-cyan-600 to-teal-500 border-2 border-cyan-400 text-slate-950 font-bold shadow-lg shadow-cyan-500/25';
+            circleClass = 'bg-emerald-600 border border-emerald-500 text-white shadow-button';
           } else if (isCurrent) {
-            circleClass =
-              'bg-[#061e38] border-2 border-cyan-400 text-cyan-300 ring-4 ring-cyan-500/20 shadow-lg shadow-cyan-500/30';
+            circleClass = 'bg-blue-600 border border-blue-400 text-white shadow-button';
           }
 
           return (
@@ -73,15 +71,15 @@ export function OrderStatusTimeline({ currentStatus }) {
               className="relative z-10 flex flex-col items-center group"
             >
               <div
-                className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 ${circleClass}`}
+                className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${circleClass}`}
               >
-                <Icon className="w-5 h-5" />
+                <Icon className="w-4 h-4" />
               </div>
               <div className="text-center mt-2">
                 <p
-                  className={`text-xs font-bold ${
+                  className={`text-xs font-semibold ${
                     isCurrent
-                      ? 'text-cyan-300'
+                      ? 'text-blue-400'
                       : isCompleted
                       ? 'text-white'
                       : 'text-slate-500'
@@ -89,7 +87,7 @@ export function OrderStatusTimeline({ currentStatus }) {
                 >
                   {language === 'ar' ? step.labelAr : step.labelEn}
                 </p>
-                <p className="text-[10px] text-slate-400 hidden sm:block mt-0.5">
+                <p className="text-[11px] text-slate-400 hidden sm:block mt-0.5">
                   {language === 'ar' ? step.descAr : step.descEn}
                 </p>
               </div>

@@ -20,18 +20,10 @@ import {
   Truck,
   CheckCircle2,
   ChevronRight,
-  Package,
   User,
-  Fish,
-  Flame,
-  Utensils,
   Edit3,
   Navigation,
   Banknote,
-  Receipt,
-  CreditCard,
-  DollarSign,
-  Trash2,
 } from 'lucide-react';
 import { buildGoogleMapsUrl } from '../../utils/location';
 import { updateOrderStatus, updatePaymentStatus } from '../../api/orders';
@@ -57,7 +49,7 @@ export function OrderCard({
       const updated = await updateOrderStatus(order.id, nextStatus, validPaymentStatus);
       const title = language === 'ar' ? 'تم تحديث حالة الطلب' : 'Status Updated';
       const msg = language === 'ar'
-        ? `تم تحديث حالة طلب الأسماك #${order.id} إلى: ${formatStatus(nextStatus, 'ar')}`
+        ? `تم تحديث حالة طلب #${order.id} إلى: ${formatStatus(nextStatus, 'ar')}`
         : `Order #${order.id} status updated to ${formatStatus(nextStatus, 'en')}!`;
 
       success(msg, title);
@@ -94,40 +86,39 @@ export function OrderCard({
     : [];
 
   const totalAmountVal = parseFloat(order.total_amount) || 0;
-
   const orderHasRaw = hasRawFish(order);
 
   return (
-    <div className={`bg-[#05172b]/90 rounded-2xl border ${
+    <div className={`bg-[#0F1622] rounded-xl border ${
       orderHasRaw
-        ? 'border-cyan-400/60 shadow-lg shadow-cyan-950/70 ring-1 ring-cyan-400/30'
-        : 'border-cyan-900/40 shadow-lg'
-    } hover:border-cyan-400/60 transition-all duration-200 p-4 sm:p-5 flex flex-col justify-between gap-4`}>
+        ? 'border-rose-900/40'
+        : 'border-slate-800/80'
+    } shadow-card hover:border-slate-700 transition-colors p-4 sm:p-5 flex flex-col justify-between gap-4`}>
       {/* Top row: Order ID, Total Amount, Badges */}
       <div className="flex items-start justify-between gap-2">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="font-extrabold text-white text-base">
+            <span className="font-bold text-white text-base font-mono">
               #{order.id}
             </span>
-            <span className="text-sm font-black text-emerald-300 bg-emerald-950/60 px-2 py-0.5 rounded-lg border border-emerald-500/30">
+            <span className="text-sm font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/50">
               {formatCurrency(totalAmountVal, language)}
             </span>
-            <Badge variant={getStatusBadgeVariant(order.status)} size="sm" dot>
+            <Badge variant={getStatusBadgeVariant(order.status)} size="sm">
               {formatStatus(order.status, language)}
             </Badge>
             <Badge variant={getPaymentBadgeVariant(order.payment_status)} size="sm">
               {formatPaymentStatus(order.payment_status, language)}
             </Badge>
             {orderHasRaw && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-xs font-black bg-cyan-950/90 text-cyan-300 border border-cyan-400/60 shadow-sm ring-1 ring-cyan-400/20">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-rose-950/60 text-rose-300 border border-rose-800/50">
                 <span>🐟</span>
-                <span>{language === 'ar' ? 'به سمك نيء' : 'Contains Raw Fish'}</span>
+                <span>{language === 'ar' ? 'سمك نيء' : 'Raw Fish'}</span>
               </span>
             )}
           </div>
-          <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mt-1">
-            <Clock className="w-3.5 h-3.5 text-cyan-400/80" />
+          <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mt-1 font-mono">
+            <Clock className="w-3.5 h-3.5 text-slate-500" />
             <span>{formatDate(order.created_at, language)}</span>
           </div>
         </div>
@@ -136,16 +127,16 @@ export function OrderCard({
           {isOwner && (
             <Link
               to={`/orders/${order.id}/edit`}
-              className="text-xs font-semibold text-cyan-300 hover:text-white flex items-center gap-1 py-1 px-2 rounded-lg bg-cyan-950/50 hover:bg-cyan-900/60 border border-cyan-800/40 transition-colors"
+              className="text-xs font-medium text-slate-300 hover:text-white flex items-center gap-1 py-1 px-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 border border-slate-700 transition-colors"
               title={t('edit_order')}
             >
-              <Edit3 className="w-3.5 h-3.5 text-cyan-400" />
+              <Edit3 className="w-3.5 h-3.5 text-slate-400" />
               <span>{t('edit_order')}</span>
             </Link>
           )}
           <Link
             to={`/orders/${order.id}`}
-            className="text-xs font-bold text-cyan-400 hover:text-cyan-200 flex items-center gap-0.5 p-1.5 rounded-lg hover:bg-cyan-950/40 transition-colors"
+            className="text-xs font-semibold text-blue-400 hover:text-blue-300 flex items-center gap-0.5 p-1 rounded hover:bg-slate-800/50 transition-colors"
           >
             <span>{t('view_details')}</span>
             <ChevronRight className="w-3.5 h-3.5 rtl:rotate-180" />
@@ -154,10 +145,10 @@ export function OrderCard({
       </div>
 
       {/* Customer and address section */}
-      <div className="bg-[#030e1a]/80 rounded-xl p-3 border border-cyan-950/60 space-y-2 text-xs">
+      <div className="bg-[#0B1019] rounded-lg p-3 border border-slate-800/80 space-y-2 text-xs">
         <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 font-bold text-white min-w-0">
-            <User className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+          <div className="flex items-center gap-1.5 font-semibold text-white min-w-0">
+            <User className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             <span className="truncate">{order.customer?.name}</span>
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
@@ -165,20 +156,20 @@ export function OrderCard({
               <button
                 type="button"
                 onClick={() => onEditCustomer(order.customer)}
-                className="inline-flex items-center gap-1 text-[11px] font-semibold text-cyan-300 hover:text-white bg-cyan-950/70 hover:bg-cyan-900/80 px-2 py-0.5 rounded-lg border border-cyan-800/40 transition-colors"
+                className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-2 py-0.5 rounded border border-slate-700 transition-colors"
                 title={language === 'ar' ? 'تعديل موقع وملاحظات العميل' : 'Edit customer location & notes'}
               >
-                <Edit3 className="w-3 h-3 text-cyan-400" />
+                <Edit3 className="w-3 h-3 text-slate-400" />
                 <span>{language === 'ar' ? 'تعديل' : 'Edit'}</span>
               </button>
             )}
             {order.customer?.phone && (
               <a
                 href={`tel:${order.customer.phone}`}
-                className="inline-flex items-center gap-1 text-cyan-300 bg-cyan-950/60 hover:bg-cyan-900/60 px-2 py-0.5 rounded-lg font-semibold transition-colors border border-cyan-800/40"
+                className="inline-flex items-center gap-1 text-slate-300 bg-slate-800 hover:bg-slate-700 px-2 py-0.5 rounded font-mono transition-colors border border-slate-700"
                 dir="ltr"
               >
-                <Phone className="w-3 h-3 text-cyan-400" />
+                <Phone className="w-3 h-3 text-slate-400" />
                 <span>{order.customer.phone}</span>
               </a>
             )}
@@ -189,20 +180,20 @@ export function OrderCard({
           const mapsUrl = buildGoogleMapsUrl(order.customer?.location_url, order.customer?.address);
           if (!order.customer?.address && !mapsUrl) return null;
           return (
-            <div className="flex items-center justify-between gap-2 pt-1 border-t border-cyan-950/40 text-slate-300">
+            <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-800 text-slate-300">
               <div className="flex items-start gap-1.5 min-w-0">
-                <MapPin className="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5" />
-                <span className="truncate">{order.customer?.address || (language === 'ar' ? 'موقع محدد على الخريطة' : 'Pinned Location')}</span>
+                <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
+                <span className="truncate text-slate-400">{order.customer?.address || (language === 'ar' ? 'موقع محدد على الخريطة' : 'Pinned Location')}</span>
               </div>
               {mapsUrl && (
                 <a
                   href={mapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-[11px] font-bold text-cyan-300 hover:text-white bg-cyan-950/70 hover:bg-cyan-900/70 px-2 py-0.5 rounded-lg border border-cyan-800/50 shrink-0 transition-colors"
+                  className="inline-flex items-center gap-1 text-[11px] font-medium text-blue-400 hover:text-blue-300 bg-slate-800 hover:bg-slate-700 px-2 py-0.5 rounded border border-slate-700 shrink-0 transition-colors"
                   title={language === 'ar' ? 'فتح موقع العميل في خرائط جوجل' : 'Open in Google Maps'}
                 >
-                  <Navigation className="w-3 h-3 text-cyan-400" />
+                  <Navigation className="w-3 h-3 text-blue-400" />
                   <span>{language === 'ar' ? 'الخريطة' : 'Maps'}</span>
                 </a>
               )}
@@ -213,32 +204,28 @@ export function OrderCard({
 
       {/* Seafood Items list */}
       <div className="space-y-1.5">
-        <div className="flex items-center justify-between text-[11px] font-bold text-cyan-400">
-          <div className="flex items-center gap-1">
-            <Fish className="w-3 h-3 text-cyan-400" />
-            <span>{t('order_items')} ({parsedItems.length}):</span>
-          </div>
+        <div className="flex items-center justify-between text-xs font-semibold text-slate-300">
+          <span>{t('order_items')} ({parsedItems.length}):</span>
           {orderHasRaw && (
-            <span className="text-[10px] font-black text-cyan-300 bg-cyan-950/90 px-2 py-0.5 rounded-full border border-cyan-400/40 flex items-center gap-1 shadow-sm">
-              <span>🐟</span>
-              <span>{language === 'ar' ? 'به سمك نيء' : 'Contains Raw Fish'}</span>
+            <span className="text-[11px] font-medium text-rose-300 bg-rose-950/60 px-2 py-0.5 rounded border border-rose-800/50">
+              {language === 'ar' ? 'سمك نيء' : 'Raw Fish'}
             </span>
           )}
         </div>
-        <div className="bg-[#030e1a]/50 p-2.5 rounded-xl border border-cyan-950/40 space-y-1.5 text-xs max-h-28 overflow-y-auto">
+        <div className="bg-[#0B1019] p-2.5 rounded-lg border border-slate-800/80 space-y-1.5 text-xs max-h-28 overflow-y-auto">
           {parsedItems.map((item, idx) => {
             const itemIsRaw = isRawFishItem(item);
             return (
-              <div key={idx} className={`flex justify-between items-center ${itemIsRaw ? 'text-cyan-200 font-semibold' : 'text-slate-200'}`}>
+              <div key={idx} className={`flex justify-between items-center ${itemIsRaw ? 'text-rose-200 font-medium' : 'text-slate-300'}`}>
                 <span className="truncate max-w-[210px] flex items-center gap-1.5">
                   <span>• {item.name || item.description}</span>
                   {itemIsRaw && (
-                    <span className="shrink-0 px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-[10px] font-black border border-cyan-400/40">
+                    <span className="shrink-0 px-1 py-0.2 rounded bg-rose-950 text-rose-300 text-[10px] font-semibold border border-rose-800/50">
                       {language === 'ar' ? 'نيء' : 'Raw'}
                     </span>
                   )}
                 </span>
-                <span className="text-[11px] font-semibold text-cyan-300 shrink-0">
+                <span className="text-[11px] font-mono text-slate-400 shrink-0">
                   ×{item.quantity}
                 </span>
               </div>
@@ -248,15 +235,15 @@ export function OrderCard({
       </div>
 
       {/* Driver info & action buttons */}
-      <div className="pt-2 border-t border-cyan-950/80 flex flex-col gap-2">
+      <div className="pt-2 border-t border-slate-800/80 flex flex-col gap-2">
         <div className="flex items-center justify-between text-xs">
           <div className="flex items-center gap-1.5 text-slate-300">
-            <Truck className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+            <Truck className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             <span>
               {order.driver ? (
-                <span className="font-semibold text-white">{order.driver.name}</span>
+                <span className="font-medium text-white">{order.driver.name}</span>
               ) : (
-                <span className="text-amber-400 italic font-normal text-[11px]">{t('unassigned')}</span>
+                <span className="text-amber-400 italic text-[11px]">{t('unassigned')}</span>
               )}
             </span>
           </div>
@@ -266,7 +253,7 @@ export function OrderCard({
               variant="outline"
               size="sm"
               onClick={() => onAssignClick(order)}
-              className="text-xs py-0.5 px-2.5 bg-cyan-950/40 border-cyan-700/60 text-cyan-300 hover:bg-cyan-900/40"
+              className="text-xs py-0.5 px-2.5"
             >
               {t('assign_driver')}
             </Button>
@@ -275,18 +262,18 @@ export function OrderCard({
 
         {/* Fast Payment Status Banner */}
         {order.payment_status === 'unpaid' && (
-          <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-amber-950/30 border border-amber-500/30">
+          <div className="flex items-center justify-between gap-2 p-2 rounded-lg bg-amber-950/30 border border-amber-800/50">
             <div className="flex items-center gap-1.5 text-xs text-amber-300">
               <Banknote className="w-3.5 h-3.5 shrink-0" />
-              <span className="font-semibold">{language === 'ar' ? 'تحصيل كاش:' : 'Cash due:'}</span>
-              <span className="font-black text-amber-200">{formatCurrency(totalAmountVal, language)}</span>
+              <span className="font-medium">{language === 'ar' ? 'تحصيل كاش:' : 'Cash due:'}</span>
+              <span className="font-bold text-amber-200">{formatCurrency(totalAmountVal, language)}</span>
             </div>
             {(isOwner || isDriver) && (
               <button
                 type="button"
                 disabled={isUpdating}
                 onClick={() => handleQuickPaymentUpdate('paid')}
-                className="text-[11px] font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1 shrink-0"
+                className="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 px-2.5 py-1 rounded transition-colors flex items-center gap-1 shrink-0 shadow-button"
               >
                 <CheckCircle2 className="w-3 h-3" />
                 <span>{t('mark_as_paid')}</span>
@@ -296,18 +283,18 @@ export function OrderCard({
         )}
 
         {order.payment_status === 'postpaid' && (
-          <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-purple-950/30 border border-purple-500/30">
+          <div className="flex items-center justify-between gap-2 p-2 rounded-lg bg-purple-950/30 border border-purple-800/50">
             <div className="flex items-center gap-1.5 text-xs text-purple-300">
               <Clock className="w-3.5 h-3.5 shrink-0" />
-              <span className="font-semibold">{language === 'ar' ? 'طلب آجل (على الحساب):' : 'On Credit:'}</span>
-              <span className="font-black text-purple-200">{formatCurrency(totalAmountVal, language)}</span>
+              <span className="font-medium">{language === 'ar' ? 'طلب آجل (على الحساب):' : 'On Credit:'}</span>
+              <span className="font-bold text-purple-200">{formatCurrency(totalAmountVal, language)}</span>
             </div>
             {(isOwner || isDriver) && (
               <button
                 type="button"
                 disabled={isUpdating}
                 onClick={() => handleQuickPaymentUpdate('paid')}
-                className="text-[11px] font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1 shrink-0"
+                className="text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 px-2.5 py-1 rounded transition-colors flex items-center gap-1 shrink-0 shadow-button"
               >
                 <CheckCircle2 className="w-3 h-3" />
                 <span>{t('mark_as_paid')}</span>
@@ -317,18 +304,18 @@ export function OrderCard({
         )}
 
         {order.payment_status === 'paid' && (
-          <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-emerald-950/30 border border-emerald-500/30">
+          <div className="flex items-center justify-between gap-2 p-2 rounded-lg bg-emerald-950/30 border border-emerald-800/50">
             <div className="flex items-center gap-1.5 text-xs text-emerald-300">
               <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-              <span className="font-semibold">{language === 'ar' ? 'تم الدفع بالكامل' : 'Paid in Full'}</span>
-              <span className="text-[11px] text-emerald-400/80">({formatCurrency(totalAmountVal, language)})</span>
+              <span className="font-medium">{language === 'ar' ? 'تم الدفع بالكامل' : 'Paid in Full'}</span>
+              <span className="text-[11px] text-emerald-400 font-mono">({formatCurrency(totalAmountVal, language)})</span>
             </div>
             {isOwner && (
               <button
                 type="button"
                 disabled={isUpdating}
                 onClick={() => handleQuickPaymentUpdate('unpaid')}
-                className="text-[10px] text-slate-400 hover:text-amber-300 underline"
+                className="text-[11px] text-slate-400 hover:text-amber-300 underline"
               >
                 {t('mark_as_unpaid')}
               </button>
@@ -346,7 +333,7 @@ export function OrderCard({
                 icon={Truck}
                 isLoading={isUpdating}
                 onClick={() => handleAdvanceStatus('out_for_delivery')}
-                className="w-full text-xs bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold border-0"
+                className="w-full text-xs"
               >
                 {language === 'ar' ? 'استلام وبدء التوصيل' : 'Start Delivery'}
               </Button>
@@ -361,7 +348,7 @@ export function OrderCard({
                     icon={CheckCircle2}
                     isLoading={isUpdating}
                     onClick={() => handleAdvanceStatus('delivered', 'paid')}
-                    className="w-full sm:flex-1 text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold border-0"
+                    className="w-full sm:flex-1 text-xs bg-emerald-600 hover:bg-emerald-500 text-white"
                   >
                     {language === 'ar' ? 'تسليم + استلام كاش' : 'Delivered & Paid'}
                   </Button>
@@ -371,7 +358,7 @@ export function OrderCard({
                     icon={Clock}
                     isLoading={isUpdating}
                     onClick={() => handleAdvanceStatus('delivered', 'postpaid')}
-                    className="w-full sm:flex-1 text-xs bg-purple-950/40 border-purple-500/50 text-purple-300 hover:bg-purple-900/50 font-bold"
+                    className="w-full sm:flex-1 text-xs text-purple-300 hover:text-white"
                   >
                     {language === 'ar' ? 'تسليم بدون دفع (آجل)' : 'Delivered (Credit)'}
                   </Button>
@@ -383,7 +370,7 @@ export function OrderCard({
                   icon={CheckCircle2}
                   isLoading={isUpdating}
                   onClick={() => handleAdvanceStatus('delivered')}
-                  className="w-full text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold border-0"
+                  className="w-full text-xs bg-emerald-600 hover:bg-emerald-500 text-white"
                 >
                   {language === 'ar' ? 'تأكيد تسليم الطلب' : 'Mark as Delivered'}
                 </Button>

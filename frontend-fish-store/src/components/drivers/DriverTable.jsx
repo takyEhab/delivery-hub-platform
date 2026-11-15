@@ -2,7 +2,7 @@ import React from 'react';
 import { formatDate } from '../../utils/formatters';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
-import { Phone, Mail, Edit, Trash2, Truck } from 'lucide-react';
+import { Phone, Edit, Trash2, Truck } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 
 export function DriverTable({ drivers, onEdit, onDelete }) {
@@ -10,11 +10,11 @@ export function DriverTable({ drivers, onEdit, onDelete }) {
 
   if (!drivers || drivers.length === 0) {
     return (
-      <div className="text-center py-12 px-4 bg-[#05172b]/90 rounded-2xl border border-cyan-900/40 shadow-xl">
-        <div className="w-14 h-14 rounded-2xl bg-cyan-950/60 border border-cyan-800/40 flex items-center justify-center mx-auto text-cyan-400 mb-3 shadow-inner">
-          <Truck className="w-7 h-7" />
+      <div className="text-center py-12 px-4 bg-[#0F1622] rounded-xl border border-slate-800/80 shadow-card">
+        <div className="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700/60 flex items-center justify-center mx-auto text-slate-400 mb-3">
+          <Truck className="w-6 h-6" />
         </div>
-        <h3 className="text-base font-bold text-white">{language === 'ar' ? 'لا يوجد كباتن مسجلين' : 'No drivers in roster'}</h3>
+        <h3 className="text-base font-semibold text-white">{language === 'ar' ? 'لا يوجد كباتن مسجلين' : 'No drivers in roster'}</h3>
         <p className="text-xs text-slate-400 max-w-sm mx-auto mt-1">
           {language === 'ar' ? 'أضف كباتن توصيل للمتجر لتوزيع طلبات الأسماك عليهم.' : 'Add delivery couriers to assign orders and enable status updates.'}
         </p>
@@ -23,72 +23,71 @@ export function DriverTable({ drivers, onEdit, onDelete }) {
   }
 
   return (
-    <div className="bg-[#05172b]/90 rounded-2xl border border-cyan-900/40 shadow-xl overflow-hidden">
+    <div className="bg-[#0F1622] rounded-xl border border-slate-800/80 shadow-card overflow-hidden">
       {/* Desktop View */}
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-right rtl:text-right ltr:text-left border-collapse text-sm">
           <thead>
-            <tr className="bg-[#030f1c] border-b border-cyan-950/80 text-cyan-400 font-bold text-xs uppercase tracking-wider">
-              <th className="py-4 px-5">{language === 'ar' ? 'الكابتن' : 'Courier Name'}</th>
-              <th className="py-4 px-4">{t('phone')}</th>
-              <th className="py-4 px-4">{t('status')}</th>
-              <th className="py-4 px-4">{language === 'ar' ? 'تاريخ الإضافة' : 'Added On'}</th>
-              <th className="py-4 px-5 text-left rtl:text-left ltr:text-right">{t('actions')}</th>
+            <tr className="bg-[#0B1019] border-b border-slate-800 text-slate-400 font-semibold text-xs uppercase tracking-wider">
+              <th className="py-3.5 px-5">{language === 'ar' ? 'الكابتن' : 'Courier Name'}</th>
+              <th className="py-3.5 px-4">{t('phone')}</th>
+              <th className="py-3.5 px-4">{t('status')}</th>
+              <th className="py-3.5 px-4">{language === 'ar' ? 'تاريخ الإضافة' : 'Added On'}</th>
+              <th className="py-3.5 px-5 text-left rtl:text-left ltr:text-right">{t('actions')}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-cyan-950/60 text-slate-200">
+          <tbody className="divide-y divide-slate-800/80 text-slate-200">
             {drivers.map((driver) => (
               <tr
                 key={driver.id}
-                className="hover:bg-cyan-950/30 transition-colors group"
+                className="hover:bg-slate-800/20 transition-colors group"
               >
-                <td className="py-3.5 px-5">
+                <td className="py-3 px-5">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-600 to-blue-500 text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                    <div className="w-8 h-8 rounded-lg bg-slate-800 text-white flex items-center justify-center font-bold text-xs shrink-0">
                       {driver.name.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <p className="font-bold text-white group-hover:text-cyan-400 transition-colors text-xs">
+                      <p className="font-semibold text-white group-hover:text-blue-400 transition-colors text-xs">
                         {driver.name}
                       </p>
-                      <p className="text-[11px] text-cyan-400/80 font-mono">ID #{driver.id}</p>
+                      <p className="text-[11px] text-slate-400 font-mono">ID #{driver.id}</p>
                     </div>
                   </div>
                 </td>
 
-                <td className="py-3.5 px-4">
+                <td className="py-3 px-4">
                   <a
                     href={`tel:${driver.phone}`}
-                    className="inline-flex items-center gap-1.5 text-slate-300 hover:text-cyan-300 transition-colors font-medium text-xs"
+                    className="inline-flex items-center gap-1.5 text-slate-300 hover:text-blue-400 transition-colors font-mono text-xs"
                     dir="ltr"
                   >
-                    <Phone className="w-3.5 h-3.5 text-cyan-400" />
+                    <Phone className="w-3.5 h-3.5 text-slate-500" />
                     <span>{driver.phone}</span>
                   </a>
                 </td>
 
-                <td className="py-3.5 px-4 whitespace-nowrap">
+                <td className="py-3 px-4 whitespace-nowrap">
                   <Badge
                     variant={driver.is_active ? 'success' : 'neutral'}
                     size="sm"
-                    dot={driver.is_active}
                   >
                     {driver.is_active ? t('driver_status_active') : t('driver_status_inactive')}
                   </Badge>
                 </td>
 
-                <td className="py-3.5 px-4 text-xs text-slate-400 whitespace-nowrap">
+                <td className="py-3 px-4 text-xs text-slate-400 whitespace-nowrap font-mono">
                   {formatDate(driver.created_at, language)}
                 </td>
 
-                <td className="py-3.5 px-5 text-left rtl:text-left ltr:text-right whitespace-nowrap">
+                <td className="py-3 px-5 text-left rtl:text-left ltr:text-right whitespace-nowrap">
                   <div className="flex items-center justify-end rtl:justify-start gap-2">
                     <Button
                       variant="outline"
                       size="sm"
                       icon={Edit}
                       onClick={() => onEdit(driver)}
-                      className="text-xs py-1 px-3 border-cyan-800/60 text-cyan-300 hover:bg-cyan-950/40"
+                      className="text-xs py-1 px-3"
                     >
                       {language === 'ar' ? 'تعديل' : 'Edit'}
                     </Button>
@@ -97,7 +96,7 @@ export function DriverTable({ drivers, onEdit, onDelete }) {
                       size="sm"
                       icon={Trash2}
                       onClick={() => onDelete(driver)}
-                      className="text-xs py-1 px-2.5 text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 border border-transparent hover:border-rose-500/30"
+                      className="text-xs py-1 px-2.5 text-rose-400 hover:text-rose-300 hover:bg-rose-950/40"
                     />
                   </div>
                 </td>
@@ -108,23 +107,22 @@ export function DriverTable({ drivers, onEdit, onDelete }) {
       </div>
 
       {/* Mobile Cards */}
-      <div className="md:hidden divide-y divide-cyan-950/60">
+      <div className="md:hidden divide-y divide-slate-800/80">
         {drivers.map((driver) => (
           <div key={driver.id} className="p-4 space-y-2.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-600 to-blue-500 text-white flex items-center justify-center font-black text-xs">
+                <div className="w-8 h-8 rounded-lg bg-slate-800 text-white flex items-center justify-center font-bold text-xs">
                   {driver.name.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <p className="font-bold text-white text-sm">{driver.name}</p>
-                  <p className="text-[11px] text-cyan-400 font-mono">ID #{driver.id}</p>
+                  <p className="font-semibold text-white text-sm">{driver.name}</p>
+                  <p className="text-[11px] text-slate-400 font-mono">ID #{driver.id}</p>
                 </div>
               </div>
               <Badge
                 variant={driver.is_active ? 'success' : 'neutral'}
                 size="sm"
-                dot={driver.is_active}
               >
                 {driver.is_active ? t('driver_status_active') : t('driver_status_inactive')}
               </Badge>
@@ -133,10 +131,10 @@ export function DriverTable({ drivers, onEdit, onDelete }) {
             <div className="flex items-center justify-between text-xs text-slate-300 pt-1">
               <a
                 href={`tel:${driver.phone}`}
-                className="flex items-center gap-1.5 text-cyan-300"
+                className="flex items-center gap-1.5 text-slate-300 hover:text-blue-400 font-mono"
                 dir="ltr"
               >
-                <Phone className="w-3.5 h-3.5" />
+                <Phone className="w-3.5 h-3.5 text-slate-500" />
                 <span>{driver.phone}</span>
               </a>
 
@@ -144,18 +142,19 @@ export function DriverTable({ drivers, onEdit, onDelete }) {
                 <Button
                   variant="outline"
                   size="sm"
+                  icon={Edit}
                   onClick={() => onEdit(driver)}
-                  className="text-xs py-1 px-2.5 border-cyan-800/60 text-cyan-300"
+                  className="text-xs py-1 px-2.5"
                 >
                   {language === 'ar' ? 'تعديل' : 'Edit'}
                 </Button>
-                <button
-                  type="button"
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon={Trash2}
                   onClick={() => onDelete(driver)}
-                  className="p-1.5 text-rose-400 hover:text-rose-300"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                  className="text-xs py-1 px-2 text-rose-400 hover:bg-rose-950/40"
+                />
               </div>
             </div>
           </div>

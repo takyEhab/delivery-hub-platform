@@ -386,14 +386,14 @@ export function DriverCustomers() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-600 to-teal-500 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-cyan-500/20">
-              <Users className="w-5 h-5 text-slate-950 stroke-[2.5]" />
+            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold shadow-button">
+              <Users className="w-5 h-5 stroke-[2.2]" />
             </div>
             <div>
-              <h1 className="text-2xl font-black text-white tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
                 {language === 'ar' ? 'إضافة وتسجيل العملاء' : 'Customer Registration & Import'}
               </h1>
-              <p className="text-xs text-slate-300 mt-0.5">
+              <p className="text-xs text-slate-400 mt-0.5">
                 {language === 'ar'
                   ? 'تسجيل عميل جديد أو استيراد جهات الاتصال من هاتفك المحمول بسهولة'
                   : 'Register a new customer or batch import contacts from your phone'}
@@ -404,7 +404,7 @@ export function DriverCustomers() {
 
         {/* Live Session Counter Badge */}
         {sessionAddedCustomers.length > 0 && (
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-950/80 border border-emerald-500/30 text-emerald-300 text-xs font-bold w-fit">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-950/60 border border-emerald-800/50 text-emerald-300 text-xs font-medium w-fit">
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
             <span>
               {language === 'ar'
@@ -416,14 +416,14 @@ export function DriverCustomers() {
       </div>
 
       {/* Tabs Navigation */}
-      <div className="flex items-center gap-2 p-1.5 bg-[#030e1a]/90 rounded-2xl border border-cyan-900/40 w-full sm:w-fit overflow-x-auto scrollbar-none">
+      <div className="flex items-center gap-2 p-1 bg-[#0B1019] rounded-xl border border-slate-800 w-full sm:w-fit overflow-x-auto scrollbar-none">
         <button
           type="button"
           onClick={() => setActiveTab('single')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${
             activeTab === 'single'
-              ? 'bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 shadow-md shadow-cyan-500/20 font-black'
-              : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
+              ? 'bg-slate-800 text-white border border-slate-700 shadow-button'
+              : 'text-slate-400 hover:text-white'
           }`}
         >
           <UserPlus className="w-4 h-4" />
@@ -433,16 +433,16 @@ export function DriverCustomers() {
         <button
           type="button"
           onClick={() => setActiveTab('batch_contacts')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${
             activeTab === 'batch_contacts'
-              ? 'bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 shadow-md shadow-cyan-500/20 font-black'
-              : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
+              ? 'bg-slate-800 text-white border border-slate-700 shadow-button'
+              : 'text-slate-400 hover:text-white'
           }`}
         >
           <Smartphone className="w-4 h-4" />
           <span>{language === 'ar' ? 'استيراد من جهات الاتصال' : 'Import from Mobile'}</span>
           {batchContacts.length > 0 && (
-            <span className="px-1.5 py-0.2 rounded-full bg-slate-950/30 text-slate-950 text-[10px]">
+            <span className="px-1.5 py-0.2 rounded-full bg-slate-700 text-white text-[10px] font-mono">
               {batchContacts.length}
             </span>
           )}
@@ -451,10 +451,10 @@ export function DriverCustomers() {
         <button
           type="button"
           onClick={() => setActiveTab('paste')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${
             activeTab === 'paste'
-              ? 'bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 shadow-md shadow-cyan-500/20 font-black'
-              : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
+              ? 'bg-slate-800 text-white border border-slate-700 shadow-button'
+              : 'text-slate-400 hover:text-white'
           }`}
         >
           <ClipboardPaste className="w-4 h-4" />
@@ -464,11 +464,11 @@ export function DriverCustomers() {
 
       {/* --- Tab 1: Single Customer Form --- */}
       {activeTab === 'single' && (
-        <div className="bg-[#05172b]/90 rounded-2xl border border-cyan-900/40 p-5 sm:p-7 shadow-xl space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-cyan-950/80">
+        <div className="bg-[#0F1622] rounded-xl border border-slate-800/80 p-5 sm:p-6 shadow-card space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
             <div>
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
-                <User className="w-5 h-5 text-cyan-400" />
+              <h2 className="text-base font-semibold text-white flex items-center gap-2">
+                <User className="w-4 h-4 text-blue-400" />
                 <span>{language === 'ar' ? 'بيانات العميل الجديد' : 'New Customer Details'}</span>
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">
@@ -486,7 +486,7 @@ export function DriverCustomers() {
               icon={Smartphone}
               isLoading={isAutofillingContact}
               onClick={handleAutofillFromDevice}
-              className="text-xs border-cyan-600/60 text-cyan-300 hover:bg-cyan-950/60 font-bold self-start sm:self-auto"
+              className="text-xs self-start sm:self-auto"
             >
               {language === 'ar' ? 'تعبئة من جهات الاتصال' : 'Autofill from Contacts'}
             </Button>
@@ -496,12 +496,12 @@ export function DriverCustomers() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Name */}
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                   {language === 'ar' ? 'اسم العميل *' : 'Customer Name *'}
                 </label>
                 <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 rtl:left-auto rtl:right-0 flex items-center pl-3 rtl:pl-0 rtl:pr-3">
-                    <User className="h-4 w-4 text-cyan-400/80" />
+                  <div className="pointer-events-none absolute inset-y-0 left-0 rtl:left-auto rtl:right-0 flex items-center pl-3 rtl:pl-0 rtl:pr-3 text-slate-500">
+                    <User className="h-4 w-4" />
                   </div>
                   <input
                     type="text"
@@ -509,8 +509,8 @@ export function DriverCustomers() {
                     placeholder={language === 'ar' ? 'مثال: محمد أحمد' : 'e.g. Mohamed Ahmed'}
                     value={singleForm.name}
                     onChange={(e) => setSingleForm({ ...singleForm, name: e.target.value })}
-                    className={`block w-full rounded-xl border bg-[#020b14]/90 text-sm text-white placeholder:text-slate-500 pl-9 rtl:pl-3 rtl:pr-9 pr-3 py-2.5 focus:outline-none transition-colors ${
-                      singleErrors.name ? 'border-rose-500' : 'border-slate-700/80 focus:border-cyan-400'
+                    className={`block w-full rounded-lg border bg-[#0B1019] text-sm text-white placeholder:text-slate-500 pl-9 rtl:pl-3 rtl:pr-9 pr-3 py-2.5 focus:outline-none transition-colors ${
+                      singleErrors.name ? 'border-rose-500' : 'border-slate-700/80 focus:border-blue-500'
                     }`}
                   />
                 </div>
@@ -519,12 +519,12 @@ export function DriverCustomers() {
 
               {/* Phone */}
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                   {language === 'ar' ? 'رقم الهاتف *' : 'Phone Number *'}
                 </label>
                 <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 rtl:left-auto rtl:right-0 flex items-center pl-3 rtl:pl-0 rtl:pr-3">
-                    <Phone className="h-4 w-4 text-cyan-400/80" />
+                  <div className="pointer-events-none absolute inset-y-0 left-0 rtl:left-auto rtl:right-0 flex items-center pl-3 rtl:pl-0 rtl:pr-3 text-slate-500">
+                    <Phone className="h-4 w-4" />
                   </div>
                   <input
                     type="tel"
@@ -533,8 +533,8 @@ export function DriverCustomers() {
                     placeholder="01xxxxxxxxx"
                     value={singleForm.phone}
                     onChange={(e) => setSingleForm({ ...singleForm, phone: e.target.value })}
-                    className={`block w-full rounded-xl border bg-[#020b14]/90 text-sm text-white placeholder:text-slate-500 pl-9 pr-3 py-2.5 focus:outline-none transition-colors ${
-                      singleErrors.phone ? 'border-rose-500' : 'border-slate-700/80 focus:border-cyan-400'
+                    className={`block w-full rounded-lg border bg-[#0B1019] text-sm text-white placeholder:text-slate-500 pl-9 pr-3 py-2.5 focus:outline-none transition-colors font-mono ${
+                      singleErrors.phone ? 'border-rose-500' : 'border-slate-700/80 focus:border-blue-500'
                     }`}
                   />
                 </div>
@@ -544,28 +544,28 @@ export function DriverCustomers() {
 
             {/* Address */}
             <div>
-              <label className="block text-xs font-bold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                 {language === 'ar' ? 'العنوان وتفاصيل السكن' : 'Delivery Address'}
               </label>
               <div className="relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 rtl:left-auto rtl:right-0 flex items-center pl-3 rtl:pl-0 rtl:pr-3">
-                  <MapPin className="h-4 w-4 text-cyan-400/80" />
+                <div className="pointer-events-none absolute inset-y-0 left-0 rtl:left-auto rtl:right-0 flex items-center pl-3 rtl:pl-0 rtl:pr-3 text-slate-500">
+                  <MapPin className="h-4 w-4" />
                 </div>
                 <input
                   type="text"
                   placeholder={language === 'ar' ? 'مثال: شارع البحر، عمارة الأمل، الدور الثاني' : 'e.g. 15 Sea St, Apt 4'}
                   value={singleForm.address}
                   onChange={(e) => setSingleForm({ ...singleForm, address: e.target.value })}
-                  className="block w-full rounded-xl border border-slate-700/80 bg-[#020b14]/90 text-sm text-white placeholder:text-slate-500 pl-9 rtl:pl-3 rtl:pr-9 pr-3 py-2.5 focus:border-cyan-400 focus:outline-none transition-colors"
+                  className="block w-full rounded-lg border border-slate-700/80 bg-[#0B1019] text-sm text-white placeholder:text-slate-500 pl-9 rtl:pl-3 rtl:pr-9 pr-3 py-2.5 focus:border-blue-500 focus:outline-none transition-colors"
                 />
               </div>
             </div>
 
             {/* GPS Capture Button & Link Preview */}
-            <div className="p-3.5 rounded-xl bg-[#020e1c] border border-cyan-900/50 space-y-2.5">
+            <div className="p-3.5 rounded-lg bg-[#0B1019] border border-slate-800 space-y-2.5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                 <div>
-                  <span className="text-xs font-bold text-slate-200 block">
+                  <span className="text-xs font-semibold text-slate-200 block">
                     {language === 'ar' ? 'موقع العميل على الخريطة (GPS)' : 'Customer Location on Map (GPS)'}
                   </span>
                   <span className="text-[11px] text-slate-400">
@@ -582,7 +582,7 @@ export function DriverCustomers() {
                   icon={MapPin}
                   isLoading={isLocatingGps}
                   onClick={handleGpsCapture}
-                  className="text-xs border-cyan-500/60 text-cyan-300 hover:bg-cyan-950/60 font-bold shrink-0"
+                  className="text-xs shrink-0"
                 >
                   {language === 'ar' ? '📍 التقاط موقعي الحالي GPS' : '📍 Capture Current GPS'}
                 </Button>
@@ -593,7 +593,7 @@ export function DriverCustomers() {
                 placeholder={language === 'ar' ? 'رابط خرائط جوجل (Google Maps URL)' : 'Google Maps URL'}
                 value={singleForm.location_url}
                 onChange={(e) => setSingleForm({ ...singleForm, location_url: e.target.value })}
-                className="block w-full rounded-xl border border-slate-700/80 bg-[#020b14]/90 text-xs text-cyan-200 placeholder:text-slate-500 px-3 py-2 focus:border-cyan-400 focus:outline-none transition-colors"
+                className="block w-full rounded-lg border border-slate-700/80 bg-[#070B12] text-xs text-slate-200 placeholder:text-slate-500 px-3 py-2 focus:border-blue-500 focus:outline-none transition-colors"
               />
 
               {singleForm.location_url && (
@@ -604,7 +604,7 @@ export function DriverCustomers() {
                     href={buildGoogleMapsUrl(singleForm.location_url)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-cyan-400 hover:underline font-bold mr-auto rtl:mr-0 rtl:ml-auto"
+                    className="inline-flex items-center gap-1 text-blue-400 hover:underline font-medium mr-auto rtl:mr-0 rtl:ml-auto"
                   >
                     <span>{language === 'ar' ? 'معاينة على الخريطة' : 'View on Map'}</span>
                     <ExternalLink className="w-3 h-3" />
@@ -615,7 +615,7 @@ export function DriverCustomers() {
 
             {/* Notes */}
             <div>
-              <label className="block text-xs font-bold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                 {language === 'ar' ? 'ملاحظات إضافية للتوصيل (اختياري)' : 'Delivery Notes (Optional)'}
               </label>
               <textarea
@@ -623,7 +623,7 @@ export function DriverCustomers() {
                 placeholder={language === 'ar' ? 'مثال: بجوار صيدلية الأمل، رن الجرس مرتين' : 'e.g. Next to pharmacy, ring bell twice'}
                 value={singleForm.notes}
                 onChange={(e) => setSingleForm({ ...singleForm, notes: e.target.value })}
-                className="block w-full rounded-xl border border-slate-700/80 bg-[#020b14]/90 text-xs text-white placeholder:text-slate-500 px-3 py-2.5 focus:border-cyan-400 focus:outline-none transition-colors"
+                className="block w-full rounded-lg border border-slate-700/80 bg-[#0B1019] text-xs text-white placeholder:text-slate-500 px-3 py-2.5 focus:border-blue-500 focus:outline-none transition-colors"
               />
             </div>
 
@@ -635,7 +635,7 @@ export function DriverCustomers() {
                 size="md"
                 isLoading={isSubmittingSingle}
                 icon={UserPlus}
-                className="w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 font-black shadow-lg shadow-cyan-500/20 text-sm py-2.5 px-6"
+                className="w-full sm:w-auto text-xs py-2.5 px-6"
               >
                 {language === 'ar' ? 'حفظ وتسجيل العميل' : 'Save & Register Customer'}
               </Button>
@@ -646,11 +646,11 @@ export function DriverCustomers() {
 
       {/* --- Tab 2: Batch Mobile Contacts Import --- */}
       {activeTab === 'batch_contacts' && (
-        <div className="bg-[#05172b]/90 rounded-2xl border border-cyan-900/40 p-5 sm:p-7 shadow-xl space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-cyan-950/80">
+        <div className="bg-[#0F1622] rounded-xl border border-slate-800/80 p-5 sm:p-6 shadow-card space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
             <div>
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
-                <Smartphone className="w-5 h-5 text-cyan-400" />
+              <h2 className="text-base font-semibold text-white flex items-center gap-2">
+                <Smartphone className="w-4 h-4 text-blue-400" />
                 <span>{language === 'ar' ? 'استيراد جهات الاتصال من الهاتف' : 'Import Contacts from Device'}</span>
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">
@@ -667,19 +667,19 @@ export function DriverCustomers() {
               icon={Smartphone}
               isLoading={isSelectingContacts}
               onClick={handleOpenContactPicker}
-              className="bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 font-bold shadow-md shadow-cyan-500/20 text-xs"
+              className="text-xs"
             >
               {language === 'ar' ? '📱 فتح جهات الاتصال للاختيار' : '📱 Select Mobile Contacts'}
             </Button>
           </div>
 
           {batchContacts.length === 0 ? (
-            <div className="p-8 border border-dashed border-cyan-900/60 rounded-2xl text-center space-y-3 bg-[#020d1a]/50">
-              <div className="w-12 h-12 rounded-full bg-cyan-950/80 border border-cyan-500/30 flex items-center justify-center mx-auto text-xl text-cyan-400">
+            <div className="p-8 border border-dashed border-slate-800 rounded-xl text-center space-y-3 bg-[#0B1019]">
+              <div className="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center mx-auto text-base text-slate-300">
                 📱
               </div>
               <div className="max-w-md mx-auto space-y-1">
-                <p className="text-xs font-bold text-white">
+                <p className="text-xs font-semibold text-white">
                   {language === 'ar' ? 'لم يتم اختيار أي جهات اتصال بعد' : 'No contacts selected yet'}
                 </p>
                 <p className="text-[11px] text-slate-400">
@@ -692,14 +692,14 @@ export function DriverCustomers() {
           ) : (
             <div className="space-y-4">
               {/* Batch Actions Bar */}
-              <div className="flex items-center justify-between p-3 rounded-xl bg-[#020d1a] border border-cyan-900/60 text-xs">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-[#0B1019] border border-slate-800 text-xs">
                 <button
                   type="button"
                   onClick={handleToggleAllBatch}
-                  className="flex items-center gap-2 text-cyan-300 font-bold hover:text-white transition-colors"
+                  className="flex items-center gap-2 text-slate-300 font-medium hover:text-white transition-colors"
                 >
                   {selectedBatchIndices.length === batchContacts.length ? (
-                    <CheckSquare className="w-4 h-4 text-cyan-400" />
+                    <CheckSquare className="w-4 h-4 text-blue-400" />
                   ) : (
                     <Square className="w-4 h-4 text-slate-500" />
                   )}
@@ -716,7 +716,7 @@ export function DriverCustomers() {
                   size="sm"
                   isLoading={isImportingBatch}
                   onClick={handleImportBatch}
-                  className="bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black text-xs shadow-md shadow-emerald-500/20"
+                  className="text-xs"
                 >
                   {language === 'ar'
                     ? `استيراد المحددين (${selectedBatchIndices.length})`
@@ -726,14 +726,14 @@ export function DriverCustomers() {
 
               {/* Progress bar */}
               {isImportingBatch && (
-                <div className="space-y-1.5 p-3 rounded-xl bg-[#020b14] border border-cyan-500/40">
-                  <div className="flex items-center justify-between text-xs text-cyan-300 font-bold">
+                <div className="space-y-1.5 p-3 rounded-lg bg-[#0B1019] border border-slate-800">
+                  <div className="flex items-center justify-between text-xs text-slate-300 font-medium">
                     <span>{language === 'ar' ? 'جاري الاستيراد...' : 'Importing...'}</span>
-                    <span>{batchProgress}%</span>
+                    <span className="font-mono">{batchProgress}%</span>
                   </div>
-                  <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                  <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
                     <div
-                      className="bg-gradient-to-r from-cyan-400 to-emerald-400 h-2 transition-all duration-300"
+                      className="bg-blue-600 h-1.5 transition-all duration-300"
                       style={{ width: `${batchProgress}%` }}
                     />
                   </div>
@@ -748,29 +748,29 @@ export function DriverCustomers() {
                     <div
                       key={idx}
                       onClick={() => handleToggleBatchIndex(idx)}
-                      className={`p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between gap-3 ${
+                      className={`p-3 rounded-lg border cursor-pointer transition-colors flex items-center justify-between gap-3 ${
                         isSelected
-                          ? 'bg-cyan-950/40 border-cyan-500/60 ring-1 ring-cyan-500/30'
-                          : 'bg-[#020b14]/70 border-slate-800 hover:border-slate-700'
+                          ? 'bg-[#131B2A] border-blue-500/80 ring-1 ring-blue-500/30'
+                          : 'bg-[#0B1019] border-slate-800 hover:border-slate-700'
                       }`}
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <div
                           className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-xs font-bold ${
-                            isSelected ? 'bg-cyan-500/20 text-cyan-300' : 'bg-slate-800 text-slate-400'
+                            isSelected ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-400'
                           }`}
                         >
                           {c.name ? c.name[0] : '👤'}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-xs font-bold text-white truncate">{c.name || 'عميل بدون اسم'}</p>
+                          <p className="text-xs font-semibold text-white truncate">{c.name || 'عميل بدون اسم'}</p>
                           <p className="text-[11px] text-slate-400 font-mono" dir="ltr">{c.phone}</p>
                         </div>
                       </div>
 
                       <div className="shrink-0">
                         {isSelected ? (
-                          <CheckCircle2 className="w-4 h-4 text-cyan-400 stroke-[2.5]" />
+                          <CheckCircle2 className="w-4 h-4 text-blue-400" />
                         ) : (
                           <Square className="w-4 h-4 text-slate-600" />
                         )}
@@ -786,10 +786,10 @@ export function DriverCustomers() {
 
       {/* --- Tab 3: Quick Paste Tool --- */}
       {activeTab === 'paste' && (
-        <div className="bg-[#05172b]/90 rounded-2xl border border-cyan-900/40 p-5 sm:p-7 shadow-xl space-y-6">
-          <div className="pb-4 border-b border-cyan-950/80">
-            <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <ClipboardPaste className="w-5 h-5 text-cyan-400" />
+        <div className="bg-[#0F1622] rounded-xl border border-slate-800/80 p-5 sm:p-6 shadow-card space-y-5">
+          <div className="pb-4 border-b border-slate-800">
+            <h2 className="text-base font-semibold text-white flex items-center gap-2">
+              <ClipboardPaste className="w-4 h-4 text-blue-400" />
               <span>{language === 'ar' ? 'لصق واستخراج أرقام زبائن سريعة' : 'Quick Paste from WhatsApp / Messages'}</span>
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
@@ -809,7 +809,7 @@ export function DriverCustomers() {
               }
               value={rawPastedText}
               onChange={(e) => setRawPastedText(e.target.value)}
-              className="block w-full rounded-xl border border-slate-700/80 bg-[#020b14]/90 text-xs text-white placeholder:text-slate-500 p-3 focus:border-cyan-400 focus:outline-none font-mono"
+              className="block w-full rounded-lg border border-slate-700/80 bg-[#0B1019] text-xs text-white placeholder:text-slate-500 p-3 focus:border-blue-500 focus:outline-none font-mono"
             />
 
             <Button
@@ -818,16 +818,16 @@ export function DriverCustomers() {
               size="sm"
               icon={Sparkles}
               onClick={handleParsePastedText}
-              className="border-cyan-600/70 text-cyan-300 hover:bg-cyan-950/60 font-bold text-xs"
+              className="text-xs"
             >
               {language === 'ar' ? '🔍 استخراج وتحليل جهات الاتصال' : 'Extract Contacts'}
             </Button>
           </div>
 
           {parsedPastedContacts.length > 0 && (
-            <div className="space-y-3 pt-3 border-t border-cyan-950/80">
+            <div className="space-y-3 pt-3 border-t border-slate-800">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-slate-300">
+                <span className="font-semibold text-slate-300">
                   {language === 'ar'
                     ? `تم استخراج ${parsedPastedContacts.length} رقم جاهز للحفظ:`
                     : `Extracted ${parsedPastedContacts.length} contact(s):`}
@@ -838,7 +838,7 @@ export function DriverCustomers() {
                   size="sm"
                   isLoading={isImportingPasted}
                   onClick={handleImportPasted}
-                  className="bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black text-xs"
+                  className="text-xs"
                 >
                   {language === 'ar' ? 'حفظ جهات الاتصال في النظام' : 'Save Extracted Contacts'}
                 </Button>
@@ -848,10 +848,10 @@ export function DriverCustomers() {
                 {parsedPastedContacts.map((c, idx) => (
                   <div
                     key={idx}
-                    className="p-2.5 rounded-xl bg-[#020b14]/90 border border-slate-800 flex items-center justify-between text-xs"
+                    className="p-2.5 rounded-lg bg-[#0B1019] border border-slate-800 flex items-center justify-between text-xs"
                   >
-                    <span className="font-bold text-white truncate">{c.name}</span>
-                    <span className="font-mono text-cyan-300 text-[11px]" dir="ltr">{c.phone}</span>
+                    <span className="font-medium text-white truncate">{c.name}</span>
+                    <span className="font-mono text-slate-400 text-[11px]" dir="ltr">{c.phone}</span>
                   </div>
                 ))}
               </div>
@@ -862,17 +862,17 @@ export function DriverCustomers() {
 
       {/* --- Session History Card: Customers Added in Current Session --- */}
       {sessionAddedCustomers.length > 0 && (
-        <div className="bg-[#05172b]/90 rounded-2xl border border-emerald-900/40 p-5 shadow-xl space-y-4">
+        <div className="bg-[#0F1622] rounded-xl border border-emerald-800/40 p-5 shadow-card space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-              <h3 className="text-sm font-black text-white">
+              <h3 className="text-sm font-semibold text-white">
                 {language === 'ar'
                   ? `العملاء المسجلون خلال هذه الجلسة (${sessionAddedCustomers.length})`
                   : `Customers Registered in Current Session (${sessionAddedCustomers.length})`}
               </h3>
             </div>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-800/50">
               {language === 'ar' ? 'تم الحفظ في قاعدة البيانات' : 'Saved in Database'}
             </span>
           </div>
@@ -881,10 +881,10 @@ export function DriverCustomers() {
             {sessionAddedCustomers.map((cust, idx) => (
               <div
                 key={idx}
-                className="p-3.5 rounded-xl bg-[#020e1c] border border-cyan-900/50 space-y-1.5"
+                className="p-3 rounded-lg bg-[#0B1019] border border-slate-800 space-y-1.5"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-white truncate">{cust.name}</span>
+                  <span className="text-xs font-semibold text-white truncate">{cust.name}</span>
                   <span className="text-[10px] text-slate-400 flex items-center gap-1 font-mono">
                     <Clock className="w-3 h-3 text-slate-500" />
                     {cust.timestamp}
@@ -892,13 +892,13 @@ export function DriverCustomers() {
                 </div>
 
                 <div className="flex items-center justify-between text-[11px] text-slate-400">
-                  <span className="font-mono text-cyan-300" dir="ltr">{cust.phone}</span>
+                  <span className="font-mono text-slate-300" dir="ltr">{cust.phone}</span>
                   {cust.location_url && (
                     <a
                       href={buildGoogleMapsUrl(cust.location_url)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-emerald-400 hover:underline font-bold"
+                      className="inline-flex items-center gap-1 text-blue-400 hover:underline font-medium"
                     >
                       <MapPin className="w-3 h-3" />
                       <span>GPS</span>
@@ -907,7 +907,7 @@ export function DriverCustomers() {
                 </div>
 
                 {cust.address && (
-                  <p className="text-[11px] text-slate-300 truncate">
+                  <p className="text-[11px] text-slate-400 truncate">
                     📍 {cust.address}
                   </p>
                 )}
